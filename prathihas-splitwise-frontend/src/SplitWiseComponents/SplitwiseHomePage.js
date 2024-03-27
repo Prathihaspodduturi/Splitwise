@@ -5,11 +5,11 @@ const SplitwiseHomePage = () => {
 
   const [initialConnection, setConnection] = useState(false);
   const [error,setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [flag, setFlag] = useState(false);
   const [connectionError, setConnectionError] = useState('');
   const [url, setUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
-  const [urlExistsError, setUrlExistsError] = useState('');
 
   const [isToken, setIsToken] = useState(false);
 
@@ -27,19 +27,17 @@ const SplitwiseHomePage = () => {
 
       const fetchConnection = async() => {
         setConnectionError('');
+        setError('');
         try{
 
           if(initialConnection === true)
-          {
-            console.log("true");
             return;
-          }
 
-          console.log("connecting");
+          //console.log("connecting");
 
         const response = await fetch("http://localhost:8080/");
         if(!response.ok){
-          throw new Error(`Could not connect. Try again later`);
+          throw new Error();
         }
 
         const data = await response.text();
@@ -51,16 +49,10 @@ const SplitwiseHomePage = () => {
       }
       catch(Error)
       {
-        if(Error instanceof TypeError)
-        {
           setConnectionError("Unable to connect to server. Please Try again later!");
-        }
-        else{
-        setError(true);
-        setFlag(true);
-
-        console.log(error);
-        }
+      }
+      finally {
+        setLoading(false); // Ensure loading is set to false after the check
       }
     };
   
@@ -68,10 +60,7 @@ const SplitwiseHomePage = () => {
       const timerId = setTimeout(fetchConnection, 150);
       return () => clearTimeout(timerId);
     }
-    else
-    {
-      setFlag(true);
-    }
+
   },[initialConnection]);
   
   
@@ -103,21 +92,30 @@ const SplitwiseHomePage = () => {
           const data = await response.text();
           setError('');
           setShortUrl(data);
-          console.log("receieved data is " + data);
+          //console.log("receieved data is " + data);
 
           setUrl('');
         } catch (error) {
           if (error instanceof TypeError) {
             sessionStorage.clear();
-            setConnectionError('Unable to connect to the server. Click on refresh to redirect to loginpage');
-            setTimeout(() => {
-              navigate('/splitwise-home', { state: { error: "Unable to connect to the server. Please check your connection and try again." } });
-          });
+            setError("connection error");
+            navigate('/splitwise-home', { state: { error: "Unable to connect to the server. Please check your connection and try again." } });
         } else {
             setError(error.message);
           }
         }
     }
+
+    if (loading) {
+      return <div>Loading...</div>; // Show a loading state while checking the connection
+    }
+
+  // Check for connection error first
+if (connectionError) {
+  return (
+    <div>{connectionError}</div>
+  );
+}
 
   return (
     <div>
