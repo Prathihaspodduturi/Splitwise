@@ -24,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: '/splitwise-logout',
         element: <SplitwiseLogout/>
+      },
+      {
+        path: '/splitwise-groups',
+        element: <SplitwiseGroupsPage/>
       }
 ])
 

@@ -1,5 +1,5 @@
 import React, {useState, useEffect}  from "react";
-import {NavLink, useLocation, useNavigate} from 'react-router-dom';
+import {NavLink, useNavigate} from 'react-router-dom';
 
 const SplitwiseHomePage = () => {
 
@@ -32,8 +32,6 @@ const SplitwiseHomePage = () => {
 
           if(initialConnection === true)
             return;
-
-          //console.log("connecting");
 
         const response = await fetch("http://localhost:8080/");
         if(!response.ok){
@@ -122,8 +120,8 @@ if (connectionError) {
       <div>
         {isToken && (
           <>
-            <NavLink to="/myurls">My URLs</NavLink>
-            <NavLink to="/logout" onClick={() => {sessionStorage.removeItem('token'); setIsToken(false);}}>Logout</NavLink>
+            <NavLink to="/splitwise-groups">groups</NavLink>
+            <NavLink to="/splitwise-logout" onClick={() => {sessionStorage.removeItem('token'); setIsToken(false);}}>Logout</NavLink>
           </>
         ) 
         }
@@ -131,27 +129,6 @@ if (connectionError) {
       <div>
         <h1>Welcome to My Splitwise</h1>
         <p>A simple site to split ans maintain expenses</p>
-        {isToken && (
-          <form onSubmit={handleSubmit}>
-          <label htmlFor="url">Enter The Original URL:</label>
-          <input
-            type="text"
-            id="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            required
-          />
-          <button type="submit">Submit</button>
-        </form>
-        )}
-        {shortUrl && (
-          <div>
-          <p>Shortened URL:</p>
-          <a href={shortUrl} target="_blank" rel="noopener noreferrer">
-          {shortUrl}
-          </a>
-          </div>
-        )}
         {error && (<div>{error}</div>)}
         {!isToken && (
           <div>
