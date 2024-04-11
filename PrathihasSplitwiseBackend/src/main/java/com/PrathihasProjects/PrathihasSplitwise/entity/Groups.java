@@ -2,11 +2,10 @@ package com.PrathihasProjects.PrathihasSplitwise.entity;
 
 import jakarta.persistence.*;
 import java.util.Date;
-import java.util.Set;
 
 @Entity
-@Table(name = "groups")
-public class groups {
+@Table(name = "Groups")
+public class Groups {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +28,7 @@ public class groups {
     @Column(name = "deleted", nullable = false)
     private boolean deleted = false;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+   /* @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "group_members",
             joinColumns = @JoinColumn(name = "group_id"),
@@ -45,12 +44,12 @@ public class groups {
 
     public void setMembers(Set<User> users) {
         this.users = users;
+    } */
+
+    public Groups() {
     }
 
-    public groups() {
-    }
-
-    public groups(String groupName, String groupDescription, Date dateCreated, User createdBy) {
+    public Groups(String groupName, String groupDescription, Date dateCreated, User createdBy) {
         this.groupName = groupName;
         this.groupDescription = groupDescription;
         this.dateCreated = dateCreated;
@@ -107,7 +106,7 @@ public class groups {
 
     @Override
     public String toString() {
-        return "groups{" +
+        return "Groups{" +
                 "id=" + id +
                 ", groupName='" + groupName + '\'' +
                 ", groupDescription='" + groupDescription + '\'' +
