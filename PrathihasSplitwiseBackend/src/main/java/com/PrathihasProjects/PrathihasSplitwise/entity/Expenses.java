@@ -26,11 +26,11 @@ public class Expenses {
     @Column(name = "deleted")
     private boolean deleted = false;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "paid_by", referencedColumnName = "username")
     private User paidBy;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Groups groupId;
 

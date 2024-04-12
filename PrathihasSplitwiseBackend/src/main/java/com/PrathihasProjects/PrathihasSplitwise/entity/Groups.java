@@ -21,7 +21,7 @@ public class Groups {
     @Column(name = "date_created")
     private Date dateCreated;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "created_by", referencedColumnName = "username")
     private User createdBy;
 

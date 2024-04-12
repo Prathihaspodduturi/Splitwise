@@ -10,20 +10,20 @@ public class GroupMembers {
     @EmbeddedId
     private GroupMembersId id;  // Embedded ID instance
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @MapsId("groupId")  // Maps the groupId part of the composite ID
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Groups group;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @MapsId("username")  // Maps the username part of the composite ID
     @JoinColumn(name = "username", referencedColumnName = "username")
     private User user;
 
     // Constructors
-    public GroupMember() {}
+    public GroupMembers() {}
 
-    public GroupMember(Groups group, User user) {
+    public GroupMembers(Groups group, User user) {
         this.group = group;
         this.user = user;
         this.id = new GroupMembersId(group.getId(), user.getUsername());

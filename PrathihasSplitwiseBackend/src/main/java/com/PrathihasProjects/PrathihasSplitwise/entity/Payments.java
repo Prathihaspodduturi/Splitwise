@@ -15,15 +15,15 @@ public class Payments {
     @Column(name = "payment_id")
     private int id;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Groups group;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "payer_username", referencedColumnName = "username")
     private User payer;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "payee_username", referencedColumnName = "username")
     private User payee;
 
