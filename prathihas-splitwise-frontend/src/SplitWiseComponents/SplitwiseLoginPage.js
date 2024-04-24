@@ -5,26 +5,32 @@ import { useNavigate } from "react-router-dom";
 import SplitwiseHomePage from "./SplitwiseHomePage";
 
 const SplitwiseLoginPage  = () => {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token'); 
+
+    if(token) {
+      navigate('/splitwise/');
+    }
+  }, []);
     
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isSubmitted, setIsSubmiitted] = useState(false);
     const [error, setError] = useState('');
-    const [connectionError, setConnectionError] = useState('');
-
-    const navigate = useNavigate();
+    const [connectionError, setConnectionError] = useState('');  
 
     const isLoggedIn = sessionStorage.getItem('LoggedIn');
 
-    useEffect(() => {
-      
-        const fetchData = async() => {
-          //setConnectionError('');
-          //setError('');
-          if(isSubmitted){
+    const handleSubmit = async(e) =>
+    {
+        e.preventDefault();
+        setIsSubmiitted(true);
           try{
   
-          const response = await fetch("http://localhost:8080/login", {
+          const response = await fetch("http://localhost:8080/splitwise/login", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify({ "username" : username, "password" : password })
@@ -41,7 +47,7 @@ const SplitwiseLoginPage  = () => {
           sessionStorage.setItem('Connected', true);
           //sessionStorage.setItem('LoggedIn', true);
           //console.log("token is"+sessionStorage.getItem('token'));
-          navigate('/splitwise-home');
+          navigate('/splitwise/');
           
           setError('');
         }
@@ -60,20 +66,11 @@ const SplitwiseLoginPage  = () => {
           }
         }
         setIsSubmiitted(false);
-      }
     }
-    fetchData();
-  
-    },[isSubmitted]);
 
-    const handleSubmit = (e) =>
-    {
-        e.preventDefault();
-        setIsSubmiitted(true);
-    }
 
     const handleSignUpReDirect = () => {
-      navigate('/splitwise-signup');
+      navigate('/splitwise/signup');
     }
 
     return (

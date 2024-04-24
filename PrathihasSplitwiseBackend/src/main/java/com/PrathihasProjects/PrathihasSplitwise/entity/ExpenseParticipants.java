@@ -2,6 +2,7 @@ package com.PrathihasProjects.PrathihasSplitwise.entity;
 
 import com.PrathihasProjects.PrathihasSplitwise.compositeKey.ExpenseParticipantsId;
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -24,14 +25,22 @@ public class ExpenseParticipants {
     @Column(name = "amount_owed", nullable = false, precision = 10, scale = 2)
     private BigDecimal amountOwed;
 
+
+    @Column(name = "amount_paid", nullable = false, precision = 10, scale = 2)
+    private BigDecimal amountpaid;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     // Default constructor
     public ExpenseParticipants() {}
 
     // Full constructor
-    public ExpenseParticipants(Expenses expense, User user, BigDecimal amountOwed) {
+    public ExpenseParticipants(Expenses expense, User user, BigDecimal amountOwed, BigDecimal amountPaid) {
         this.expense = expense;
         this.user = user;
         this.amountOwed = amountOwed;
+        this.amountpaid = amountPaid;
         // Update the embedded ID
         this.id.setExpenseId(expense.getId()); // Make sure the Expenses entity has getId()
         this.id.setUsername(user.getUsername()); // Make sure the User entity has getUsername()
@@ -55,6 +64,14 @@ public class ExpenseParticipants {
         this.id.setExpenseId(expense.getId()); // Synchronize the ID when setting the expense
     }
 
+    public BigDecimal getAmountpaid() {
+        return amountpaid;
+    }
+
+    public void setAmountpaid(BigDecimal amountpaid) {
+        this.amountpaid = amountpaid;
+    }
+
     public User getUser() {
         return user;
     }
@@ -72,14 +89,25 @@ public class ExpenseParticipants {
         this.amountOwed = amountOwed;
     }
 
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+
     // Implement toString() if needed
     @Override
     public String toString() {
         return "ExpenseParticipants{" +
                 "id=" + id +
-                ", expense=" + (expense != null ? expense.getId() : null) + // Just showing expense ID for simplicity
-                ", user=" + (user != null ? user.getUsername() : null) +
+                ", expense=" + expense +
+                ", user=" + user +
                 ", amountOwed=" + amountOwed +
+                ", amountpaid=" + amountpaid +
+                ", isDeleted=" + isDeleted +
                 '}';
     }
 }

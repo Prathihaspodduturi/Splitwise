@@ -10,8 +10,10 @@ public interface groupMembersDAO {
 
     void save(GroupMembers members);
 
-    List<Groups> allGroupsOfUser(String username);
+    List<Groups> findGroupsOfUser(String username);
 
-    List<User> allUsersInGroup(int id);
+    List<User> findMembersByGroupId(int id);
+
+    boolean isMember(String username, int groupId);
 
 }

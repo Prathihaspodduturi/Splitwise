@@ -5,6 +5,8 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Repository
 public class groupsDAOImpl implements groupsDAO{
@@ -17,9 +19,24 @@ public class groupsDAOImpl implements groupsDAO{
     }
 
     @Override
+    public Groups findGroupById(int id)
+    {
+        Groups group = entityManager.find(Groups.class, id);
+
+        return group;
+    }
+
+    @Override
     @Transactional
     public void save(Groups group) {
         entityManager.persist(group);
+    }
+
+    @Override
+    @Transactional
+    public void updateGroupName(Groups group)
+    {
+        entityManager.merge(group);
     }
 
     @Override
@@ -37,7 +54,7 @@ public class groupsDAOImpl implements groupsDAO{
 
     @Override
     @Transactional
-    public boolean undoDeletionOfGroup(int id) {
+    public boolean restoreGroup(int id) {
         Groups group = entityManager.find(Groups.class, id);
 
         if(group != null)
@@ -47,6 +64,5 @@ public class groupsDAOImpl implements groupsDAO{
         }
         return false;
     }
-
 
 }

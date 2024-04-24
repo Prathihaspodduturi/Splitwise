@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "Groups")
+@Table(name = "`groups`")
 public class Groups {
 
     @Id
@@ -20,6 +20,9 @@ public class Groups {
 
     @Column(name = "date_created")
     private Date dateCreated;
+
+    @Column(name = "settled_up", nullable = false)
+    private boolean settledUp = false;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "created_by", referencedColumnName = "username")
@@ -102,6 +105,14 @@ public class Groups {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public boolean isSettledUp() {
+        return settledUp;
+    }
+
+    public void setSettledUp(boolean settledUp) {
+        this.settledUp = settledUp;
     }
 
     @Override

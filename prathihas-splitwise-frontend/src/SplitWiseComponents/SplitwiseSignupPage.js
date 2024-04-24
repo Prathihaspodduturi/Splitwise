@@ -19,7 +19,7 @@ const SplitwiseSignupPage = () =>
         setSignUpMessage('');
         // Perform the signup request
         try {
-            const response = await fetch('http://localhost:8080/signup', {
+            const response = await fetch('http://localhost:8080/splitwise/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ "username": username, "password": password })
@@ -46,7 +46,7 @@ const SplitwiseSignupPage = () =>
     };
 
     const handleLoginRedirect = () => {
-        navigate('/splitwise-login'); 
+        navigate('/splitwise/login'); 
     };
 
     return (

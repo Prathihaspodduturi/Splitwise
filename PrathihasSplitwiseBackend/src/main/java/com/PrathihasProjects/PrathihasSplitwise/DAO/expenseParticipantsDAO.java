@@ -11,6 +11,10 @@ public interface expenseParticipantsDAO {
 
     List<User> getParticipants(int expenseId);
 
+    ExpenseParticipants findParticipant(int expenseId, String username);
 
+    List<ExpenseParticipants> findByExpenseId(int expenseId);
+
+    void updateExpenseParticipants(ExpenseParticipants participants);
 
 }

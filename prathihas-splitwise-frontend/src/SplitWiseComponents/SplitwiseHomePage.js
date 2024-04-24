@@ -1,150 +1,26 @@
-import React, {useState, useEffect}  from "react";
-import {NavLink, useNavigate} from 'react-router-dom';
+import React from "react";
+import { NavLink } from 'react-router-dom';
 
 const SplitwiseHomePage = () => {
+    const isLoggedIn = sessionStorage.getItem('token');
 
-  const [initialConnection, setConnection] = useState(false);
-  const [error,setError] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [flag, setFlag] = useState(false);
-  const [connectionError, setConnectionError] = useState('');
-  const [url, setUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState('');
-
-  const [isToken, setIsToken] = useState(false);
-
-  const LoggedIn = sessionStorage.getItem('LoggedIn');
-
-    useEffect(() => {
-      const token = sessionStorage.getItem('token'); 
-
-      if(token) {
-        setIsToken(true); 
-      }
-    }, []);
-
-    useEffect(() => {
-
-      const fetchConnection = async() => {
-        setConnectionError('');
-        setError('');
-        try{
-
-          if(initialConnection === true)
-            return;
-
-        const response = await fetch("http://localhost:8080/");
-        if(!response.ok){
-          throw new Error();
-        }
-
-        const data = await response.text();
-        setFlag(true);
-        setConnection(true);
-        sessionStorage.setItem("Connected", "true");
-        setConnection(initialConnection);
-        
-      }
-      catch(Error)
-      {
-          setConnectionError("Unable to connect to server. Please Try again later!");
-      }
-      finally {
-        setLoading(false); // Ensure loading is set to false after the check
-      }
-    };
-  
-    if(!initialConnection){
-      const timerId = setTimeout(fetchConnection, 150);
-      return () => clearTimeout(timerId);
-    }
-
-  },[initialConnection]);
-  
-  
-    
-
-    const navigate = useNavigate();
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setShortUrl('');
-        setConnectionError('');
-        //setError('');
-        try
-        {
-            const token = sessionStorage.getItem('token');
-            const response = await fetch("http://localhost:8080/saveUrl",{
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({"originalUrl": url})
-            });
-
-          if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(errorMessage);
-          }
-          const data = await response.text();
-          setError('');
-          setShortUrl(data);
-          //console.log("receieved data is " + data);
-
-          setUrl('');
-        } catch (error) {
-          if (error instanceof TypeError) {
-            sessionStorage.clear();
-            setError("connection error");
-            navigate('/splitwise-home', { state: { error: "Unable to connect to the server. Please check your connection and try again." } });
-        } else {
-            setError(error.message);
-          }
-        }
-    }
-
-    if (loading) {
-      return <div>Loading...</div>; // Show a loading state while checking the connection
-    }
-
-  // Check for connection error first
-if (connectionError) {
-  return (
-    <div>{connectionError}</div>
-  );
-}
-
-  return (
-    <div>
-      <div>
-        {isToken && (
-          <>
-            <NavLink to="/splitwise-groups">groups</NavLink>
-            <NavLink to="/splitwise-logout" onClick={() => {sessionStorage.removeItem('token'); setIsToken(false);}}>Logout</NavLink>
-          </>
-        ) 
-        }
-      </div>
-      <div>
-        <h1>Welcome to My Splitwise</h1>
-        <p>A simple site to split ans maintain expenses</p>
-        {error && (<div>{error}</div>)}
-        {!isToken && (
-          <div>
-            <p>Please log in or sign up to use the splitwise app.</p>
-          </div>
-        )}
-        {!isToken && (
+    return (
         <div>
-          <NavLink to="/splitwise-login">Login</NavLink>
-          <NavLink to="/splitwise-signup">Sign Up</NavLink>
+            <h1>Welcome to My Splitwise</h1>
+            <p>A simple site to split and maintain expenses</p>
+            {isLoggedIn ? (
+                <>
+                    <NavLink to="/splitwise/groups">Manage Groups</NavLink>
+                    <NavLink to="/splitwise/logout" onClick={() => { sessionStorage.clear(); }}>Logout</NavLink>
+                </>
+            ) : (
+                <div>
+                    <NavLink to="/splitwise/login">Login</NavLink>
+                    <NavLink to="/splitwise/signup">Sign Up</NavLink>
+                </div>
+            )}
         </div>
-        )}
-      </div>
-    </div>
-  );
-  
+    );
 }
 
 export default SplitwiseHomePage;

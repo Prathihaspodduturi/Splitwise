@@ -14,4 +14,8 @@ public interface expensesDAO {
 
     public boolean undoDeletion(int expenseId);
 
+    Expenses findExpenseById(int expenseId);
+
+    public void updateExpense(Expenses expense);
+
 }

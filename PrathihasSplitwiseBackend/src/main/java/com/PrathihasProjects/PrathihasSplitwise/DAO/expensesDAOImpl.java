@@ -25,12 +25,21 @@ public class expensesDAOImpl implements expensesDAO{
     }
 
     @Override
+    @Transactional
+    public void updateExpense(Expenses expense)
+    {
+        entityManager.merge(expense);
+    }
+
+    @Override
     public List<Expenses> groupExpenses(int groupId) {
         return entityManager.createQuery(
-                        "SELECT e FROM Expenses e WHERE e.groupId.id = :groupId AND e.deleted = false", Expenses.class)
+                        "SELECT e FROM Expenses e WHERE e.groupId.id = :groupId", Expenses.class)
                 .setParameter("groupId", groupId)
                 .getResultList();
     }
+
+
 
     @Override
     public boolean deleteExpense(int expenseId) {
@@ -54,5 +63,10 @@ public class expensesDAOImpl implements expensesDAO{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Expenses findExpenseById(int expenseId) {
+        return entityManager.find(Expenses.class, expenseId);
     }
 }

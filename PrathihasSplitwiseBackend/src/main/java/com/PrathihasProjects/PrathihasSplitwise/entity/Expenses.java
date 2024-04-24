@@ -11,14 +11,14 @@ public class Expenses {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "expense_id")
     private int id;
 
     @Column(name = "amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "decription")
-    private String description;
+    @Column(name = "expensename")
+    private String expenseName;
 
     @Column(name = "date_created")
     private Date dateCreated;
@@ -27,21 +27,35 @@ public class Expenses {
     private boolean deleted = false;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name = "paid_by", referencedColumnName = "username")
-    private User paidBy;
+    @JoinColumn(name = "deleted_by", referencedColumnName = "username")
+    private User deletedBy;
+
+    @Column(name = "deleted_date")
+    private Date deletedDate;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Groups groupId;
 
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "added_by", referencedColumnName = "username")
+    private User addedBy;
+
+    @Column(name = "last_updated")
+    private Date lastUpdatedDate;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "updated_by", referencedColumnName = "username")
+    private User updatedBy;
+
     public Expenses(){}
 
-    public Expenses(Groups groupId, User paidBy, BigDecimal amount, String description, Date dateCreated){
+    public Expenses(Groups groupId, BigDecimal amount, String expenseName, Date dateCreated, User addedBy){
         this.groupId = groupId;
-        this.paidBy = paidBy;
         this.amount = amount;
-        this.description = description;
+        this.expenseName = expenseName;
         this.dateCreated = dateCreated;
+        this.addedBy = addedBy;
     }
 
     public int getId() {
@@ -60,12 +74,12 @@ public class Expenses {
         this.amount = amount;
     }
 
-    public String getDescription() {
-        return description;
+    public String getExpenseName() {
+        return expenseName;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setExpenseName(String expneseName) {
+        this.expenseName = expneseName;
     }
 
     public Date getDateCreated() {
@@ -74,14 +88,6 @@ public class Expenses {
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public User getPaidBy() {
-        return paidBy;
-    }
-
-    public void setPaidBy(User paidBy) {
-        this.paidBy = paidBy;
     }
 
     public Groups getGroupId() {
@@ -100,15 +106,61 @@ public class Expenses {
         this.deleted = deleted;
     }
 
+    public User getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(User addedBy) {
+        this.addedBy = addedBy;
+    }
+
+    public Date getLastUpdatedDate() {
+        return lastUpdatedDate;
+    }
+
+    public void setLastUpdatedDate(Date lastUpdatedDate) {
+        this.lastUpdatedDate = lastUpdatedDate;
+    }
+
+    public User getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(User updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public User getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(User deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public Date getDeletedDate() {
+        return deletedDate;
+    }
+
+    public void setDeletedDate(Date deletedDate) {
+        this.deletedDate = deletedDate;
+    }
+
+
     @Override
     public String toString() {
         return "Expenses{" +
                 "id=" + id +
                 ", amount=" + amount +
-                ", description='" + description + '\'' +
+                ", expenseName='" + expenseName + '\'' +
                 ", dateCreated=" + dateCreated +
-                ", paidBy=" + paidBy +
+                ", deleted=" + deleted +
+                ", deletedBy=" + deletedBy +
+                ", deletedDate=" + deletedDate +
                 ", groupId=" + groupId +
+                ", addedBy=" + addedBy +
+                ", lastUpdatedDate=" + lastUpdatedDate +
+                ", updatedBy=" + updatedBy +
                 '}';
     }
 }

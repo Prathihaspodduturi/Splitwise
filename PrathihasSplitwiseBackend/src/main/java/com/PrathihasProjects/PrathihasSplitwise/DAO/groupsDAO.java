@@ -6,10 +6,13 @@ import java.util.List;
 
 public interface groupsDAO {
 
-    void save(Groups groups);
+    public void save(Groups groups);
+
+    public Groups findGroupById(int id);
 
     public boolean deletegroupById(int id);
 
-    public boolean undoDeletionOfGroup(int id);
+    public boolean restoreGroup(int id);
 
+    public void updateGroupName(Groups group);
 }
