@@ -10,7 +10,9 @@ public interface groupsDAO {
 
     public Groups findGroupById(int id);
 
-    public boolean deletegroupById(int id);
+    public boolean deletegroupById(int id, String username);
+
+    public boolean settlegroupById(int id, String username);
 
     public boolean restoreGroup(int id);
 

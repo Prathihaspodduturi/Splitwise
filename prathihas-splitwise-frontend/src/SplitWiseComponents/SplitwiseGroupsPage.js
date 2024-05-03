@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate, Link } from 'react-router-dom';
+import styles from './SplitwiseGroupsPage.module.css';
+
 
 const SplitwiseGroupsPage = () => {
     const [allGroups, setGroups] = useState([]);
@@ -10,6 +12,8 @@ const SplitwiseGroupsPage = () => {
     const [groupDescription, setGroupDescription] = useState('');
     const [showSettledGroups, setShowSettledGroups] = useState(false);
     const [showDeletedGroups, setShowDeletedGroups] = useState(false);
+
+    const [activeSection, setActiveSection] = useState(null);
 
 
     useEffect(() => {
@@ -94,74 +98,96 @@ const SplitwiseGroupsPage = () => {
         }
     };
     
-
+    const toggleSection = (section) => {
+        setActiveSection(prevSection => prevSection === section ? null : section);
+    }
 
     const isLoggedIn = sessionStorage.getItem('token');
 
-    return (
-        <div>
-            <NavLink to="/splitwise/logout">Logout</NavLink>
-            <h1>Groups</h1>
-            {isLoading && <p>Loading...</p>}
-            {error && <p>Error: {error}</p>}
-            <button onClick={handleToggleCreateGroup}>
-                {showCreateGroupForm ? 'Cancel Create Group' : 'Create Group'}
-            </button>
-            {showCreateGroupForm && (
-                <form onSubmit={handleCreateGroup}>
+    if (showCreateGroupForm) {
+        return (
+            <div className={styles.container}>
+                <form onSubmit={handleCreateGroup} className={styles.form}>
                     <div>
-                        <label htmlFor="groupName">Group Name:</label>
+                        <label htmlFor="groupName" className={styles.formLabel}>Group Name:</label>
                         <input
                             id="groupName"
                             type="text"
                             value={groupName}
                             onChange={(e) => setGroupName(e.target.value)}
+                            className={styles.formInput}
                             required
                         />
                     </div>
                     <div>
-                        <label htmlFor="groupDescription">Group Description:</label>
+                        <label htmlFor="groupDescription" className={styles.formLabel}>Group Description:</label>
                         <textarea
                             id="groupDescription"
                             value={groupDescription}
                             onChange={(e) => setGroupDescription(e.target.value)}
+                            className={styles.formTextArea}
                         />
                     </div>
-                    <button type="submit">Submit</button>
+                    <button type="submit" className={styles.button}>Submit</button>
+                    <button type="button" className={styles.button} onClick={handleToggleCreateGroup}>Cancel</button>
                 </form>
-            )}
+            </div>
+        );
+    }
 
-            <h2>Active Groups</h2>
-            <ul>
-                    {allGroups.filter(group => !group.settledUp && !group.deleted).map(group => (
-                        <li key={group.id}>
-                            <NavLink to={`/splitwise/groups/${group.id}`}>
+
+    return (
+        <div className={styles.container}>
+            <NavLink to="/splitwise/logout" className={styles.topRightLink}>Logout</NavLink>
+            {isLoading && <p>Loading...</p>}
+            {error && <p>Error: {error}</p>}
+            <button onClick={handleToggleCreateGroup} className={`${styles.button} ${styles.topLeftButton} ${showCreateGroupForm ? styles.buttonCancel : ''}`}>
+                {showCreateGroupForm ? 'Cancel Creation' : 'Create Group'}
+            </button>
+            <h2 className={styles.activeGroupsHeader}>Active Groups</h2>
+            <ul className={styles.activeGroupList}>
+                {allGroups.filter(group => !group.settledUp && !group.deleted).map(group => (
+                    <li key={group.id} className={styles.activeGroupItem}>
+                        <div className={styles.activeGroupName}>
+                            <NavLink to={`/splitwise/groups/${group.id}`} className={styles.activeGroupLink}>
                                 {group.groupName}
-                            </NavLink> - {group.groupDescription}
-                        </li>
-                    ))}
+                            </NavLink>
+                        </div>
+                        <div className={styles.activeGroupDescription}>
+                            {group.groupDescription}
+                        </div>
+                    </li>
+                ))}
             </ul>
-    
-            <h2 onClick={() => setShowSettledGroups(!showSettledGroups)}>Settled Groups</h2>
-            {showSettledGroups && (
-                <ul>
+
+            <div className={styles.toggleContainer}>
+                <h2 className={`${styles.toggleButton} ${activeSection === 'settled' ? styles.toggleButtonActive : ''}`} onClick={() => toggleSection('settled')}>
+                {activeSection === 'settled' ? 'Hide Settled Groups' : 'Show Settled Groups'}
+                </h2>
+
+                <h2 className={`${styles.toggleButton} ${activeSection === 'deleted' ? styles.toggleButtonActive : ''}`} 
+             onClick={() => toggleSection('deleted')}>{activeSection === 'deleted' ? 'Hide Deleted Groups' : 'Show Deleted Groups'}</h2>
+            </div>
+
+
+            {activeSection === 'settled' && (
+                <ul className={styles.groupList}>
                     {allGroups.filter(group => group.settledUp && !group.deleted).map(group => (
-                        <li key={group.id}>
-                            <NavLink to={`/splitwise/groups/details/${group.id}`}>
+                        <li key={group.id} className={styles.groupItem}>
+                            <NavLink to={`/splitwise/groups/details/${group.id}`} className={styles.navLink}>
                                 {group.groupName}
                             </NavLink> - {group.groupDescription}
                         </li>
                     ))}
                 </ul>
             )}
-    
-            <h2 onClick={() => setShowDeletedGroups(!showDeletedGroups)}>Deleted Groups</h2>
-            {showDeletedGroups && (
-                <ul>
+
+            {activeSection === 'deleted' && (
+                <ul className={styles.groupList}>
                     {allGroups.filter(group => group.deleted).map(group => (
-                        <li key={group.id} style={{ color: 'red' }}>
+                        <li key={group.id} className={`${styles.groupItem} ${styles.groupItemDeleted}`}>
                             {group.groupName} - {group.groupDescription}
-                            <button onClick={() => handleRestoreGroup(group.id)}>Restore</button>
+                            <button onClick={() => handleRestoreGroup(group.id)} className={styles.button}>Restore</button>
                         </li>
                     ))}
                 </ul>

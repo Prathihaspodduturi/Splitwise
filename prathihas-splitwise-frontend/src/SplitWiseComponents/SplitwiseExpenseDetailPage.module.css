@@ -1,0 +1,181 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 0px;
+}
+
+.details {
+    margin-top: 0px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.details p {
+    margin: 5px 0;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+details h3 {
+    margin-bottom: 10px; /* Reduce bottom margin on h3 if it's large */
+}
+
+.details ul {
+    margin-top: 0; /* Remove top margin from ul if it's causing extra space */
+}
+
+.expenseName {
+    font-weight: bold;
+    color: #0254EB;
+}
+
+.expenseAmount {
+    font-weight: bold;
+    color: #009688;
+}
+
+.addedBy {
+    font-size: 16px;
+    color: #565656;
+}
+
+.createdDate {
+    color: black;
+}
+
+.formRow {
+    margin-bottom: 15px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.warning {
+    color: red;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+}
+
+.warning {
+    color: red;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.button, .editButton, .deleteButton, .restoreButton, .saveButton, .cancelButton{
+    padding: 10px 20px;
+    background-color: #28a745; /* Light green background */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-grow: 0;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: start; /* Align buttons to the start of the container */
+    gap: 10px; /* Space between buttons */
+}
+
+
+.button:hover, .editButton:hover {
+    background-color: #218838; /* Slightly darker green on hover */
+}
+
+.deleteButton:hover {
+    background-color: #218838;
+}
+
+.restoreButton {
+    background-color: #28a745;
+}
+
+.restoreButton:hover {
+    background-color: #218838;
+}
+
+.saveButton {
+    background-color: #28a745;
+}
+
+.saveButton:hover{
+    background-color: #218838;
+}
+
+.cancelButton {
+    background-color: #6c757d;
+}
+
+.cancelButton:hover {
+    background-color: #5a6268;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+
+.paymentLabel {
+    display: block;
+    margin-bottom: 8px; /* Increased margin for better spacing */
+    font-weight: bold;
+    font-size: 18px; /* Larger font size for better readability */
+}
+
+.paymentInput {
+    width: 100%;
+    padding: 12px; /* Increased padding for larger touch area */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px; /* Larger font size for better readability */
+}
+
+.paymentFormContainer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    gap: 15px; /* Added gap for better spacing between form rows */
+}
+
+.paymentFormRow {
+    display: flex;
+    flex-direction: column; /* Ensure labels and inputs are stacked for clarity */
+    align-items: start;
+    margin-bottom: 20px; /* Increased margin for better separation */
+}
+
+

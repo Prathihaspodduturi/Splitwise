@@ -10,6 +10,8 @@ public class ExpenseDTO {
     private Map<String, BigDecimal> payers;
     private Map<String, Boolean> participants;
 
+    private boolean isPayment;
+
     // Getters and Setters
     public String getExpenseName() {
         return expenseName;
@@ -41,5 +43,13 @@ public class ExpenseDTO {
 
     public void setParticipants(Map<String, Boolean> participants) {
         this.participants = participants;
+    }
+
+    public boolean getIsPayment() {
+        return isPayment;
+    }
+
+    public void setIsPayment(boolean isPayment) {
+        this.isPayment = isPayment;
     }
 }

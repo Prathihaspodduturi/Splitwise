@@ -1,6 +1,7 @@
 package com.PrathihasProjects.PrathihasSplitwise.DAO;
 
 import com.PrathihasProjects.PrathihasSplitwise.entity.Groups;
+import com.PrathihasProjects.PrathihasSplitwise.entity.User;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,12 +42,28 @@ public class groupsDAOImpl implements groupsDAO{
 
     @Override
     @Transactional
-    public boolean deletegroupById(int id) {
+    public boolean deletegroupById(int id, String username) {
         Groups group = entityManager.find(Groups.class, id);
 
+        User user = entityManager.find(User.class, username);
         if(group != null)
         {
             group.setDeleted(true);
+            group.setDeletedBy(user);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean settlegroupById(int id, String username) {
+        Groups group = entityManager.find(Groups.class, id);
+
+        User user = entityManager.find(User.class, username);
+        if(group != null)
+        {
+            group.setSettledUp(true);
+            group.setSettledBy(user);
             return true;
         }
         return false;

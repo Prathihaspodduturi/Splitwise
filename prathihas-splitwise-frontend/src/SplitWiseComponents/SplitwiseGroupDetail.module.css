@@ -1,0 +1,854 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+
+/* General page enhancements */
+.app-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    margin: auto;
+    max-width: 960px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+
+h1, h2, h3 {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+a {
+    color: #2196F3;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.input,
+select {
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: block;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.form-container input, .form-container textarea {
+    width: 90%;  /* Adjust width to fit form */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+
+
+.button, .form-container button {
+    padding: 8px 15px;  
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;  
+    margin: 5px;  
+    width: auto;  
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.button-group {
+    text-align: center;  /* Centers the button group within the form */
+    margin-top: 10px;
+}
+
+.input-group {
+    margin-bottom: 10px;  /* Provides spacing between input groups */
+}
+
+
+.form-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.optionsContainer {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    margin-top: 20px;
+    margin-left: auto; /* Center the container */
+    margin-right: auto; /* Center the container */
+    max-width: 80%; /* New max width */
+    border-top: 1px solid #ccc;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.optionLink {
+    padding: 8px 12px;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    margin: 0 5px;
+    cursor: pointer;
+    flex-grow: 1; /* Allows the buttons to grow */
+    text-align: center; /* Centers text */
+}
+
+.optionLink:hover {
+    background-color: #bbdefb;
+    color: #0d47a1;
+    text-decoration: none;
+}
+
+.list-container {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    width: 80%; /* Limit width */
+    margin-left: auto; /* Center the container */
+    margin-right: auto; /* Center the container */
+}
+
+.list-container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.list-item {
+    background: #f5f5f5;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-left: 5px solid #2196F3;
+    border-radius: 4px;
+}
+
+.list-item:hover {
+    background: #e1f5fe;
+}
+
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.list-item strong {
+    color: #333;
+}
+
+.updateForm {
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 10px;
+}
+
+/* Navigation link styling */
+.navLink, .NavLink {
+    color: #0d47a1;
+    padding: 5px 10px;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    display: block;
+}
+
+.navLink:hover, .NavLink:hover {
+    background-color: #bbdefb;
+    text-decoration: none;
+}
+
+.addExpenseContainer {
+    background: #fff;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.updateForm input[type="text"], .updateForm input[type="number"] {
+    width: calc(100% - 22px);  /* Full width minus padding and border */
+}
+
+
+
+/* Expenses section container styling */
+.expensesSection {
+    background-color: #f9f9f9; /* Light gray background for the section */
+    padding: 15px;
+    margin-bottom: 20px; /* Space below the section */
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative; /* Allows absolute positioning inside */
+    overflow: auto;
+    height: 400px; 
+}
+
+/* Expenses Heading styling */
+.expensesHeader {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin: -15px -15px 10px -15px; 
+}
+
+/* Add Expense button styling */
+.addExpenseButton {
+    right: 40px;
+    bottom: 20px;
+    background-color: #2196F3; /* Blue background */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    display: block;
+    cursor: pointer;
+    z-index: 10;
+    position: fixed;
+}
+
+.addExpenseButton:hover {
+    background-color: #0d47a1; /* Darker blue on hover */
+}
+
+/* Styling for each expense item */
+.expenseItem {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.expenseItem strong {
+    color: #333;
+    display: block; /* Make sure the name is on a new line */
+    margin-bottom: 5px;
+}
+
+.expenseItemDetails {
+    font-size: 14px;
+    color: #666;
+}
+
+
+/* Styling for expense item details */
+.expenseDetails {
+    font-size: 14px;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.expenseGetBack {
+    color: rgb(16, 212, 16); /* Green color for profit */
+    /*background-color: #b7f5bc; /* Light green background */
+}
+
+.expenseOwe {
+    color: #c62828; /* Red color for debt */
+    /*background-color: #ffebee; /* Light red background */
+}
+
+.expenseNeutral {
+    color: #757575; /* Grey for neutral */
+    /* background-color: #eeeeee; /* Light grey background */
+}
+
+
+
+.logoutLink {
+    position: fixed; /* Fixed position regardless of scrolling */
+    right: 20px;
+    top: 20px;
+    color: #2196F3;
+    font-weight: bold;
+    text-decoration: none;
+    z-index: 1000;   /* Ensures it stays on top of other content */
+}
+
+.addMemberButton {
+    right: 40px;
+    bottom: 100px;
+    background-color: #2196F3; /* Blue background */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    display: block;
+    cursor: pointer;
+    z-index: 10;
+    position: fixed;
+}
+
+
+/* displying group members */
+
+.groupMembersContainer {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 16px;
+}
+
+.group-members-container h3 {
+    color: #333;
+    border-bottom: 2px solid #2196F3;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.groupMembersList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.groupMembersListLi {
+    padding: 10px;
+    margin-bottom: 8px;
+    background-color: #f9f9f9;
+    border-left: 5px solid #2196F3;
+    border-radius: 4px;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.groupMembersListHover {
+    background-color: #e1f5fe;
+    transform: scale(1.02);
+}
+
+.groupNameContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editIcon {
+    margin-left: 10px;
+    cursor: pointer;
+    color: #2196F3;
+}
+
+
+/* css for edit Icon options */
+.editOptionsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.editOptionButton {
+    margin: 5px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.editOptionButtonHover {
+    background-color: #0056b3;
+}
+
+.editCancelButton {
+    margin-top: 20px;
+    background-color: #6c757d; /* Changed from grey to bootstrap's secondary color for better visibility */
+    color: white; /* Ensures text is readable */
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.editCancelButtonHover {
+    background-color: #5a6268;
+}
+
+
+.blurred {
+    filter: blur(10px);
+    pointer-events: none; /* Disable interaction with the blurred elements */
+    user-select: none; /* Prevent text selection */
+}
+
+
+.modalShowEditOptions {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050; /* Above everything else */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.modalShowExpense {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050; /* Above everything else */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%; /* Adjust width to accommodate all elements */
+    max-width: 800px; /* Limit maximum width */
+    max-height: 90vh; /* Limit height to 90% of the viewport height */
+    overflow-y: auto; /* Allow vertical scrolling */
+}
+
+
+.formContainerAddExpense {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 50%;
+}
+
+.scrollableFormContainerAddExpense {
+    max-height: 500px; /* Set a maximum height for the form container */
+    overflow-y: auto; /* Enable vertical scrolling within the form */
+    padding: 20px; /* Add some padding inside the scrollable area */
+}
+
+
+.inputAddExpense, .inputGroupAddExpense {
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.buttonAddExpense, .buttonSubmitAddExpense, .buttonCancelAddExpense {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.buttonAddExpense:hover, .buttonSubmitAddExpense:hover, .buttonCancelAddExpense:hover {
+    background-color: #45a049;
+}
+
+.flexRowAddExpense {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.flexButtonAddExpense {
+    flex: 1; /* Each button takes equal space */
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.labelAddExpense {
+    font-size: 14px;
+    color: #333;
+}
+
+.scrollableContainerAddExpense {
+    height: 200px;
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding: 10px;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.checkboxAddExpense {
+    margin-left: 5px;
+}
+
+
+.modalOverlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050; /* Above everything else */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 60%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+
+.addExpenseContainer {
+    background-color: #f9f9f9; /* Light gray background for the section */
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.inputGroup {
+    margin-bottom: 10px;
+}
+
+.inputGroup label {
+    margin-right: 10px;
+}
+
+
+.listBalancesContainer {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-top: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.listBalancesContainer h3 {
+    color: #333333;
+    margin-bottom: 15px;
+}
+
+.listBalancesItem {
+    background: #f8f9fa;
+    border-left: 5px solid #007bff; /* Bootstrap primary color for visual cue */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.listBalancesItem p {
+    margin: 0; /* Removes default margin */
+    color: #555; /* Subtle text color for readability */
+    font-size: 16px;
+}
+
+.listBalancesItem:Hover {
+    background-color: #e2e6ea; /* Slightly darker on hover for interactive feel */
+}
+
+/* Enhancing visual separation and alignment */
+.listBalancesItem:not(:last-child) {
+    border-bottom: 1px solid #dee2e6; /* Light grey border for separation */
+}
+
+
+.deletedExpensesContainer {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-top: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.9; /* Slightly lower opacity to indicate a different status */
+}
+
+.deletedExpensesContainer h3 {
+    color: #6c757d; /* Muted heading color */
+    margin-bottom: 15px;
+}
+
+.deletedExpensesItem {
+    background: #f8f9fa;
+    border-left: 5px solid #dc3545; /* Bootstrap danger color to indicate deletion */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.deletedExpensesItem p {
+    margin: 0;
+    color: #6c757d; /* Muted text color for less emphasis */
+    font-size: 16px;
+}
+
+.deletedExpensesItem:hover {
+    background-color: #e2e6ea; /* Subtle hover effect to maintain usability */
+}
+
+/* Additional styling for better visual separation */
+.deletedExpensesItem:not(:last-child) {
+    border-bottom: 1px solid #dee2e6;
+}
+
+
+.membersContainer {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.membersContainer h3 {
+    color: #333;
+    border-bottom: 2px solid #2196F3;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.membersItem {
+    padding: 10px;
+    margin-bottom: 8px;
+    background-color: #f9f9f9;
+    border-left: 5px solid #2196F3;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.membersItem:hover {
+    background-color: #e1f5fe;
+    transform: scale(1.02);
+}
+
+.username {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.usernameDetail {
+    font-size: 14px;
+    color: #666;
+    text-align: right;
+}
+
+
+.totalExpensesContainer {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.totalExpensesHeader {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.totalExpensesItem {
+    font-size: 16px;
+    color: #555;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+.totalExpensesItem:last-child {
+    border-bottom: none;
+}
+
+.totalExpensesValue {
+    color: #2196F3;
+    font-weight: bold;
+}
+
+.addMemberFormContainer {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.addMemberForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.addMemberFormInput {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.addMemberFormButton {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.addMemberFormButton:hover {
+    background-color: #45a049;
+}
+
+.addMemberFormButtonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.balancesPayButton {
+    padding: 5px 10px;
+    background-color: #4CAF50; /* Green background for pay button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.balancesPayButton:hover {
+    background-color: #2196F3; /* Blue on hover */
+}
+
+
+.paymentModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050;
+    width: 300px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.paymentModalContent {
+    width: 100%;
+}
+
+.paymentModal h4 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.paymentModalInput[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.paymentConfirmButton, .paymentCancelButton {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 5px;
+}
+
+.paymentConfirmButton {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.paymentCancelButton {
+    background-color: #f44336;
+    color: white;
+}
+
+.paymentConfirmButton:hover {
+    background-color: #45a049;
+}
+
+.paymentCancelButton:hover {
+    background-color: #d32f2f;
+}
+
+.removeMemberButton {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.removeMemberButton:hover {
+    background-color: #d32f2f;
+}
+
+
+.paymentDetails {
+    color: black; /* Sets the text color to black */
+    font-size: 16px;
+}
+
+.paymentItem {
+    color: black; /* Ensures the link or text within <strong> is also black */
+}

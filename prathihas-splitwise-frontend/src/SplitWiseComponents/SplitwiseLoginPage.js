@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SplitwiseHomePage from "./SplitwiseHomePage";
+import styles from './SplitwiseLoginPage.module.css';
 
 const SplitwiseLoginPage  = () => {
 
@@ -45,6 +46,7 @@ const SplitwiseLoginPage  = () => {
           const jwtToken = data;
           sessionStorage.setItem('token', jwtToken);
           sessionStorage.setItem('Connected', true);
+          sessionStorage.setItem('username', username);
           //sessionStorage.setItem('LoggedIn', true);
           //console.log("token is"+sessionStorage.getItem('token'));
           navigate('/splitwise/');
@@ -74,39 +76,41 @@ const SplitwiseLoginPage  = () => {
     }
 
     return (
-      <div>
-        {connectionError && (<div>{connectionError}</div>)}
-        {error && <div>{error}</div>}
-        {!connectionError && (
-          <>
-            {!isLoggedIn && <h1>Please login to your account</h1>}
-            {!isLoggedIn && (
-              <form onSubmit={handleSubmit}>
-                <div>
-                  <label htmlFor="username">Username</label>
-                  <input type="text"
-                         id="username"
-                         value={username}
-                         onChange={(e) => setUsername(e.target.value)} required />
-                </div>
-                <div>
-                  <label htmlFor="password">Password</label>
-                  <input type="password"
-                         id="password"
-                         value={password}
-                         onChange={(e) => setPassword(e.target.value)} required />
-                </div>
-                <button type="submit">Log In</button>
-                <div>
-                  <p>Don't have a an account : <span onClick={handleSignUpReDirect}>SignUp</span> </p>
-              </div>
-              </form>
-            )}
-          </>
-        )}
+      <div className={styles.container}>
+          {connectionError && (<div className={styles.error}>{connectionError}</div>)}
+          {error && <div className={styles.error}>{error}</div>}
+          {!connectionError && (
+              <>
+                  <h1>Please login to your account</h1>
+                  <form onSubmit={handleSubmit}>
+                      <div className={styles.formGroup}>
+                          <label htmlFor="username" className={styles.label}>Username</label>
+                          <input type="text"
+                                 id="username"
+                                 value={username}
+                                 onChange={(e) => setUsername(e.target.value)}
+                                 required
+                                 className={styles.input} />
+                      </div>
+                      <div className={styles.formGroup}>
+                          <label htmlFor="password" className={styles.label}>Password</label>
+                          <input type="password"
+                                 id="password"
+                                 value={password}
+                                 onChange={(e) => setPassword(e.target.value)}
+                                 required
+                                 className={styles.input} />
+                      </div>
+                      <button type="submit" className={styles.button}>Log In</button>
+                      <div className={styles.signUpPrompt}>
+                          <p>Don't have an account? <span className={styles.signUpLink} onClick={handleSignUpReDirect}>Sign Up</span></p>
+                      </div>
+                  </form>
+              </>
+          )}
       </div>
     );
-}
+};
 
 
 export default SplitwiseLoginPage;

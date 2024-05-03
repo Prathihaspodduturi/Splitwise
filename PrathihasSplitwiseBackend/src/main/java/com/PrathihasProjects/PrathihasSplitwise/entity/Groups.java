@@ -31,6 +31,14 @@ public class Groups {
     @Column(name = "deleted", nullable = false)
     private boolean deleted = false;
 
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "deleted_by", referencedColumnName = "username")
+    private User deletedBy;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "settled_by", referencedColumnName = "username")
+    private User settledBy;
+
    /* @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "group_members",
@@ -115,6 +123,22 @@ public class Groups {
         this.settledUp = settledUp;
     }
 
+    public User getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(User deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public User getSettledBy() {
+        return settledBy;
+    }
+
+    public void setSettledBy(User settledBy) {
+        this.settledBy = settledBy;
+    }
+
     @Override
     public String toString() {
         return "Groups{" +
@@ -122,8 +146,11 @@ public class Groups {
                 ", groupName='" + groupName + '\'' +
                 ", groupDescription='" + groupDescription + '\'' +
                 ", dateCreated=" + dateCreated +
+                ", settledUp=" + settledUp +
                 ", createdBy=" + createdBy +
                 ", deleted=" + deleted +
+                ", deletedBy=" + deletedBy +
+                ", settledBy=" + settledBy +
                 '}';
     }
 }

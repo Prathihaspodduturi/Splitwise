@@ -3,6 +3,7 @@ package com.PrathihasProjects.PrathihasSplitwise.Controller;
 import com.PrathihasProjects.PrathihasSplitwise.DAO.*;
 import com.PrathihasProjects.PrathihasSplitwise.DTO.ExpenseDTO;
 import com.PrathihasProjects.PrathihasSplitwise.DTO.GroupDTO;
+import com.PrathihasProjects.PrathihasSplitwise.Helper.Transaction;
 import com.PrathihasProjects.PrathihasSplitwise.Jwt.JwtUtil;
 import com.PrathihasProjects.PrathihasSplitwise.compositeKey.ExpenseParticipantsId;
 import com.PrathihasProjects.PrathihasSplitwise.compositeKey.GroupMembersId;
@@ -140,6 +141,8 @@ public class SplitwiseController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found");
             }
 
+
+
             // Fetch expenses related to the group
             //List<Expenses> expenses = expensesDAO.groupExpenses(groupId);
 
@@ -163,7 +166,7 @@ public class SplitwiseController {
                 expenseDetails.put("dateCreated", expense.getDateCreated());
                 expenseDetails.put("amount", expense.getAmount());
                 expenseDetails.put("deleted", expense.isDeleted());
-
+                expenseDetails.put("isPayment", expense.isPayment());
 
                 User deletedByUser = expense.getDeletedBy();
                 User updatedByUser = expense.getUpdatedBy();
@@ -175,8 +178,8 @@ public class SplitwiseController {
 
                 if(deletedByUser != null)
                 {
-                    expenseDetails.put("updatedBy", deletedByUser.getUsername());
-                    expenseDetails.put("lastUpdatedDate", expense.getDeletedDate());
+                    expenseDetails.put("deletedBy", deletedByUser.getUsername());
+                    expenseDetails.put("deletedDate", expense.getDeletedDate());
                 }
 
                 ExpenseParticipants participant = expenseParticipantsDAO.findParticipant(expense.getId(),username);
@@ -199,18 +202,73 @@ public class SplitwiseController {
                 detailedExpenses.add(expenseDetails);
             }
 
+            List<ExpenseParticipants> participants = new ArrayList<>();
 
+            for(int i=0;i<expenses.size();i++)
+            {
+                if(!expenses.get(i).isDeleted()) {
+                    List<ExpenseParticipants> tempParticipants = expenseParticipantsDAO.findByExpenseId(expenses.get(i).getId());
+
+                    if (!tempParticipants.isEmpty()) {
+                        participants.addAll(tempParticipants);
+                    }
+                }
+            }
+
+            Map<String, BigDecimal> netBalances = new HashMap<>();
+            for (ExpenseParticipants participant : participants) {
+                if(!participant.isDeleted()) {
+                    String usernameFromParticipant = participant.getUser().getUsername();
+                    netBalances.putIfAbsent(usernameFromParticipant, BigDecimal.ZERO);
+                    BigDecimal paid = participant.getAmountpaid();
+                    BigDecimal owed = participant.getAmountOwed();
+                    BigDecimal balance = netBalances.get(usernameFromParticipant).add(paid).subtract(owed);
+                    netBalances.put(usernameFromParticipant, balance);
+                }
+            }
+
+            Map<String, BigDecimal> creditors = new HashMap<>();
+            Map<String, BigDecimal> debtors = new HashMap<>();
+            for (Map.Entry<String, BigDecimal> entry : netBalances.entrySet()) {
+                if (entry.getValue().compareTo(BigDecimal.ZERO) > 0) {
+                    creditors.put(entry.getKey(), entry.getValue());
+                } else if (entry.getValue().compareTo(BigDecimal.ZERO) < 0) {
+                    debtors.put(entry.getKey(), entry.getValue().abs());
+                }
+            }
+
+            List<Transaction> transactions = resolveDebts(creditors, debtors);
             //System.out.println(""+detailedExpenses);
 
             response.put("group", group);
             response.put("members", members);
             response.put("detailedExpenses", detailedExpenses);
+            response.put("transactions", transactions);
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
+    }
+
+    private List<Transaction> resolveDebts(Map<String, BigDecimal> creditors, Map<String, BigDecimal> debtors) {
+        List<Transaction> transactions = new ArrayList<>();
+        for (Map.Entry<String, BigDecimal> creditor : creditors.entrySet()) {
+            BigDecimal amountToSettle = creditor.getValue();
+            Iterator<Map.Entry<String, BigDecimal>> debtorIterator = debtors.entrySet().iterator();
+            while (debtorIterator.hasNext() && amountToSettle.compareTo(BigDecimal.ZERO) > 0) {
+                Map.Entry<String, BigDecimal> debtor = debtorIterator.next();
+                BigDecimal possiblePayment = debtor.getValue().min(amountToSettle);
+                transactions.add(new Transaction(debtor.getKey(), creditor.getKey(), possiblePayment));
+                amountToSettle = amountToSettle.subtract(possiblePayment);
+                debtor.setValue(debtor.getValue().subtract(possiblePayment));
+                if (debtor.getValue().compareTo(BigDecimal.ZERO) == 0) {
+                    debtorIterator.remove();
+                }
+            }
+        }
+        return transactions;
     }
 
     @PostMapping("/splitwise/groups/{groupId}/addmember")
@@ -254,12 +312,29 @@ public class SplitwiseController {
     }
 
     @PutMapping ("/splitwise/groups/{groupid}/delete")
-    public ResponseEntity<?> deleteGroup(@PathVariable int groupid)
+    public ResponseEntity<?> deleteGroup(@PathVariable int groupid, Authentication authentication)
     {
         try
         {
-            theGroupsDAOImpl.deletegroupById(groupid);
+            String username = authentication.getName();
+            theGroupsDAOImpl.deletegroupById(groupid, username);
             return ResponseEntity.ok().body("succesfully deleted group");
+        }
+        catch(Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: Please try again later");
+        }
+    }
+
+
+    @PutMapping ("/splitwise/groups/{groupid}/settlegroup")
+    public ResponseEntity<?> settleGroup(@PathVariable int groupid, Authentication authentication)
+    {
+        try
+        {
+            String username = authentication.getName();
+            theGroupsDAOImpl.settlegroupById(groupid, username);
+            return ResponseEntity.ok().body("succesfully settled up group");
         }
         catch(Exception e)
         {
@@ -354,6 +429,14 @@ public class SplitwiseController {
             expense.setDateCreated(new Date());
             expense.setAddedBy(addedBy);
             expense.setDeleted(false);
+            expense.setPayment(expenseDTO.getIsPayment());
+
+            if(expense.isPayment()) {
+                System.out.println("Payers" + expenseDTO.getPayers());
+                System.out.println(" ");
+                System.out.println("Participants" + expenseDTO.getParticipants());
+            }
+
 
             expensesDAO.save(expense);
 
@@ -433,6 +516,7 @@ public class SplitwiseController {
             expenseDetails.put("amount", expense.getAmount());
             expenseDetails.put("dateCreated", expense.getDateCreated());
             expenseDetails.put("addedBy", expense.getAddedBy().getUsername());
+            expenseDetails.put("isPayment",expense.isPayment());
             User user = expense.getUpdatedBy();
             if(user != null) {
                 expenseDetails.put("updatedBy", expense.getUpdatedBy().getUsername());
@@ -442,16 +526,23 @@ public class SplitwiseController {
             if(deletedByUser != null)
             {
                 expenseDetails.put("isDeleted", true);
-                expenseDetails.put("deletedBy", expense.getUpdatedBy().getUsername());
-                expenseDetails.put("deletedDate", expense.getLastUpdatedDate());
+                expenseDetails.put("deletedBy", expense.getDeletedBy().getUsername());
+                expenseDetails.put("deletedDate", expense.getDeletedDate());
             }
             // Fetch participants and amounts involved
             List<ExpenseParticipants> participants = expenseParticipantsDAO.findByExpenseId(expenseId);
             List<Map<String, Object>> participantDetails = participants.stream().map(participant -> {
                 Map<String, Object> details = new HashMap<>();
-                details.put("username", participant.getUser().getUsername());
-                details.put("amountPaid", participant.getAmountpaid());
-                details.put("amountOwed", participant.getAmountOwed());
+
+                BigDecimal zero = BigDecimal.ZERO;
+                if(participant.getAmountpaid().compareTo(zero) != 0 || participant.getAmountOwed().compareTo(zero) != 0) {
+                    details.put("username", participant.getUser().getUsername());
+                    details.put("amountPaid", participant.getAmountpaid());
+                    details.put("amountOwed", participant.getAmountOwed());
+
+                    if(participant.getAmountOwed().compareTo(zero) != 0)
+                        details.put("isChecked", true);
+                }
                 return details;
             }).collect(Collectors.toList());
 
@@ -505,7 +596,7 @@ public class SplitwiseController {
             // Handle payers
             Map<String, BigDecimal> payers = expenseDTO.getPayers();
 
-            //System.out.println("payers"+ payers);
+            System.out.println("payers"+ payers);
             payers.forEach((payerUsername, amountPaid) -> {
                 ExpenseParticipants participantDB = expenseParticipantsDAO.findParticipant(expense.getId(), payerUsername);
                 if (participantDB != null) {
@@ -524,6 +615,7 @@ public class SplitwiseController {
             });
 
             // Handle participants
+            System.out.println("participants"+ expenseDTO.getParticipants());
             expenseDTO.getParticipants().forEach((participantUsername, isParticipating) -> {
                 ExpenseParticipants participantDB = expenseParticipantsDAO.findParticipant(expense.getId(), participantUsername);
                 BigDecimal amountOwed = isParticipating ? shareAmount : BigDecimal.ZERO;

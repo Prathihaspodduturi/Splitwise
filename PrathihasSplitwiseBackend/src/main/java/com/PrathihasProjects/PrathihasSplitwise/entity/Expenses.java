@@ -26,6 +26,9 @@ public class Expenses {
     @Column(name = "deleted")
     private boolean deleted = false;
 
+    @Column(name = "is_payment")
+    private boolean isPayment = false;
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "deleted_by", referencedColumnName = "username")
     private User deletedBy;
@@ -146,6 +149,13 @@ public class Expenses {
         this.deletedDate = deletedDate;
     }
 
+    public boolean isPayment() {
+        return isPayment;
+    }
+
+    public void setPayment(boolean payment) {
+        isPayment = payment;
+    }
 
     @Override
     public String toString() {
@@ -155,6 +165,7 @@ public class Expenses {
                 ", expenseName='" + expenseName + '\'' +
                 ", dateCreated=" + dateCreated +
                 ", deleted=" + deleted +
+                ", isPayment=" + isPayment +
                 ", deletedBy=" + deletedBy +
                 ", deletedDate=" + deletedDate +
                 ", groupId=" + groupId +
