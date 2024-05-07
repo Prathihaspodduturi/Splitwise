@@ -1,5 +1,6 @@
 package com.PrathihasProjects.PrathihasSplitwise.DAO;
 
+import com.PrathihasProjects.PrathihasSplitwise.DTO.MemberInfo;
 import com.PrathihasProjects.PrathihasSplitwise.entity.GroupMembers;
 import com.PrathihasProjects.PrathihasSplitwise.entity.Groups;
 import com.PrathihasProjects.PrathihasSplitwise.entity.User;
@@ -12,8 +13,10 @@ public interface groupMembersDAO {
 
     List<Groups> findGroupsOfUser(String username);
 
-    List<User> findMembersByGroupId(int id);
+    List<MemberInfo> findMembersByGroupId(int id);
 
     boolean isMember(String username, int groupId);
+
+    GroupMembers getDetails(int groupId, String username);
 
 }

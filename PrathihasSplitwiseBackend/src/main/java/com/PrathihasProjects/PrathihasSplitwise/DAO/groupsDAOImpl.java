@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -42,7 +43,7 @@ public class groupsDAOImpl implements groupsDAO{
 
     @Override
     @Transactional
-    public boolean deletegroupById(int id, String username) {
+    public boolean deletegroupById(int id, String username, Date date) {
         Groups group = entityManager.find(Groups.class, id);
 
         User user = entityManager.find(User.class, username);
@@ -50,13 +51,15 @@ public class groupsDAOImpl implements groupsDAO{
         {
             group.setDeleted(true);
             group.setDeletedBy(user);
+            group.setDeletedDate(date);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean settlegroupById(int id, String username) {
+    @Transactional
+    public boolean settlegroupById(int id, String username, Date date) {
         Groups group = entityManager.find(Groups.class, id);
 
         User user = entityManager.find(User.class, username);
@@ -64,6 +67,7 @@ public class groupsDAOImpl implements groupsDAO{
         {
             group.setSettledUp(true);
             group.setSettledBy(user);
+            group.setSettledDate(date);
             return true;
         }
         return false;

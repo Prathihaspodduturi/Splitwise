@@ -10,6 +10,7 @@ const SplitwiseExpenseDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [editMode, setEditMode] = useState(false);
     const [totalMismatch, setTotalMismatch] = useState(false);
+    const [gmDetails, setGmDetails] = useState(null);
 
     const navigate = useNavigate();
 
@@ -49,6 +50,7 @@ const SplitwiseExpenseDetailPage = () => {
                 setExpenseDetails(dataWithChecked);
                 setEditExpense(dataWithChecked);
                 setLoading(false);
+                setGmDetails(dataWithChecked.gmDetails);
             } catch (error) {
                 setError(error.message);
                 console.error('Failed to fetch expense details:', error);
@@ -87,7 +89,11 @@ const SplitwiseExpenseDetailPage = () => {
     };
 
     const handleUpdate = async () => {
-        const totalContributions = editExpense.participants.reduce((acc, curr) => acc + (curr.isChecked ? curr.amountPaid : 0), 0);
+        
+        let totalContributions = 0;
+        editExpense.participants.forEach(participant => {
+            totalContributions = totalContributions + (parseFloat(participant.amountPaid) || 0);
+        })
         if (totalContributions !== parseFloat(editExpense.amount)) {
             setTotalMismatch(true);
             return; 
@@ -207,7 +213,7 @@ const SplitwiseExpenseDetailPage = () => {
             amount: editExpense.amount,
             payers: payers,
             participants: participants,
-            isPayment: true  // Explicitly marking the update as a payment
+            isPayment: true  
         };
     
         try {
@@ -245,6 +251,7 @@ const SplitwiseExpenseDetailPage = () => {
         return (
             <div className={styles.container}>
                 <h1 className={styles.title}>Payment Details</h1>
+
                 {!editMode && (
                 <div className={styles.details}>
                     <h2 className={styles.expenseName}>{expense.expenseName} ${expense.amount}</h2>
@@ -272,11 +279,13 @@ const SplitwiseExpenseDetailPage = () => {
                     <div className={styles.buttonContainer}>
                     {!expense.isDeleted ? (
                         <>
-                            <button className={styles.editButton} onClick={() => setEditMode(true)}>Edit Payment</button>
-                            <button className={styles.deleteButton} onClick={handleDelete}>Delete Payment</button>
+                            {gmDetails.removedDate === null && <button className={styles.editButton} onClick={() => setEditMode(true)}>Edit Payment</button>}
+                            {gmDetails.removedDate === null && <button className={styles.deleteButton} onClick={handleDelete}>Delete Payment</button>}
                         </>
                     ) : (
-                    <button  className={styles.restoreButton} onClick={handleRestore}>Restore Payment</button>
+                        <>
+                            {gmDetails.removedDate === null && <button  className={styles.restoreButton} onClick={handleRestore}>Restore Payment</button>}
+                        </>
                     )}
                 </div>
                 )}
@@ -377,11 +386,13 @@ const SplitwiseExpenseDetailPage = () => {
                 <div className={styles.buttonContainer}>
                     {!expense.isDeleted ? (
                         <>
-                            <button className={styles.editButton} onClick={() => setEditMode(true)}>Edit Expense</button>
-                            <button className={styles.deleteButton} onClick={handleDelete}>Delete Expense</button>
+                            {gmDetails.removedDate === null && <button className={styles.editButton} onClick={() => setEditMode(true)}>Edit Expense</button>}
+                            {gmDetails.removedDate === null && <button className={styles.deleteButton} onClick={handleDelete}>Delete Expense</button>}
                         </>
                     ) : (
-                        <button  className={styles.restoreButton} onClick={handleRestore}>Restore Expense</button>
+                        <>
+                            {gmDetails.removedDate === null && <button  className={styles.restoreButton} onClick={handleRestore}>Restore Expense</button>}
+                        </>  
                     )}
                 </div>
             )}

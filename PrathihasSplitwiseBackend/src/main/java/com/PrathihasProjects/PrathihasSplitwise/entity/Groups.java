@@ -21,6 +21,12 @@ public class Groups {
     @Column(name = "date_created")
     private Date dateCreated;
 
+    @Column(name = "settled_date")
+    private Date settledDate;
+
+    @Column(name = "deleted_date")
+    private Date deletedDate;
+
     @Column(name = "settled_up", nullable = false)
     private boolean settledUp = false;
 
@@ -123,6 +129,22 @@ public class Groups {
         this.settledUp = settledUp;
     }
 
+    public Date getSettledDate() {
+        return settledDate;
+    }
+
+    public void setSettledDate(Date settledDate) {
+        this.settledDate = settledDate;
+    }
+
+    public Date getDeletedDate() {
+        return deletedDate;
+    }
+
+    public void setDeletedDate(Date deletedDate) {
+        this.deletedDate = deletedDate;
+    }
+
     public User getDeletedBy() {
         return deletedBy;
     }
@@ -146,6 +168,8 @@ public class Groups {
                 ", groupName='" + groupName + '\'' +
                 ", groupDescription='" + groupDescription + '\'' +
                 ", dateCreated=" + dateCreated +
+                ", settledDate=" + settledDate +
+                ", deletedDate=" + deletedDate +
                 ", settledUp=" + settledUp +
                 ", createdBy=" + createdBy +
                 ", deleted=" + deleted +

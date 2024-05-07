@@ -29,10 +29,12 @@ const SplitwiseGroupsPage = () => {
                 });
 
                 if (!response.ok) {
+                    console.log(response);
                     throw new Error('Something went wrong!');
                 }
 
                 const data = await response.json();
+                console.log("data", data);
                 setGroups(data);
                 setIsLoading(false);
             } catch (error) {
@@ -146,7 +148,7 @@ const SplitwiseGroupsPage = () => {
             </button>
             <h2 className={styles.activeGroupsHeader}>Active Groups</h2>
             <ul className={styles.activeGroupList}>
-                {allGroups.filter(group => !group.settledUp && !group.deleted).map(group => (
+                {allGroups.filter(group => !group.settledUp && !group.deleted && group.removedDate === null).map(group => (
                     <li key={group.id} className={styles.activeGroupItem}>
                         <div className={styles.activeGroupName}>
                             <NavLink to={`/splitwise/groups/${group.id}`} className={styles.activeGroupLink}>
@@ -172,11 +174,11 @@ const SplitwiseGroupsPage = () => {
 
             {activeSection === 'settled' && (
                 <ul className={styles.groupList}>
-                    {allGroups.filter(group => group.settledUp && !group.deleted).map(group => (
+                    {allGroups.filter(group => (group.settledUp && !group.deleted) || (group.removedDate !== null)).map(group => (
                         <li key={group.id} className={styles.groupItem}>
-                            <NavLink to={`/splitwise/groups/details/${group.id}`} className={styles.navLink}>
+                            <NavLink to={`/splitwise/groups/${group.id}`} className={styles.navLink}>
                                 {group.groupName}
-                            </NavLink> - {group.groupDescription}
+                            </NavLink>  {group.groupDescription}
                         </li>
                     ))}
                 </ul>
@@ -184,7 +186,7 @@ const SplitwiseGroupsPage = () => {
 
             {activeSection === 'deleted' && (
                 <ul className={styles.groupList}>
-                    {allGroups.filter(group => group.deleted).map(group => (
+                    {allGroups.filter(group => group.deleted && group.removedDate === null).map(group => (
                         <li key={group.id} className={`${styles.groupItem} ${styles.groupItemDeleted}`}>
                             {group.groupName} - {group.groupDescription}
                             <button onClick={() => handleRestoreGroup(group.id)} className={styles.button}>Restore</button>

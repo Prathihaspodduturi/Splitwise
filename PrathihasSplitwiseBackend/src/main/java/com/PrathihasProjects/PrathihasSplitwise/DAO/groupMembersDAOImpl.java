@@ -1,5 +1,6 @@
 package com.PrathihasProjects.PrathihasSplitwise.DAO;
 
+import com.PrathihasProjects.PrathihasSplitwise.DTO.MemberInfo;
 import com.PrathihasProjects.PrathihasSplitwise.entity.GroupMembers;
 import com.PrathihasProjects.PrathihasSplitwise.entity.Groups;
 import com.PrathihasProjects.PrathihasSplitwise.entity.User;
@@ -33,14 +34,21 @@ public class groupMembersDAOImpl implements groupMembersDAO {
                 .setParameter("username", username)
                 .getResultList();
 
-        System.out.println("" + members);
         return members.stream().map(GroupMembers::getGroup).collect(Collectors.toList());
     }
 
-    @Override
-    public List<User> findMembersByGroupId(int groupId) {
+    /*@Override
+    public List<GroupMembers> findMembersByGroupId(int groupId) {
         return entityManager.createQuery(
-                        "SELECT gm.user FROM GroupMembers gm WHERE gm.group.id = :groupId", User.class)
+                        "SELECT gm FROM GroupMembers gm WHERE gm.group.id = :groupId", GroupMembers.class)
+                .setParameter("groupId", groupId)
+                .getResultList();
+    }*/
+
+    public List<MemberInfo> findMembersByGroupId(int groupId) {
+        return entityManager.createQuery(
+                        "SELECT new com.PrathihasProjects.PrathihasSplitwise.DTO.MemberInfo(gm.user.username, gm.removedBy.username, gm.removedDate) " +
+                                "FROM GroupMembers gm WHERE gm.group.id = :groupId", MemberInfo.class)
                 .setParameter("groupId", groupId)
                 .getResultList();
     }
@@ -50,7 +58,7 @@ public class groupMembersDAOImpl implements groupMembersDAO {
 
         try {
             User user = entityManager.createQuery(
-                            "SELECT gm.user FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.user.username = :username", User.class)
+                            "SELECT gm.user FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.user.username = :username and gm.removedBy IS NULL", User.class)
                     .setParameter("username", username)
                     .setParameter("groupId", groupId)
                     .getSingleResult();
@@ -59,5 +67,22 @@ public class groupMembersDAOImpl implements groupMembersDAO {
         } catch (NoResultException e) {
             return false;
         }
+    }
+
+    @Override
+    public GroupMembers getDetails(int groupId, String username) {
+
+        try {
+            GroupMembers gmDetails = entityManager.createQuery(
+                            "SELECT gm FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.user.username = :username", GroupMembers.class)
+                    .setParameter("username", username)
+                    .setParameter("groupId", groupId)
+                    .getSingleResult();
+
+            return gmDetails;
+        } catch (NoResultException e) {
+            return null;
+        }
+
     }
 }

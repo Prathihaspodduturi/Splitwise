@@ -14,6 +14,7 @@ const SplitwiseGroupDetail = () => {
     const { groupId } = useParams();
     const navigate = useNavigate();
     const [group, setGroup] = useState(null);
+    const [gmDetails, setGmDetails] = useState(null); 
     const [expenses, setExpenses] = useState([]);
     const [members, setMembers] = useState([]);
 
@@ -71,9 +72,20 @@ const SplitwiseGroupDetail = () => {
             }
 
             const data = await response.json();
+            console.log("memebrs", data.members);
             setMembers(data.members);
             setGroup(data.group);
-            const sortedExpenses = data.detailedExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
+            setGmDetails(data.gmDetails); 
+
+            const filteredExpenses = data.detailedExpenses.filter(exp => {
+                const expDate = new Date(exp.dateCreated);
+                const addedDate = new Date(data.gmDetails.addedDate);
+                const removedDate = data.gmDetails.removedDate ? new Date(data.gmDetails.removedDate) : new Date();
+                return expDate >= addedDate && expDate <= removedDate;
+            });
+
+
+            const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
             setExpenses(sortedExpenses);
             const tempActiveExpenses = sortedExpenses.filter(exp => !exp.deleted);
             const tempDeletedExpenses = sortedExpenses.filter(exp => exp.deleted);
@@ -176,6 +188,14 @@ const SplitwiseGroupDetail = () => {
     };
 
     const handleSettleGroup = async () => {
+
+        const hasOutstandingBalances = balances.some(balance => balance.amount !== 0);
+
+        if (hasOutstandingBalances) {
+            alert('Cannot settle group while there are outstanding balances.');
+            return;
+        }
+
         if (window.confirm('Are you sure you want to delete this group?')) {
             try {
                 const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/settlegroup`, {
@@ -187,7 +207,7 @@ const SplitwiseGroupDetail = () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to delete group');
+                    throw new Error('Failed to settle up group');
                 }
 
                 alert('Group settled successfully!');
@@ -369,7 +389,7 @@ const SplitwiseGroupDetail = () => {
         if (window.confirm(`Are you sure you want to remove ${memberUsername} from the group?`)) {
             try {
                 const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/removemember`, {
-                    method: 'POST',
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${sessionStorage.getItem('token')}`
@@ -696,9 +716,14 @@ const SplitwiseGroupDetail = () => {
 
                 <div className={styles.groupNameContainer}>
                     <h2>{group.groupName}</h2>
-                    <FaEdit className={styles.editIcon} onClick={toggleEditIconForm} />
+                    {gmDetails.removedDate === null && <FaEdit className={styles.editIcon} onClick={toggleEditIconForm} />}
+                    {group.settledUp && <p>Group was settled by {group.settledBy} on {group.settledDate}</p>}
+                    {gmDetails.removedBy !== null && gmDetails.removedDate !== null && (
+                    <p className={styles.removalInfo}>
+                        You were removed by {gmDetails.removedBy} on {new Date(gmDetails.removedDate).toLocaleDateString()}
+                    </p>
+                )}
                 </div>
-
 
                 <div className={styles.optionsContainer}>
                     <div onClick={toggleExpenses} className={styles.optionLink}>
@@ -720,9 +745,9 @@ const SplitwiseGroupDetail = () => {
 
                 {showExpenses && (
                     <div className={styles.expensesSection}>
-                        <button onClick={toggleAddExpense} className={styles.addExpenseButton}>
+                        {(!group.settledUp && gmDetails.removedDate === null)&& <button onClick={toggleAddExpense} className={styles.addExpenseButton}>
                             Add Expense
-                        </button>
+                        </button> }
                         {expenses.length > 0 ? (
                             <ul>
                                 {activeExpenses.map((expense, index) => (
@@ -793,28 +818,31 @@ const SplitwiseGroupDetail = () => {
                             <p>No deleted expenses.</p>
                         )}
                     </div>
-                )}
-                
+                )} 
+
+
                 {showGroupMembers && (
                     <div className={styles.membersContainer}>
                         <h3>Group Members</h3>
                         <ul>
-                            {members.map(member => (
+                            {members.filter(member => member.removedBy === null).map(member => ( 
                                 <li key={member.username} className={styles.membersItem}>
                                     <span className={styles.username}>{member.username}</span>
-                                    {currentUser === member.username ? 
-                                        (<button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>Leave Group</button>)
-                                        :
-                                        (<button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>
-                                            Remove
-                                        </button>)
-                                    }
+                                    {(!group.settledUp && gmDetails.removedDate === null) && (
+                                        currentUser === member.username ? 
+                                            <button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>Leave Group</button>
+                                            :
+                                            <button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>
+                                                Remove
+                                            </button>
+                                    )}
                                 </li>
                             ))}
                         </ul>
-                        <div onClick={toggleAddMemberForm} className={styles.addMemberButton} >
+
+                        {(!group.settledUp && gmDetails.removedDate === null) && <div onClick={toggleAddMemberForm} className={styles.addMemberButton} >
                         {showAddMemberForm ? 'Hide Add Member Form' : 'Add Member'}
-                        </div>
+                        </div>}
                         {showAddMemberForm && (
                             <form onSubmit={handleAddMember} className={styles.addMemberForm}>
                                 <input
@@ -832,6 +860,7 @@ const SplitwiseGroupDetail = () => {
                         )}
                     </div>
                 )}
+
                 
                 {showBalances && !isLoading && (
                 <div className={styles.listBalancesContainer}>
@@ -841,7 +870,7 @@ const SplitwiseGroupDetail = () => {
                         {balances.map((balance, index) => (
                             <li key={index} className={styles.listBalancesItem}>
                                 <p>{balance.fromUser} owes ${balance.amount} to {balance.toUser}</p>
-                                <button onClick={() => openPaymentModal(balance)} className={styles.balancesPayButton}>Pay</button>
+                                {gmDetails.removedDate === null && <button onClick={() => openPaymentModal(balance)} className={styles.balancesPayButton}>Pay</button>}
                             </li>
                         ))}
                     </ul>
@@ -898,3 +927,45 @@ const SplitwiseGroupDetail = () => {
 }   
 
 export default SplitwiseGroupDetail;
+
+/*
+
+{showGroupMembers && (
+                    <div className={styles.membersContainer}>
+                        <h3>Group Members</h3>
+                        <ul>
+                            {members.map(member => (
+                                <li key={member.username} className={styles.membersItem}>
+                                    <span className={styles.username}>{member.username}</span>
+                                    {!group.settledUp && (
+                                        currentUser === member.username ? 
+                                            <button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>Leave Group</button>
+                                            :
+                                            <button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>
+                                                Remove
+                                            </button>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                        {group.settledUp && <div onClick={toggleAddMemberForm} className={styles.addMemberButton} >
+                        {showAddMemberForm ? 'Hide Add Member Form' : 'Add Member'}
+                        </div> }
+                        {showAddMemberForm && (
+                            <form onSubmit={handleAddMember} className={styles.addMemberForm}>
+                                <input
+                                    type="username"
+                                    placeholder="Username"
+                                    value={newUsername}
+                                    onChange={(e) => setNewUsername(e.target.value)} required
+                                    className={styles.addMemberFormInput}
+                                />
+                                <div className={styles.addMemberFormButtonGroup}>
+                                    <button type="submit" className={styles.addMemberFormButton}>Add</button>
+                                    <button type="button" onClick={() => setShowAddMemberForm(false)} className={styles.addMemberFormButton}>Cancel</button>
+                                </div>
+                            </form>
+                        )}
+                    </div>
+                )}
+*/

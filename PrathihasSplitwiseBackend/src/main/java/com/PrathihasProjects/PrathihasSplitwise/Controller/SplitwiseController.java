@@ -3,6 +3,8 @@ package com.PrathihasProjects.PrathihasSplitwise.Controller;
 import com.PrathihasProjects.PrathihasSplitwise.DAO.*;
 import com.PrathihasProjects.PrathihasSplitwise.DTO.ExpenseDTO;
 import com.PrathihasProjects.PrathihasSplitwise.DTO.GroupDTO;
+import com.PrathihasProjects.PrathihasSplitwise.DTO.MemberInfo;
+import com.PrathihasProjects.PrathihasSplitwise.Helper.GroupMembersHelper;
 import com.PrathihasProjects.PrathihasSplitwise.Helper.Transaction;
 import com.PrathihasProjects.PrathihasSplitwise.Jwt.JwtUtil;
 import com.PrathihasProjects.PrathihasSplitwise.compositeKey.ExpenseParticipantsId;
@@ -69,7 +71,6 @@ public class SplitwiseController {
     @GetMapping("/splitwise/")
     public String sampleConnection()
     {
-        //System.out.println("receieved connection");
         return "Connected";
     }
 
@@ -125,9 +126,34 @@ public class SplitwiseController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName(); // Get username from authentication
 
+            List<Map<String, Object>> groupDetails = new ArrayList<>();
+
             List<Groups> groups = groupMembersDAO.findGroupsOfUser(username);
 
-            return ResponseEntity.ok(groups);
+            for(Groups group : groups)
+            {
+                Map<String,Object> groupDetail = new HashMap<>();
+                groupDetail.put("id", group.getId());
+                groupDetail.put("groupName", group.getGroupName());
+                groupDetail.put("groupDescription", group.getGroupDescription());
+                groupDetail.put("dateCreated", group.getDateCreated());
+                groupDetail.put("settledUp", group.isSettledUp());
+                groupDetail.put("deleted", group.isDeleted());
+                groupDetail.put("createdBy", group.getCreatedBy().getUsername());
+
+                if(group.isSettledUp())
+                    groupDetail.put("settledBy", group.getSettledBy().getUsername());
+
+                if(group.isDeleted())
+                    groupDetail.put("deletedBy", group.getDeletedBy().getUsername());
+
+                GroupMembers gmDetails = groupMembersDAO.getDetails(group.getId(), username);
+                groupDetail.put("removedDate", gmDetails.getRemovedDate());
+
+                groupDetails.add(groupDetail);
+            }
+
+            return ResponseEntity.ok(groupDetails);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
@@ -141,21 +167,27 @@ public class SplitwiseController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found");
             }
 
+            String username = authentication.getName();
 
+            GroupMembers gmGroupMembers = groupMembersDAO.getDetails(groupId,username);
 
+            GroupMembersHelper gmDetails = new GroupMembersHelper(gmGroupMembers.getUser().getUsername(), gmGroupMembers.getGroup().getId(), gmGroupMembers.getAddedBy().getUsername(), gmGroupMembers.getAddedDate());
+
+            if(gmGroupMembers.getRemovedBy() != null)
+            {
+                gmDetails.setRemovedBy(gmGroupMembers.getRemovedBy().getUsername());
+                gmDetails.setRemovedDate(gmGroupMembers.getRemovedDate());
+            }
             // Fetch expenses related to the group
             //List<Expenses> expenses = expensesDAO.groupExpenses(groupId);
 
-            List<User> members = groupMembersDAO.findMembersByGroupId(groupId);
-            List<Expenses> expenses = expensesDAO.groupExpenses(groupId);
+            List<MemberInfo> members = groupMembersDAO.findMembersByGroupId(groupId);
 
-            /*for(int i=0;i<expenses.size();i++){
-                System.out.println("Expenses" + expenses.get(i));}*/
+
+            List<Expenses> expenses = expensesDAO.groupExpenses(groupId);
 
 
             Map<String, Object> response = new HashMap<>();
-
-            String username = authentication.getName();
 
             List<Map<String,Object>> detailedExpenses = new ArrayList<>();
 
@@ -165,6 +197,7 @@ public class SplitwiseController {
                 expenseDetails.put("expenseName", expense.getExpenseName());
                 expenseDetails.put("dateCreated", expense.getDateCreated());
                 expenseDetails.put("amount", expense.getAmount());
+                expenseDetails.put("addedBy", expense.getAddedBy());
                 expenseDetails.put("deleted", expense.isDeleted());
                 expenseDetails.put("isPayment", expense.isPayment());
 
@@ -238,16 +271,17 @@ public class SplitwiseController {
             }
 
             List<Transaction> transactions = resolveDebts(creditors, debtors);
-            //System.out.println(""+detailedExpenses);
+
+            //GroupMembers gmDetails = groupMembersDAO.getDetails(groupId, username);
 
             response.put("group", group);
+            response.put("gmDetails", gmDetails);
             response.put("members", members);
             response.put("detailedExpenses", detailedExpenses);
             response.put("transactions", transactions);
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }
@@ -280,6 +314,10 @@ public class SplitwiseController {
                 return ResponseEntity.badRequest().body("Username is required");
             }
 
+            String username = authentication.getName();
+
+            User curUser = theUserDAOImpl.findUserByName(username);
+
             User userToAdd = theUserDAOImpl.findUserByName(newUsername);
             if (userToAdd == null) {
                 return ResponseEntity.badRequest().body("User does not exist");
@@ -302,11 +340,54 @@ public class SplitwiseController {
             newMember.setUser(userToAdd);
             newMember.setGroup(group);
             newMember.setId(new GroupMembersId(groupId, newUsername));
+            newMember.setAddedBy(curUser);
+            newMember.setAddedDate(new Date());
             groupMembersDAO.save(newMember);
-            List<User> members = groupMembersDAO.findMembersByGroupId(groupId);
+            List<MemberInfo> members = groupMembersDAO.findMembersByGroupId(groupId);
             return ResponseEntity.ok().body(members);
         }
         catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: please try again later!");
+        }
+    }
+
+    @PutMapping("/splitwise/groups/{groupId}/removemember")
+    public ResponseEntity<?> removeMember(@PathVariable int groupId, @RequestBody Map<String, String> requestBody, Authentication authentication)
+    {
+        try
+        {
+            String memberUsername = requestBody.get("username");
+            if (memberUsername == null || memberUsername.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Member username is required");
+            }
+
+            String removedByUsername = authentication.getName();
+
+            Groups group = theGroupsDAOImpl.findGroupById(groupId);
+            User removedByUser = theUserDAOImpl.findUserByName(removedByUsername);
+            User memberUser = theUserDAOImpl.findUserByName(memberUsername);
+
+            if (group == null) {
+                return ResponseEntity.badRequest().body("Group not found");
+            }
+            if (memberUser == null) {
+                return ResponseEntity.badRequest().body("Member user not found");
+            }
+
+            GroupMembers member = groupMembersDAO.getDetails(groupId, memberUsername);
+            if (member == null) {
+                return ResponseEntity.badRequest().body("User is not part of this group");
+            }
+
+            member.setRemovedBy(removedByUser);
+            member.setRemovedDate(new Date());
+
+            groupMembersDAO.save(member);
+
+            return ResponseEntity.ok().body("Succesfull");
+        }
+        catch(Exception e)
+        {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: please try again later!");
         }
     }
@@ -317,7 +398,7 @@ public class SplitwiseController {
         try
         {
             String username = authentication.getName();
-            theGroupsDAOImpl.deletegroupById(groupid, username);
+            theGroupsDAOImpl.deletegroupById(groupid, username, new Date());
             return ResponseEntity.ok().body("succesfully deleted group");
         }
         catch(Exception e)
@@ -333,7 +414,7 @@ public class SplitwiseController {
         try
         {
             String username = authentication.getName();
-            theGroupsDAOImpl.settlegroupById(groupid, username);
+            theGroupsDAOImpl.settlegroupById(groupid, username, new Date());
             return ResponseEntity.ok().body("succesfully settled up group");
         }
         catch(Exception e)
@@ -367,7 +448,6 @@ public class SplitwiseController {
     @PostMapping ("/splitwise/login")
     public ResponseEntity<String> loginController (@RequestBody User authenticationRequest) throws Exception
     {
-        //System.out.println("request receieved at login");
         try{
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
@@ -416,7 +496,6 @@ public class SplitwiseController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user information.");
             }
 
-            //System.out.println("groupId" + groupId);
             Groups group = theGroupsDAOImpl.findGroupById(groupId);
             if (group == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found");
@@ -431,17 +510,10 @@ public class SplitwiseController {
             expense.setDeleted(false);
             expense.setPayment(expenseDTO.getIsPayment());
 
-            if(expense.isPayment()) {
-                System.out.println("Payers" + expenseDTO.getPayers());
-                System.out.println(" ");
-                System.out.println("Participants" + expenseDTO.getParticipants());
-            }
-
 
             expensesDAO.save(expense);
 
             Map<String, BigDecimal> payers = expenseDTO.getPayers();
-            //System.out.println(""+payers);
             payers.forEach((payerUsername, amountPaid) -> {
                 User payer = theUserDAOImpl.findUserByName(payerUsername);
                 if (payer != null) {
@@ -455,7 +527,6 @@ public class SplitwiseController {
             // Then handle participants
             expenseDTO.getParticipants().forEach((participantUsername, isParticipating) -> {
                 if (isParticipating) {
-                    //System.out.println("inside");
                     User participant = theUserDAOImpl.findUserByName(participantUsername);
                     if (participant != null) {
                         // Calculate the owed amount based on total amount divided by number of participants
@@ -492,7 +563,6 @@ public class SplitwiseController {
 
             return ResponseEntity.ok(expenseDetails);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add expense: " + e.getMessage());
         }
     }
@@ -510,6 +580,8 @@ public class SplitwiseController {
             if (expense == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Expense not found or has been deleted");
             }
+
+            GroupMembers gmDetails = groupMembersDAO.getDetails(groupId,username);
 
             Map<String, Object> expenseDetails = new HashMap<>();
             expenseDetails.put("expenseName", expense.getExpenseName());
@@ -547,10 +619,10 @@ public class SplitwiseController {
             }).collect(Collectors.toList());
 
             expenseDetails.put("participants", participantDetails);
+            expenseDetails.put("gmDetails", gmDetails);
 
             return ResponseEntity.ok(expenseDetails);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to retrieve expense details: " + e.getMessage());
         }
     }
@@ -581,7 +653,6 @@ public class SplitwiseController {
             expense.setLastUpdatedDate(new Date());
 
             //Expenses updatedExpense = expensesDAO.findExpenseById(expenseId);
-            //System.out.println("expense updated"+ updatedExpense.getId() + " " +updatedExpense.getUpdatedBy() + " " +updatedExpense.getLastUpdatedDate());
             expensesDAO.updateExpense(expense);
 
              int totalParticipants = (int) expenseDTO.getParticipants().values().stream()
@@ -590,19 +661,16 @@ public class SplitwiseController {
 
             BigDecimal shareAmount = totalParticipants > 0 ? expenseDTO.getAmount().divide(BigDecimal.valueOf(totalParticipants), 2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 
-            //System.out.println("totalParticipants count is "+totalParticipants);
 
 
             // Handle payers
             Map<String, BigDecimal> payers = expenseDTO.getPayers();
 
-            System.out.println("payers"+ payers);
             payers.forEach((payerUsername, amountPaid) -> {
                 ExpenseParticipants participantDB = expenseParticipantsDAO.findParticipant(expense.getId(), payerUsername);
                 if (participantDB != null) {
                     participantDB.setAmountpaid(amountPaid);
                     expenseParticipantsDAO.updateExpenseParticipants(participantDB);
-                    //System.out.println("payers : " +participantDB.getUser().getUsername()+" "+participantDB.getAmountpaid()+" "+participantDB.getAmountOwed());
                 } else {
                     // Create new payer record if not found
                     User payer = theUserDAOImpl.findUserByName(payerUsername);
@@ -610,12 +678,10 @@ public class SplitwiseController {
                     participantDB.setId(new ExpenseParticipantsId(expense.getId(), payerUsername));
                     expenseParticipantsDAO.save(participantDB);
                     //ExpenseParticipants participantTemp = expenseParticipantsDAO.findParticipant(expense.getId(), payerUsername);
-                    //System.out.println("payers : " +participantDB.getUser().getUsername()+" "+participantDB.getAmountpaid()+" "+participantDB.getAmountOwed());
                 }
             });
 
             // Handle participants
-            System.out.println("participants"+ expenseDTO.getParticipants());
             expenseDTO.getParticipants().forEach((participantUsername, isParticipating) -> {
                 ExpenseParticipants participantDB = expenseParticipantsDAO.findParticipant(expense.getId(), participantUsername);
                 BigDecimal amountOwed = isParticipating ? shareAmount : BigDecimal.ZERO;
@@ -623,7 +689,6 @@ public class SplitwiseController {
                 if (participantDB != null) {
                     participantDB.setAmountOwed(amountOwed);
                     expenseParticipantsDAO.updateExpenseParticipants(participantDB);
-                    System.out.println("participants : " +participantDB.getUser().getUsername()+" "+participantDB.getAmountpaid()+" "+participantDB.getAmountOwed());
 
                 } else {
                     // Create new participant record if not found
@@ -631,11 +696,9 @@ public class SplitwiseController {
                     ExpenseParticipants newParticipant = new ExpenseParticipants(expense, participantUser, amountOwed, BigDecimal.ZERO);
                     newParticipant.setId(new ExpenseParticipantsId(expense.getId(), participantUsername));
                     expenseParticipantsDAO.save(newParticipant);
-                    System.out.println("participants : " +participantDB.getUser().getUsername()+" "+participantDB.getAmountpaid()+" "+participantDB.getAmountOwed());
                 }
             });
 
-            //System.out.println("updated participants");
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Expense updated successfully.");
@@ -643,7 +706,6 @@ public class SplitwiseController {
 
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update expense: " + e.getMessage());
         }
     }
@@ -706,7 +768,6 @@ public class SplitwiseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to restore expense: " + e.getMessage());
         }
     }
-
 
 
     @PostMapping("/splitwise/signup")
