@@ -2,6 +2,10 @@
 
 This project is a full-stack application that mimics the functionality of Splitwise, facilitating the management and splitting of expenses among users. It includes a React-based frontend, a Spring Boot backend, and utilizes MySQL for data storage.
 
+## Database Optimizations
+
+To enhance the performance and responsiveness of the application, several indexes have been applied to the database tables. These indexes improve the efficiency of query operations, especially on larger datasets. The indexes are particularly focused on fields that are frequently queried and joined on, such as user IDs and group IDs in tables handling expenses and group memberships.
+
 ## Features
 
 - **User Authentication**: Includes functionalities for users to sign up, log in, and log out.
