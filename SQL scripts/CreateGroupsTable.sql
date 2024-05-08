@@ -2,19 +2,21 @@ CREATE TABLE `groups` (
   `id` int NOT NULL AUTO_INCREMENT,
   `group_name` varchar(500) NOT NULL,
   `description` text,
-  `date_created` datetime NOT NULL default current_timestamp,
-  `created_by` varchar(50),
+  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(50) DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `settled_up` tinyint(1) NOT NULL DEFAULT '0',
+  `deleted_by` varchar(50) DEFAULT NULL,
+  `settled_by` varchar(50) DEFAULT NULL,
+  `settled_date` datetime DEFAULT NULL,
+  `deleted_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`created_by`) REFERENCES `users`(`username`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-
-
--- Index for `group_name`
-CREATE INDEX idx_group_name ON `groups`(group_name(191));
-
--- Index for `date_created`
-CREATE INDEX idx_date_created ON `groups`(date_created);
-
--- Index for `created_by`
-CREATE INDEX idx_created_by ON `groups`(created_by);
-
+  KEY `idx_group_name` (`group_name`(191)),
+  KEY `idx_date_created` (`date_created`),
+  KEY `idx_created_by` (`created_by`),
+  KEY `groups_ibfk_2` (`deleted_by`),
+  KEY `groups_ibfk_3` (`settled_by`),
+  CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`username`) ON DELETE SET NULL,
+  CONSTRAINT `groups_ibfk_2` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`username`) ON DELETE SET NULL,
+  CONSTRAINT `groups_ibfk_3` FOREIGN KEY (`settled_by`) REFERENCES `users` (`username`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;

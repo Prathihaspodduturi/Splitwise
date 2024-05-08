@@ -1,18 +1,24 @@
 CREATE TABLE `expenses` (
-    expense_id int NOT NULL AUTO_INCREMENT,
-    group_id int NOT NULL,
-    paid_by varchar(50) NOT NULL,
-    amount decimal(10,2) NOT NULL,
-    description text,
-    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`expense_id`),
-    FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`paid_by`) REFERENCES `users`(`username`) ON DELETE CASCADE
-)ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-CREATE INDEX idx_expenses_group_id ON expenses(group_id);
-CREATE INDEX idx_expenses_paid_by ON expenses(paid_by);
-CREATE INDEX idx_expenses_date_created ON expenses(date_created);
-
--- adding delete column for undo of deletions --
-ALTER TABLE `expenses` ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+  `expense_id` int NOT NULL AUTO_INCREMENT,
+  `group_id` int NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `expensename` text,
+  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `added_by` varchar(50) DEFAULT NULL,
+  `updated_by` varchar(50) DEFAULT NULL,
+  `last_updated` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_by` varchar(50) DEFAULT NULL,
+  `deleted_date` datetime DEFAULT NULL,
+  `is_payment` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`expense_id`),
+  KEY `idx_expenses_group_id` (`group_id`),
+  KEY `idx_expenses_date_created` (`date_created`),
+  KEY `fk_expenses_added_by` (`added_by`),
+  KEY `fk_expenses_updated_by` (`updated_by`),
+  KEY `fk_expenses_deleted_by` (`deleted_by`),
+  CONSTRAINT `expenses_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_expenses_added_by` FOREIGN KEY (`added_by`) REFERENCES `users` (`username`) ON DELETE SET NULL,
+  CONSTRAINT `fk_expenses_deleted_by` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`username`) ON DELETE SET NULL,
+  CONSTRAINT `fk_expenses_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `users` (`username`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=latin1;

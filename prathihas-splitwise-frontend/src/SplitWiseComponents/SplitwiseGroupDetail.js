@@ -716,13 +716,13 @@ const SplitwiseGroupDetail = () => {
 
                 <div className={styles.groupNameContainer}>
                     <h2>{group.groupName}</h2>
-                    {gmDetails.removedDate === null && <FaEdit className={styles.editIcon} onClick={toggleEditIconForm} />}
-                    {group.settledUp && <p>Group was settled by {group.settledBy} on {group.settledDate}</p>}
-                    {gmDetails.removedBy !== null && gmDetails.removedDate !== null && (
-                    <p className={styles.removalInfo}>
-                        You were removed by {gmDetails.removedBy} on {new Date(gmDetails.removedDate).toLocaleDateString()}
-                    </p>
-                )}
+                    {gmDetails.removedBy !== null && gmDetails.removedDate !== null ? (
+                        <p className={styles.groupStatusRemoval}>
+                            You were removed by {gmDetails.removedBy} on {new Date(gmDetails.removedDate).toLocaleDateString()}
+                        </p>
+                    ) : group.settledUp ? (
+                        <p className={styles.groupStatusSettledUp}>Group was settled by {group.settledBy} on {new Date(group.settledDate).toLocaleDateString()}</p>
+                    ) : null}
                 </div>
 
                 <div className={styles.optionsContainer}>

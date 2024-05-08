@@ -265,36 +265,33 @@ button:hover {
 }
 
 .expenseGetBack {
-    color: rgb(16, 212, 16); /* Green color for profit */
-    /*background-color: #b7f5bc; /* Light green background */
+    color: rgb(16, 212, 16); 
 }
 
 .expenseOwe {
-    color: #c62828; /* Red color for debt */
-    /*background-color: #ffebee; /* Light red background */
+    color: #c62828; 
 }
 
 .expenseNeutral {
-    color: #757575; /* Grey for neutral */
-    /* background-color: #eeeeee; /* Light grey background */
+    color: #757575; 
 }
 
 
 
 .logoutLink {
-    position: fixed; /* Fixed position regardless of scrolling */
+    position: fixed; 
     right: 20px;
     top: 20px;
     color: #2196F3;
     font-weight: bold;
     text-decoration: none;
-    z-index: 1000;   /* Ensures it stays on top of other content */
+    z-index: 1000;   
 }
 
 .addMemberButton {
     right: 40px;
     bottom: 100px;
-    background-color: #2196F3; /* Blue background */
+    background-color: #2196F3; 
     color: white;
     padding: 8px 16px;
     border: none;
@@ -349,9 +346,11 @@ button:hover {
 
 .groupNameContainer {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
+
 
 .editIcon {
     margin-left: 10px;
@@ -383,8 +382,8 @@ button:hover {
 
 .editCancelButton {
     margin-top: 20px;
-    background-color: #6c757d; /* Changed from grey to bootstrap's secondary color for better visibility */
-    color: white; /* Ensures text is readable */
+    background-color: #6c757d; 
+    color: white; 
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
@@ -398,8 +397,8 @@ button:hover {
 
 .blurred {
     filter: blur(10px);
-    pointer-events: none; /* Disable interaction with the blurred elements */
-    user-select: none; /* Prevent text selection */
+    pointer-events: none; 
+    user-select: none; 
 }
 
 
@@ -408,7 +407,7 @@ button:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 1050; /* Above everything else */
+    z-index: 1050; 
     background-color: white;
     padding: 20px;
     border-radius: 8px;
@@ -421,15 +420,15 @@ button:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 1050; /* Above everything else */
+    z-index: 1050; 
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 90%; /* Adjust width to accommodate all elements */
-    max-width: 800px; /* Limit maximum width */
-    max-height: 90vh; /* Limit height to 90% of the viewport height */
-    overflow-y: auto; /* Allow vertical scrolling */
+    width: 90%; 
+    max-width: 800px; 
+    max-height: 90vh; 
+    overflow-y: auto; 
 }
 
 
@@ -441,9 +440,9 @@ button:hover {
 }
 
 .scrollableFormContainerAddExpense {
-    max-height: 500px; /* Set a maximum height for the form container */
-    overflow-y: auto; /* Enable vertical scrolling within the form */
-    padding: 20px; /* Add some padding inside the scrollable area */
+    max-height: 500px; 
+    overflow-y: auto; 
+    padding: 20px; 
 }
 
 
@@ -845,10 +844,30 @@ button:hover {
 
 
 .paymentDetails {
-    color: black; /* Sets the text color to black */
+    color: black; 
     font-size: 16px;
 }
 
 .paymentItem {
-    color: black; /* Ensures the link or text within <strong> is also black */
+    color: black; 
+}
+
+.groupStatusRemoval {
+    color: #666; 
+    font-size: 14px; 
+    background-color: #f9f9f9; 
+    padding: 8px; 
+    border-left: 4px solid red; 
+    margin: 10px 0; 
+    border-radius: 4px; 
+}
+
+.groupStatusSettledUp {
+    color: #666; 
+    font-size: 14px; 
+    background-color: #f9f9f9; 
+    padding: 8px; 
+    border-left: 4px solid #2196F3; 
+    margin: 10px 0; 
+    border-radius: 4px; 
 }
