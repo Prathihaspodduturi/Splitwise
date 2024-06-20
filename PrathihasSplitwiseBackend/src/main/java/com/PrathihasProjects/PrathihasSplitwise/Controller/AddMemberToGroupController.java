@@ -45,6 +45,7 @@ public class AddMemberToGroupController {
             User curUser = theUserDAOImpl.findUserByName(username);
 
             User userToAdd = theUserDAOImpl.findUserByName(newUsername);
+            System.out.println("userToAdd"+ userToAdd);
             if (userToAdd == null) {
                 return ResponseEntity.badRequest().body("User does not exist");
             }

@@ -9,6 +9,7 @@ import SplitwiseSignupPage from './SplitWiseComponents/SplitwiseSignupPage';
 import SplitwiseGroupsPage from './SplitWiseComponents/SplitwiseGroupsPage';
 import SplitwiseGroupDetail from './SplitWiseComponents/SplitwiseGroupDetail';
 import SplitwiseExpenseDetailPage from './SplitWiseComponents/SplitwiseExpenseDetailPage';
+import SplitwiseCreateGroup from './SplitWiseComponents/SplitwiseCreateGroup';
 
 
 const router = createBrowserRouter([
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: '/splitwise/groups/:groupId/expenses/:expenseId',  // Route for specific expense details
         element: <SplitwiseExpenseDetailPage />
+      },
+      {
+        path: '/splitwise/groups/creategroup',
+        element: <SplitwiseCreateGroup/>
       }
 ])
 

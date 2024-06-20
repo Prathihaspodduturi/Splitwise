@@ -1,4 +1,3 @@
-/* Container and layout */
 .container {
     padding: 20px;
     background-color: #f4f4f4;
@@ -7,13 +6,6 @@
     min-height: 100vh;
 }
 
-.header {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* Styling for the top navigation links */
 .topRightLink {
     position: absolute;
     right: 20px;
@@ -27,21 +19,6 @@
     text-decoration: none;
 }
 
-
-
-/* Buttons and links */
-
-.createButtonTopRight {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    /* Apply same width controls as other buttons */
-    width: auto;
-    min-width: 120px;
-    max-width: 200px;
-}
-
-
 .button {
     background-color: #4CAF50;
     border: none;
@@ -52,9 +29,8 @@
     cursor: pointer;
     display: inline-block;
     margin: 5px;
-    /* Ensure buttons don't stretch too wide */
     width: auto;
-    min-width: 120px; /* Ensure a minimum width for better appearance */
+    min-width: 120px;
     max-width: 200px;
 }
 
@@ -62,16 +38,11 @@
     position: absolute;
     left: 20px;
     top: 20px;
-    /* Remove any specific width setting that may cause stretching */
     width: auto;
 }
 
 .button:hover {
-    background-color: #45a049; /* Slightly darker green */
-}
-
-.buttonCancel {
-    background-color: #f44336;
+    background-color: #45a049;
 }
 
 .navLink {
@@ -80,42 +51,16 @@
     font-weight: bold;
 }
 
-/* Form styling */
-.form {
-    margin-top: 10px;
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.formInput,
-.formTextArea {
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.formLabel {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-}
-
-/* Group lists */
-/* Container for groups */
-.groupList {
+.groupList, .activeGroupList {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px; /* Spacing between cards */
+    gap: 20px;
     padding: 20px;
+    margin: 0 auto;
 }
 
-/* General group item styles, applies to all group types */
-.groupItem {
+.groupItem, .activeGroupItem {
     background: linear-gradient(to bottom right, #e8f0fe, #d1e9fd);
     border: 1px solid #b0c4de;
     border-radius: 8px;
@@ -130,24 +75,9 @@
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.groupItem:hover {
+.groupItem:hover, .activeGroupItem:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-}
-
-.groupItemDeleted {
-    border-color: #f44336;  /* Maintain a specific border color for deleted items if needed */
-}
-
-
-.groupName {
-    font-weight: bold;
-    font-size: 18px; /* Larger font for group name */
-}
-
-.groupDescription {
-    color: #666;
-    font-size: 14px; /* Smaller font for description */
 }
 
 .groupItemDeleted {
@@ -155,50 +85,50 @@
     border-color: #f44336;
 }
 
-.toggleSection {
-    cursor: pointer;
-    color: #555;
+.groupName, .activeGroupName {
     font-weight: bold;
-    padding: 5px;
-    margin-top: 10px;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.groupDescription, .activeGroupDescription {
+    color: #666;
+    font-size: 14px;
 }
 
 .toggleContainer {
     display: flex;
-    justify-content: center;  /* Centers the buttons horizontally */
-    gap: 20px;  /* Centers the buttons vertically if needed */
-    margin-top: 20px;  /* Adds some space above the container */
-    margin-bottom: 20px;  /* Adds some space below the container */
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-/* Toggle sections for showing/hiding groups */
 .toggleButton {
-    padding: 6px 12px;  /* Reduced padding */
-    font-size: 14px;  /* Smaller font size */
-    background-color: #78909c;  /* Blue Grey */
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: #78909c;
     color: white;
     font-weight: bold;
     cursor: pointer;
     border-radius: 5px;
-    text-transform: uppercase;  /* Stylistic choice to enhance visibility */
+    text-transform: uppercase;
     transition: background-color 0.3s, transform 0.2s;
     border: none;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .toggleButton:hover {
-    background-color: #90a4ae; /* Lighter blue Grey */
-    transform: translateY(-2px); /* Gives a subtle lift effect */
+    background-color: #90a4ae;
+    transform: translateY(-2px);
 }
 
-/* Active toggle style */
 .toggleButtonActive {
-    background-color: #546e7a; /* Darker Blue Gray */
+    background-color: #546e7a;
     color: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-/* Active groups section */
 .activeGroupsHeader {
     color: #333;
     font-weight: bold;
@@ -207,50 +137,10 @@
     text-align: center;
 }
 
-/* Container for active groups */
-.activeGroupList {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px; /* Spacing between cards */
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Individual active group item */
-.activeGroupItem {
-    background: linear-gradient(to bottom right, #e8f0fe, #d1e9fd);  /* Subtle blue gradient */
-    border: 1px solid #b0c4de;  /* Soft blue border */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
-    padding: 20px;
-    width: 300px; /* Fixed width, can be adjusted */
-    text-align: center; /* Centering text inside the card */
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    align-items: center; /* Align items in the center for vertical alignment */
-    margin-bottom: 20px; /* Space below each card */
-    transition: transform 0.3s, box-shadow 0.3s; /* Smooth transitions for hover effects */
-}
-
-.activeGroupItem:hover {
-    transform: translateY(-5px); /* Slight lift effect */
-    box-shadow: 0 6px 16px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
-}
-
 .activeGroupLink {
     text-decoration: none;
-    color: #005662; /* Darker teal */
+    color: #005662;
     font-weight: bold;
 }
 
-.activeGroupName {
-    font-weight: bold;
-    font-size: 18px; /* Larger font for group name */
-    margin-bottom: 10px; /* Space below the group name */
-}
 
-.activeGroupDescription {
-    color: #666;
-    font-size: 14px; /* Smaller font for description */
-}

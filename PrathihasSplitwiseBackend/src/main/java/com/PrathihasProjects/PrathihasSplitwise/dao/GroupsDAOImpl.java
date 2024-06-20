@@ -80,6 +80,8 @@ public class GroupsDAOImpl implements GroupsDAO {
         if(group != null)
         {
             group.setDeleted(false);
+            group.setDeletedDate(null);
+            group.setDeletedBy(null);
             return true;
         }
         return false;

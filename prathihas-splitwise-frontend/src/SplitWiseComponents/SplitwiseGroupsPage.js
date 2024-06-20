@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import styles from './SplitwiseGroupsPage.module.css';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SplitwiseGroupsPage = () => {
     const [allGroups, setGroups] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showCreateGroupForm, setShowCreateGroupForm] = useState(false);
-    const [groupName, setGroupName] = useState('');
-    const [groupDescription, setGroupDescription] = useState('');
-    const [showSettledGroups, setShowSettledGroups] = useState(false);
-    const [showDeletedGroups, setShowDeletedGroups] = useState(false);
+    
+    const [connectionError, setConnectionError] = useState('');
+    
 
     const [activeSection, setActiveSection] = useState(null);
 
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchGroups = async () => {
             const token = sessionStorage.getItem('token');
+            setError('');
+            setConnectionError('');
             try {
                 const response = await fetch('http://localhost:8080/splitwise/groups', {
                     method: 'POST',  // Consider changing to GET if no specific data needs to be sent
@@ -26,59 +28,32 @@ const SplitwiseGroupsPage = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                });
+                });   
 
                 if (!response.ok) {
-                    console.log(response);
-                    throw new Error('Something went wrong!');
+                    const data = await response.text();
+                    throw new Error(data);
                 }
 
                 const data = await response.json();
-                console.log("data", data);
+                
                 setGroups(data);
                 setIsLoading(false);
             } catch (error) {
-                setError(error.message);
                 setIsLoading(false);
+                if (error instanceof TypeError) {
+                    setConnectionError("Unable to connect to the server. Please try again later.");
+                } else {
+                    setError(error.message);
+                }
             }
         };
 
         fetchGroups();
     }, []);
 
-    const handleToggleCreateGroup = () => {
-        setShowCreateGroupForm(!showCreateGroupForm);
-    };
-
-    const handleCreateGroup = async (event) => {
-        event.preventDefault();
-        const token = sessionStorage.getItem('token');
-        try {
-            const response = await fetch("http://localhost:8080/splitwise/creategroup", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ groupName, groupDescription })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create group');
-            }
-
-            const data = await response.json(); // Assuming it includes some kind of id or confirmation
-            alert("Group created successfully");
-            setShowCreateGroupForm(false);
-            setGroupName('');
-            setGroupDescription('');
-            setGroups([...allGroups, data]); // Optionally add the new group to the list without re-fetching
-        } catch (error) {
-            setError(error.message);
-        }
-    };
-
-    const handleRestoreGroup = async (groupId) => {
+    const handleRestoreGroup = async (groupId, groupName) => {
+        try{
         const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/restore`, {
             method: 'PUT',
             headers: {
@@ -88,9 +63,10 @@ const SplitwiseGroupsPage = () => {
         });
     
         if (!response.ok) {
-            alert('Failed to restore group');
+            const data = await response.text();
+            throw new Error(data);
         } else {
-            alert('Group restored successfully');
+            toast.success(`Group ${groupName} restored successfully`);
             setGroups(allGroups.map(group => {
                 if (group.id === groupId) {
                     return { ...group, deleted: false };
@@ -98,53 +74,43 @@ const SplitwiseGroupsPage = () => {
                 return group;
             }));
         }
+        }catch (error) {
+            if (error instanceof TypeError) {
+                setConnectionError("Unable to connect to the server. Please try again later.");
+            }
+            else{
+                toast.error('Failed to restore group due to an error');
+            }
+        }
     };
     
     const toggleSection = (section) => {
         setActiveSection(prevSection => prevSection === section ? null : section);
     }
 
+    const handleCreateGroup = () => {
+        navigate("/splitwise/groups/creategroup");
+    }
+
     const isLoggedIn = sessionStorage.getItem('token');
 
-    if (showCreateGroupForm) {
+    if (connectionError) {
         return (
-            <div className={styles.container}>
-                <form onSubmit={handleCreateGroup} className={styles.form}>
-                    <div>
-                        <label htmlFor="groupName" className={styles.formLabel}>Group Name:</label>
-                        <input
-                            id="groupName"
-                            type="text"
-                            value={groupName}
-                            onChange={(e) => setGroupName(e.target.value)}
-                            className={styles.formInput}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="groupDescription" className={styles.formLabel}>Group Description:</label>
-                        <textarea
-                            id="groupDescription"
-                            value={groupDescription}
-                            onChange={(e) => setGroupDescription(e.target.value)}
-                            className={styles.formTextArea}
-                        />
-                    </div>
-                    <button type="submit" className={styles.button}>Submit</button>
-                    <button type="button" className={styles.button} onClick={handleToggleCreateGroup}>Cancel</button>
-                </form>
-            </div>
+          <div className={styles.errorMessage}>{connectionError}</div>
         );
     }
 
+    if(isLoading){
+        return (<div>Loading...</div>);
+    }
 
     return (
         <div className={styles.container}>
             <NavLink to="/splitwise/logout" className={styles.topRightLink}>Logout</NavLink>
             {isLoading && <p>Loading...</p>}
-            {error && <p>Error: {error}</p>}
-            <button onClick={handleToggleCreateGroup} className={`${styles.button} ${styles.topLeftButton} ${showCreateGroupForm ? styles.buttonCancel : ''}`}>
-                {showCreateGroupForm ? 'Cancel Creation' : 'Create Group'}
+            {error && <div>{error}</div>}
+            <button to="/splitwise/groups/creategroup" onClick={handleCreateGroup} className={`${styles.button} ${styles.topLeftButton}`}>
+                Create Group
             </button>
             <h2 className={styles.activeGroupsHeader}>Active Groups</h2>
             <ul className={styles.activeGroupList}>
@@ -189,11 +155,12 @@ const SplitwiseGroupsPage = () => {
                     {allGroups.filter(group => group.deleted && group.removedDate === null).map(group => (
                         <li key={group.id} className={`${styles.groupItem} ${styles.groupItemDeleted}`}>
                             {group.groupName} - {group.groupDescription}
-                            <button onClick={() => handleRestoreGroup(group.id)} className={styles.button}>Restore</button>
+                            <button onClick={() => handleRestoreGroup(group.id, group.groupName)} className={styles.button}>Restore</button>
                         </li>
                     ))}
                 </ul>
             )}
+            <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </div>
     );
     

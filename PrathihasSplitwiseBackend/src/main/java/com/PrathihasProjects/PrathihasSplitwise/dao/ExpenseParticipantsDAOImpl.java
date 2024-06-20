@@ -62,7 +62,7 @@ public class ExpenseParticipantsDAOImpl implements ExpenseParticipantsDAO {
 
     @Override
     @Transactional
-    public void updateExpenseParticipants(ExpenseParticipants participants) {
-        entityManager.merge(participants);
+    public void updateExpenseParticipants(ExpenseParticipants participant) {
+        entityManager.merge(participant);
     }
 }

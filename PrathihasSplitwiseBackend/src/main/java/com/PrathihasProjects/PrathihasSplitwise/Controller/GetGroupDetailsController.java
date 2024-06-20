@@ -74,7 +74,7 @@ public class GetGroupDetailsController {
                 expenseDetails.put("expenseName", expense.getExpenseName());
                 expenseDetails.put("dateCreated", expense.getDateCreated());
                 expenseDetails.put("amount", expense.getAmount());
-                expenseDetails.put("addedBy", expense.getAddedBy());
+                expenseDetails.put("addedBy", expense.getAddedBy().getUsername());
                 expenseDetails.put("deleted", expense.isDeleted());
                 expenseDetails.put("isPayment", expense.isPayment());
 
@@ -151,7 +151,38 @@ public class GetGroupDetailsController {
 
             //GroupMembers gmDetails = GroupMembersDAO.getDetails(groupId, username);
 
-            response.put("group", group);
+            Map<String, Object> groupDetails = new HashMap<>();
+            groupDetails.put("id", group.getId());
+            groupDetails.put("groupName", group.getGroupName());
+            groupDetails.put("dateCreated", group.getDateCreated());
+            groupDetails.put("deleted", group.isDeleted());
+            groupDetails.put("createdBy", group.getCreatedBy().getUsername());
+            groupDetails.put("groupDescription", group.getGroupDescription());
+            groupDetails.put("settledUp", group.isSettledUp());
+
+            if(group.isDeleted())
+            {
+                groupDetails.put("deletedBy", group.getDeletedBy().getUsername());
+                groupDetails.put("deletedDate", group.getDeletedDate());
+            }
+            else
+            {
+                groupDetails.put("deletedBy",null);
+                groupDetails.put("deletedDate", null);
+            }
+
+            if(group.isSettledUp())
+            {
+                groupDetails.put("settledBy", group.getSettledBy().getUsername());
+                groupDetails.put("settledDate", group.getSettledDate());
+            }
+            else
+            {
+                groupDetails.put("settledBy", null);
+                groupDetails.put("settledDate", null);
+            }
+
+            response.put("group", groupDetails);
             response.put("gmDetails", gmDetails);
             response.put("members", members);
             response.put("detailedExpenses", detailedExpenses);
@@ -159,6 +190,7 @@ public class GetGroupDetailsController {
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }

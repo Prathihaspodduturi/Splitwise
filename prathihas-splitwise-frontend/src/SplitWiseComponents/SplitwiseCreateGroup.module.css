@@ -1,0 +1,81 @@
+.successMessage {
+    color: green;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid green;
+    border-radius: 5px;
+    background-color: #e0f7e9;
+    text-align: center;
+}
+
+.container {
+    padding: 20px;
+    background-color: #f4f4f4;
+    font-family: 'Arial', sans-serif;
+    position: relative;
+    min-height: 100vh;
+}
+
+.formInput,
+.formTextArea {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 5px;
+    width: auto;
+    min-width: 120px;
+    max-width: 200px;
+}
+
+.button:hover {
+    background-color: #45a049;
+}
+
+.buttonCancel {
+    background-color: red;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 5px;
+    width: auto;
+    min-width: 120px;
+    max-width: 200px;
+}
+
+.buttonCancel:hover {
+    background-color: #f44336;
+}
+
+.form {
+    margin-top: 10px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.formLabel {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+

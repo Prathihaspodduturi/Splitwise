@@ -67,6 +67,9 @@ public class GetExpenseDetailsController {
                 expenseDetails.put("deletedBy", expense.getDeletedBy().getUsername());
                 expenseDetails.put("deletedDate", expense.getDeletedDate());
             }
+            else {
+                expenseDetails.put("isDeleted", false);
+            }
             // Fetch participants and amounts involved
             List<ExpenseParticipants> participants = expenseParticipantsDAO.findByExpenseId(expenseId);
             List<Map<String, Object>> participantDetails = participants.stream().map(participant -> {
@@ -85,7 +88,12 @@ public class GetExpenseDetailsController {
             }).collect(Collectors.toList());
 
             expenseDetails.put("participants", participantDetails);
-            expenseDetails.put("gmDetails", gmDetails);
+
+            if(gmDetails.getRemovedBy() != null)
+                expenseDetails.put("gmRemovedDate", gmDetails.getRemovedDate());
+            else {
+                expenseDetails.put("gmRemovedDate", null);
+            }
 
             return ResponseEntity.ok(expenseDetails);
         } catch (Exception e) {

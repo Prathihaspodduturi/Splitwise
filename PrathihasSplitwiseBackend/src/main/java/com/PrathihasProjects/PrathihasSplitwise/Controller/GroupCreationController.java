@@ -61,6 +61,8 @@ public class GroupCreationController {
             groupMember.setGroup(newGroup);
             groupMember.setUser(user);
             groupMember.setId(new GroupMembersId(newGroup.getId(), user.getUsername()));
+            groupMember.setAddedBy(user);
+            groupMember.setAddedDate(new Date());
 
             groupMembersDAO.save(groupMember);
 

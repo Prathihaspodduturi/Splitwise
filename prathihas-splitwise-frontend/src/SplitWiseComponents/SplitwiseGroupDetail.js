@@ -4,6 +4,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { FaEdit } from 'react-icons/fa'; // Import the edit icon from a library
 import { useParams, useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import styles from './SplitwiseGroupDetail.module.css';
 
 
@@ -47,6 +49,7 @@ const SplitwiseGroupDetail = () => {
     const [userTotalExpenses, setUserTotalExpenses] = useState(0);
     const [paidAmount, setPaidAmount] = useState(0);
     const [showEditOptions, setShowEditOptions] = useState(false);
+    const [connectionError, setConnectionError] = useState('');
 
     const [showModal, setShowModal] = useState(false);
     const [blurBackground, setBlurBackground] = useState(false);
@@ -58,6 +61,8 @@ const SplitwiseGroupDetail = () => {
 
 
     const fetchGroupDetails = useCallback(async () => {
+        setError('');
+        setConnectionError('');
         try {
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}`, {
                 method: 'GET',
@@ -68,11 +73,12 @@ const SplitwiseGroupDetail = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch group details');
+                const data = await response.text();
+                throw new Error(data);
             }
 
             const data = await response.json();
-            console.log("memebrs", data.members);
+            //console.log("data", data);
             setMembers(data.members);
             setGroup(data.group);
             setGmDetails(data.gmDetails); 
@@ -92,7 +98,7 @@ const SplitwiseGroupDetail = () => {
             setActiveExpenses(tempActiveExpenses);
             setDeletedExpenses(tempDeletedExpenses);
             setNewGroupName(data.groupName);
-            console.log(data.transactions);
+            //console.log(data.transactions);
             setBalances(data.transactions);
             let groupTotal = 0;
             let userTotal = 0;
@@ -100,7 +106,7 @@ const SplitwiseGroupDetail = () => {
             //const username = sessionStorage.getItem('username'); // Replace "currentUser" with the actual username of the logged-in user
 
             sortedExpenses.forEach(expense => {
-                if(!expense.isPayment)
+                if(!expense.isPayment && !expense.deleted)
                 {
                     groupTotal += parseFloat(expense.amount);
                 }
@@ -119,19 +125,26 @@ const SplitwiseGroupDetail = () => {
             setTotalGroupExpenses(groupTotal);
             setUserTotalExpenses(userTotal);
             setPaidAmount(paidTotal);
-        } catch (error) {
-            setError(error.message);
-        } finally {
             setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            if (error instanceof TypeError) {
+                setConnectionError("Unable to connect to the server. Please try again later.");
+            } else {
+                setError(error.message);
+            }
         }
     }, [groupId]);
 
     useEffect(() => {
+        //console.log("print inside useEffect");
         fetchGroupDetails();
     }, [fetchGroupDetails]);
 
     const handleUpdateGroupName = async (event) => {
         event.preventDefault();
+        setError('');
+        setConnectionError('');
         try {
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/update`, {
                 method: 'PUT',
@@ -146,7 +159,7 @@ const SplitwiseGroupDetail = () => {
                 throw new Error('Failed to update group name');
             }
 
-            alert('Group name updated successfully!');
+            toast.success('Group name updated successfully!');
             const updatedGroup = await response.json();
             setGroup(updatedGroup);
             setNewGroupName(updatedGroup.groupName);
@@ -154,12 +167,18 @@ const SplitwiseGroupDetail = () => {
             setShowExpenses(true);
             setBlurBackground(false);
         } catch (error) {
-            setError(error.message);
+            if (error instanceof TypeError) {
+                setConnectionError("Unable to connect to the server. Please try again later.");
+            } else {
+                toast.error(error.message);
+            }
         }
     };
 
     const handleAddMember = async (event) => {
         event.preventDefault();
+        setError('');
+        setConnectionError('');
         try {
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/addmember`, {
                 method: 'POST',
@@ -170,25 +189,33 @@ const SplitwiseGroupDetail = () => {
                 body: JSON.stringify({ "newUsername" : newUsername })
             });
 
+
             if (!response.ok) {
-                throw new Error('Failed to add member');
+                const data = await response.json();
+                throw new Error(data);
             }
 
-            alert('Member added successfully!');
+            toast.success('Member added successfully!');
             const data = await response.json();
             setMembers(data);
             
             setNewUsername('');
             setShowAddMemberForm(false);
             fetchGroupDetails(); 
-            console.log(members);
+            //console.log(members);
         } catch (error) {
-            setError(error.message);
+            if (error instanceof TypeError) {
+                setConnectionError("Unable to connect to the server. Please try again later.");
+            } else {
+                toast.error(error.message);
+            }
         }
     };
 
     const handleSettleGroup = async () => {
 
+        setError('');
+        setConnectionError('');
         const hasOutstandingBalances = balances.some(balance => balance.amount !== 0);
 
         if (hasOutstandingBalances) {
@@ -213,7 +240,11 @@ const SplitwiseGroupDetail = () => {
                 alert('Group settled successfully!');
                 navigate('/splitwise/groups');
             } catch (error) {
-                setError(error.message);
+                if (error instanceof TypeError) {
+                    setConnectionError("Unable to connect to the server. Please try again later.");
+                } else {
+                    setError(error.message);
+                }
             }
         }
     };
@@ -221,6 +252,8 @@ const SplitwiseGroupDetail = () => {
 
     const handleDeleteGroup = async () => {
         if (window.confirm('Are you sure you want to delete this group?')) {
+            setError('');
+            setConnectionError('');
             try {
                 const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/delete`, {
                     method: 'PUT',
@@ -237,7 +270,11 @@ const SplitwiseGroupDetail = () => {
                 alert('Group deleted successfully!');
                 navigate('/splitwise/groups');
             } catch (error) {
-                setError(error.message);
+                if (error instanceof TypeError) {
+                    setConnectionError("Unable to connect to the server. Please try again later.");
+                } else {
+                    setError(error.message);
+                }
             }
         }
     };
@@ -247,7 +284,7 @@ const SplitwiseGroupDetail = () => {
 
         if(payers.size === 0)
         {
-            alert("No Payers selected");
+           toast.error("No Payers selected");
             return;
         }
 
@@ -260,7 +297,7 @@ const SplitwiseGroupDetail = () => {
         }
 
         if (!hasParticipants) {
-            alert("No Participants selected. Please select at least one participant.");
+            toast.error("No Participants selected. Please select at least one participant.");
             return;
         }
 
@@ -272,7 +309,7 @@ const SplitwiseGroupDetail = () => {
         const totalExpense = parseFloat(newExpenseAmount);
 
         if (totalContributions !== totalExpense) {
-            alert("The sum of all contributions must equal the total expense amount.");
+            toast.error("The sum of all contributions must equal the total expense amount.");
             return;  
         }
 
@@ -288,6 +325,8 @@ const SplitwiseGroupDetail = () => {
             "isPayment" : false
         };
 
+        setError('');
+        setConnectionError('');
         try{
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/addExpense`, {
                 method: 'POST',
@@ -299,15 +338,16 @@ const SplitwiseGroupDetail = () => {
             });
 
             if(!response.ok){
-                throw new Error("Failed to add expense");
+                const data = response.text();
+                throw new Error(data);
             }
 
             const newExpense = await response.json();
-            console.log("newExpense", newExpense);
+            //console.log("newExpense", newExpense);
             const updatedExpenses = [...expenses, newExpense];
             setExpenses(updatedExpenses);
 
-            alert('Expense added successfully!');
+            toast.success('Expense added successfully!');
 
             setNewExpenseName('');
             setNewExpenseAmount('');
@@ -320,7 +360,11 @@ const SplitwiseGroupDetail = () => {
         }
         catch(error)
         {
-            setError(error.message);
+            if (error instanceof TypeError) {
+                setConnectionError("Unable to connect to the server. Please try again later.");
+            } else {
+                toast.error(error.message);
+            }
         }
     }
 
@@ -336,6 +380,8 @@ const SplitwiseGroupDetail = () => {
         };
     
         try {
+            setError('');
+            setConnectionError('');
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/addExpense`, {
                 method: 'POST',
                 headers: {
@@ -350,20 +396,26 @@ const SplitwiseGroupDetail = () => {
             }
     
             const newExpense = await response.json();
-            console.log("Payment recorded as expense", newExpense);
+            //console.log("Payment recorded as expense", newExpense);
             alert('Payment recorded successfully!');
     
             setShowPaymentModal(false);
             // Refresh data after payment
             fetchGroupDetails();
         } catch (error) {
-            console.error("Error recording payment:", error);
-            setError(error.message);
+            if (error instanceof TypeError) {
+                setConnectionError("Unable to connect to the server. Please try again later.");
+            } else {
+                setError(error.message);
+            }
         }
     };
 
 
     const handleRemoveMember = async (memberUsername) => {
+
+        setError('');
+        setConnectionError('');
 
         const netBalance = balances.reduce((acc, balance) => {
             if (balance.fromUser === memberUsername) {
@@ -405,8 +457,11 @@ const SplitwiseGroupDetail = () => {
                 // Re-fetch the group details to update the list of members
                 fetchGroupDetails();
             } catch (error) {
-                console.error('Failed to remove member:', error);
-                setError(error.message);
+                if (error instanceof TypeError) {
+                    setConnectionError("Unable to connect to the server. Please try again later.");
+                } else {
+                    setError(error.message);
+                }
             }
         }
     };
@@ -490,8 +545,8 @@ const SplitwiseGroupDetail = () => {
     
     const toggleTotalExpenses = () => {
 
-        console.log("totalExpense", totalGroupExpenses);
-        console.log("userExpenses", userTotalExpenses);
+        //console.log("totalExpense", totalGroupExpenses);
+        //console.log("userExpenses", userTotalExpenses);
 
         setShowTotalExpenses(true);
 
@@ -502,7 +557,7 @@ const SplitwiseGroupDetail = () => {
         setShowDeletedExpenses(false);
         setShowGroupMembers(false);
         setShowEditOptions(false);
-        console.log("showTotalExpenses", showTotalExpenses);
+        //console.log("showTotalExpenses", showTotalExpenses);
     }
 
     const toggleUpdateForm = () => {
@@ -529,17 +584,20 @@ const SplitwiseGroupDetail = () => {
     const cancelUpdatingGroupName = () => {
         setShowUpdateForm(false);
         setShowEditOptions(true);
+        setShowExpenses(true);
     }
 
     const cancelShowEditOptions = () => {
         setShowEditOptions(false);
         setBlurBackground(false);
+        setShowExpenses(true);
     }    
     
     const togglePayers = () => {
         setShowPayers(!showPayers);
         setShowParticipants(false);
     }
+
     const toggleParticipants = () => 
     {
         setShowParticipants(!showParticipants);
@@ -548,8 +606,6 @@ const SplitwiseGroupDetail = () => {
 
     const togglePayerModal = () => {
         setShowPayers(!showPayers);
-        //setBlurBackground(true); // Ensure background is blurred
-         // Show payer modal
         setShowParticipants(false); // Hide participants modal
     };
 
@@ -573,10 +629,15 @@ const SplitwiseGroupDetail = () => {
     };
     
 
-
+    if (connectionError) {
+        return (
+          <div className={styles.errorMessage}>{connectionError}</div>
+        );
+    }
 
     if (isLoading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
+
+    if (error) return <p>{error}</p>;
 
 
     if(showUpdateForm)
@@ -584,17 +645,18 @@ const SplitwiseGroupDetail = () => {
         return (
             <div>
                 {showUpdateForm && (
-                    <form onSubmit={handleUpdateGroupName} className='form-container'>
-                        <label htmlFor="newGroupName">New Name:</label>
+                    <form onSubmit={handleUpdateGroupName} className={styles.updateForm}>
+                        <label className={styles.updateFormLabel} htmlFor="newGroupName">New Name:</label>
                         <input
                             type="text"
                             value={newGroupName}
-                            onChange={(e) => setNewGroupName(e.target.value)}
+                            onChange={(e) => setNewGroupName(e.target.value)} required
+                            className={styles.updateFormInput}
                         />
-                        <div className="button-group">
-                        <button type="submit">Submit</button>
-                        <button type="button" onClick={cancelUpdatingGroupName}>Cancel</button>
-                        </div>
+                        <div className={styles.updateFormButtonGroup}>
+                            <button className={styles.updateFormConfirmButton} type="submit">Submit</button>
+                            <button className={styles.updateFormCancelButton} type="button" onClick={cancelUpdatingGroupName}>Cancel</button>
+                        </div>   
                     </form>
                 )}
             </div>
@@ -634,9 +696,10 @@ const SplitwiseGroupDetail = () => {
                                     <div>
                                         {members.map(member => (
                                             <div key={member.username} className={styles.inputGroup}>
-                                                <label>{member.username}</label>
+                                                <label htmlFor={member.username}>{member.username}</label>
                                                 <input
                                                     type="number"
+                                                    id={member.username}
                                                     value={payers.get(member.username) || ''}
                                                     onChange={e => setPayers(new Map(payers.set(member.username, e.target.value)))}
                                                 />
@@ -658,9 +721,10 @@ const SplitwiseGroupDetail = () => {
                                     <div>
                                         {members.map(member => (
                                             <div key={member.username} className={styles.inputGroup}>
-                                                <label>{member.username}</label>
+                                                <label htmlFor={member.username}>{member.username}</label>
                                                 <input
                                                     type="checkbox"
+                                                    id={member.username}
                                                     checked={!!participants.get(member.username)}
                                                     onChange={e => setParticipants(new Map(participants.set(member.username, e.target.checked)))}
                                                 />
@@ -706,20 +770,23 @@ const SplitwiseGroupDetail = () => {
         );
     }
     
-    
-
     return (
         <div>
 
     <div className={`${styles.appContainer} ${blurBackground ? styles.blurred : ''}`}>
                 <NavLink to="/splitwise/logout" className={styles.logoutLink}>Logout</NavLink>
-
                 <div className={styles.groupNameContainer}>
-                    <h2>{group.groupName}</h2>
+                    <h2>{group.groupName} {gmDetails.removedBy === null && <FaEdit className={styles.editIcon} onClick={toggleEditIconForm} />}</h2>
                     {gmDetails.removedBy !== null && gmDetails.removedDate !== null ? (
-                        <p className={styles.groupStatusRemoval}>
-                            You were removed by {gmDetails.removedBy} on {new Date(gmDetails.removedDate).toLocaleDateString()}
-                        </p>
+                        gmDetails.removedBy === currentUser ? (
+                            <p className={styles.groupStatusRemoval}>
+                                You left the group on {new Date(gmDetails.removedDate).toLocaleDateString()}
+                            </p>
+                        ) : (
+                            <p className={styles.groupStatusRemoval}>
+                                You were removed by {gmDetails.removedBy} on {new Date(gmDetails.removedDate).toLocaleDateString()}
+                            </p>
+                        )
                     ) : group.settledUp ? (
                         <p className={styles.groupStatusSettledUp}>Group was settled by {group.settledBy} on {new Date(group.settledDate).toLocaleDateString()}</p>
                     ) : null}
@@ -730,10 +797,10 @@ const SplitwiseGroupDetail = () => {
                         Expenses
                     </div>
                     <div onClick={toggleBalances} className={styles.optionLink}>
-                        {'Balances'}
+                        Balances
                     </div>
                     <div onClick={toggleDeletedExpenses} className={styles.optionLink}>
-                        {'Deleted Expenses'}
+                        Deleted Expenses
                     </div>
                     <div onClick={toggleMembers} className={styles.optionLink}>
                         Members
@@ -796,7 +863,7 @@ const SplitwiseGroupDetail = () => {
                 
                 {showDeletedExpenses && (
                     <div className={styles.deletedExpensesContainer}>
-                        <h3>Deleted Expenses</h3>
+                        <h3>All Deleted Expenses</h3>
                         {deletedExpenses.length > 0 ? (
                             <ul>
                             {deletedExpenses.map((expense, index) => (
@@ -864,7 +931,7 @@ const SplitwiseGroupDetail = () => {
                 
                 {showBalances && !isLoading && (
                 <div className={styles.listBalancesContainer}>
-                <h3>Balances</h3>
+                <h3>All Balances</h3>
                 {balances.length > 0 ? (
                     <ul>
                         {balances.map((balance, index) => (
@@ -920,7 +987,6 @@ const SplitwiseGroupDetail = () => {
                 </div>
                 )
             }
-
         </div>
         
     );
@@ -928,44 +994,3 @@ const SplitwiseGroupDetail = () => {
 
 export default SplitwiseGroupDetail;
 
-/*
-
-{showGroupMembers && (
-                    <div className={styles.membersContainer}>
-                        <h3>Group Members</h3>
-                        <ul>
-                            {members.map(member => (
-                                <li key={member.username} className={styles.membersItem}>
-                                    <span className={styles.username}>{member.username}</span>
-                                    {!group.settledUp && (
-                                        currentUser === member.username ? 
-                                            <button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>Leave Group</button>
-                                            :
-                                            <button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>
-                                                Remove
-                                            </button>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                        {group.settledUp && <div onClick={toggleAddMemberForm} className={styles.addMemberButton} >
-                        {showAddMemberForm ? 'Hide Add Member Form' : 'Add Member'}
-                        </div> }
-                        {showAddMemberForm && (
-                            <form onSubmit={handleAddMember} className={styles.addMemberForm}>
-                                <input
-                                    type="username"
-                                    placeholder="Username"
-                                    value={newUsername}
-                                    onChange={(e) => setNewUsername(e.target.value)} required
-                                    className={styles.addMemberFormInput}
-                                />
-                                <div className={styles.addMemberFormButtonGroup}>
-                                    <button type="submit" className={styles.addMemberFormButton}>Add</button>
-                                    <button type="button" onClick={() => setShowAddMemberForm(false)} className={styles.addMemberFormButton}>Cancel</button>
-                                </div>
-                            </form>
-                        )}
-                    </div>
-                )}
-*/

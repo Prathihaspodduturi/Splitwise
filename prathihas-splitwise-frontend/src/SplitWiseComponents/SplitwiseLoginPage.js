@@ -2,7 +2,6 @@ import React from "react";
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SplitwiseHomePage from "./SplitwiseHomePage";
 import styles from './SplitwiseLoginPage.module.css';
 
 const SplitwiseLoginPage  = () => {
@@ -13,7 +12,7 @@ const SplitwiseLoginPage  = () => {
     const token = sessionStorage.getItem('token'); 
 
     if(token) {
-      navigate('/splitwise/');
+      navigate('/splitwise/groups');
     }
   }, []);
     
@@ -29,6 +28,7 @@ const SplitwiseLoginPage  = () => {
     {
         e.preventDefault();
         setIsSubmiitted(true);
+        setConnectionError('');
           try{
   
           const response = await fetch("http://localhost:8080/splitwise/login", {
@@ -49,20 +49,15 @@ const SplitwiseLoginPage  = () => {
           sessionStorage.setItem('username', username);
           //sessionStorage.setItem('LoggedIn', true);
           //console.log("token is"+sessionStorage.getItem('token'));
-          navigate('/splitwise/');
+          navigate('/splitwise/groups');
           
           setError('');
         }
         catch(error)
         {
-          //console.log(error.name);
-          //console.log(error.message);
           if (error.name === "TypeError" || error.message === "Failed to fetch") {
-            //console.log("inside");
             setConnectionError("Unable to connect to the server. Please try again later.");
-            //console.log(connectionError);
         } else {
-            // Handle other errors
             setIsSubmiitted(false);
             setError(error.message);
           }
@@ -70,9 +65,14 @@ const SplitwiseLoginPage  = () => {
         setIsSubmiitted(false);
     }
 
-
     const handleSignUpReDirect = () => {
       navigate('/splitwise/signup');
+    }
+
+    if (connectionError) {
+      return (
+        <div className={styles.errorMessage}>{connectionError}</div>
+      );
     }
 
     return (
@@ -84,21 +84,19 @@ const SplitwiseLoginPage  = () => {
                   <h1>Please login to your account</h1>
                   <form onSubmit={handleSubmit}>
                       <div className={styles.formGroup}>
-                          <label htmlFor="username" className={styles.label}>Username</label>
+                          <label htmlFor="username" className={styles.label}>Username:</label>
                           <input type="text"
                                  id="username"
                                  value={username}
-                                 onChange={(e) => setUsername(e.target.value)}
-                                 required
+                                 onChange={(e) => setUsername(e.target.value)} required
                                  className={styles.input} />
                       </div>
                       <div className={styles.formGroup}>
-                          <label htmlFor="password" className={styles.label}>Password</label>
+                          <label htmlFor="password" className={styles.label}>Password:</label>
                           <input type="password"
                                  id="password"
                                  value={password}
-                                 onChange={(e) => setPassword(e.target.value)}
-                                 required
+                                 onChange={(e) => setPassword(e.target.value)} required
                                  className={styles.input} />
                       </div>
                       <button type="submit" className={styles.button}>Log In</button>

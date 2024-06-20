@@ -87,6 +87,7 @@ public class AddExpenseController {
                         if (existingParticipant != null) {
                             // Update owed amount if already a payer
                             existingParticipant.setAmountOwed(amountOwed);
+                            expenseParticipantsDAO.updateExpenseParticipants(existingParticipant);
                         } else {
                             // If not already a payer, create new record
                             ExpenseParticipants newParticipant = new ExpenseParticipants(expense, participant, amountOwed, BigDecimal.ZERO);

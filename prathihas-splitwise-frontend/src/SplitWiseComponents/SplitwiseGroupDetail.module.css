@@ -157,14 +157,6 @@ button:hover {
     color: #333;
 }
 
-.updateForm {
-    padding: 20px;
-    background: white;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-top: 10px;
-}
-
 /* Navigation link styling */
 .navLink, .NavLink {
     color: #0d47a1;
@@ -186,12 +178,6 @@ button:hover {
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-
-.updateForm input[type="text"], .updateForm input[type="number"] {
-    width: calc(100% - 22px);  /* Full width minus padding and border */
-}
-
-
 
 /* Expenses section container styling */
 .expensesSection {
@@ -871,3 +857,69 @@ button:hover {
     margin: 10px 0; 
     border-radius: 4px; 
 }
+
+.updateForm {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    width: 80%; /* Adjust as needed */
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Adds space between elements */
+   
+}
+
+.updateFormLabel {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.updateFormInput[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    width: 100%; /* Full width */
+    margin-bottom: 10px; /* Space below input */
+}
+
+.updateFormButtongroup {
+    display: flex;
+    justify-content: space-between; /* Distributes space between buttons */
+    gap: 10px; /* Space between buttons */
+}
+
+.updateFormConfirmButton, .updateFormCancelButton {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 5px;
+}
+
+.updateFormConfirmButton {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.updateFormCancelButton {
+    background-color: #f44336;
+    color: white;
+}
+
+.updateFormConfirmButton:hover {
+    background-color: #45a049;
+}
+
+.updateFormCancelButton:hover {
+    background-color: #d32f2f;
+}
+
+/* SplitwiseGroupsPage.module.css */
+
