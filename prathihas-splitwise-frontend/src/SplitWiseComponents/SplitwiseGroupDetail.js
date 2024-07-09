@@ -129,7 +129,7 @@ const SplitwiseGroupDetail = () => {
         } catch (error) {
             setIsLoading(false);
             if (error instanceof TypeError) {
-                setConnectionError("Unable to connect to the server. Please try again later.");
+                setConnectionError("try again later.");
             } else {
                 setError(error.message);
             }
@@ -179,6 +179,9 @@ const SplitwiseGroupDetail = () => {
         event.preventDefault();
         setError('');
         setConnectionError('');
+
+        //console.log("coming here 1");
+
         try {
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/addmember`, {
                 method: 'POST',
@@ -191,21 +194,24 @@ const SplitwiseGroupDetail = () => {
 
 
             if (!response.ok) {
-                const data = await response.json();
+                const data = await response.text();
+                console.log("coming here 2");
                 throw new Error(data);
             }
 
             toast.success('Member added successfully!');
+            //toast.success('Member added successfully!');
+            setConnectionError("Member added successfully!");
             const data = await response.json();
             setMembers(data);
             
             setNewUsername('');
             setShowAddMemberForm(false);
-            fetchGroupDetails(); 
+            //fetchGroupDetails(); 
             //console.log(members);
         } catch (error) {
             if (error instanceof TypeError) {
-                setConnectionError("Unable to connect to the server. Please try again later.");
+                setConnectionError("Please try again later.");
             } else {
                 toast.error(error.message);
             }
@@ -349,13 +355,23 @@ const SplitwiseGroupDetail = () => {
 
             toast.success('Expense added successfully!');
 
-            setNewExpenseName('');
-            setNewExpenseAmount('');
-            setPayers(new Map());
-            setParticipants(new Map());
-            setShowAddExpenseForm(false);
-            fetchGroupDetails();
-            setShowExpenses(true);
+            setTimeout(() => {
+                setNewExpenseName('');
+                setNewExpenseAmount('');
+                setPayers(new Map());
+                setParticipants(new Map());
+                setShowAddExpenseForm(false);
+                fetchGroupDetails();
+                setShowExpenses(true);
+            }, 2000); 
+
+            // setNewExpenseName('');
+            // setNewExpenseAmount('');
+            // setPayers(new Map());
+            // setParticipants(new Map());
+            // setShowAddExpenseForm(false);
+            // fetchGroupDetails();
+            // setShowExpenses(true);
             //console.log("addexpense" + expenses);
         }
         catch(error)
@@ -659,6 +675,7 @@ const SplitwiseGroupDetail = () => {
                         </div>   
                     </form>
                 )}
+                <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
             </div>
         ); 
     }
@@ -744,7 +761,9 @@ const SplitwiseGroupDetail = () => {
                         </form>
                     </div>
                 )}
+            <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
             </div>
+            
         );
     }
 
@@ -766,6 +785,7 @@ const SplitwiseGroupDetail = () => {
                     <button onClick={() => handlePayment(selectedBalance)} className={styles.paymentConfirmButton}>Confirm Payment</button>
                     <button onClick={closePaymentModal} className={styles.paymentCancelButton}>Cancel</button>
                 </div>
+                <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
             </div>
         );
     }
@@ -987,10 +1007,10 @@ const SplitwiseGroupDetail = () => {
                 </div>
                 )
             }
+            <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </div>
         
     );
 }   
 
 export default SplitwiseGroupDetail;
-

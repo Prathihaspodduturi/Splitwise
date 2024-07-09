@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor} from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter,  MemoryRouter, Route, Routes } from 'react-router-dom';
 import SplitwiseGroupDetail from '../SplitWiseComponents/SplitwiseGroupDetail';
 
 const mockNavigate = jest.fn();
@@ -26,79 +26,93 @@ beforeEach(() => {
     sessionStorage.clear();
     fetch.mockClear();
     mockNavigate.mockClear();
+    jest.useFakeTimers();
 });
 
-describe('Testing SplitwiseCreateGroup', () => {
+afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();  // Reset to real timers
+});
 
-    const mockData = {
-        detailedExpenses : [
-            {
-                amount : 1000, 
-                dateCreated: new Date().toISOString(), 
-                deleted: false, 
-                expenseName: "miami", 
-                id: 1, 
-                involved : -333, 
-                isPayment: false, 
-                addedBy : "test"
-            },
-            {
-                amount : 500, 
-                dateCreated: new Date().toISOString(), 
-                deleted: true, 
-                expenseName: "tampa", 
-                id: 2, 
-                involved : 100, 
-                isPayment: false, 
-                addedBy : "test"
-            }
-        ],
+const mockDate = new Date();
 
-        gmDetails: {
-            addedBy: "test",
-            addedDate: new Date().toISOString(),
-            groupId: 1,
+const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+    return new Date(date).toLocaleDateString('en-US', options);
+  };
+
+
+
+  const mockData = {
+    detailedExpenses : [
+        {
+            amount : 1000, 
+            dateCreated: new Date().toISOString(), 
+            deleted: false, 
+            expenseName: "miami", 
+            id: 1, 
+            involved : -333, 
+            isPayment: false, 
+            addedBy : "test"
+        },
+        {
+            amount : 500, 
+            dateCreated: new Date().toISOString(), 
+            deleted: true, 
+            expenseName: "tampa", 
+            id: 2, 
+            involved : 100, 
+            isPayment: false, 
+            addedBy : "test"
+        }
+    ],
+
+    gmDetails: {
+        addedBy: "test",
+        addedDate: new Date().toISOString(),
+        groupId: 1,
+        removedBy: null,
+        removedDate: null,
+        username: "test"
+    },
+
+    group: {
+        createdBy: "test",
+        dateCreated: new Date().toISOString(),
+        deleted: false,
+        deletedBy: null,
+        deletedDate: null,
+        groupDescription: "testgroup",
+        groupName: "testGroup",
+        id: 1,
+        settledBy: null,
+        settledDate: null,
+        settledUp: false
+    },
+
+    members:[
+        {
             removedBy: null,
             removedDate: null,
             username: "test"
         },
+        {
+            removedBy: null,
+            removedDate: null,
+            username: "chikku"
+        }
+    ],
 
-        group: {
-            createdBy: "test",
-            dateCreated: new Date().toISOString(),
-            deleted: false,
-            deletedBy: null,
-            deletedDate: null,
-            groupDescription: "testgroup",
-            groupName: "testGroup",
-            id: 1,
-            settledBy: null,
-            settledDate: null,
-            settledUp: false
-        },
+    transactions: [
+        {
+            amount: 33,
+            fromUser: "test",
+            toUser: "chikku"
+        }
+    ]
+}
 
-        members:[
-            {
-                removedBy: null,
-                removedDate: null,
-                username: "test"
-            },
-            {
-                removedBy: null,
-                removedDate: null,
-                username: "chikku"
-            }
-        ],
-
-        transactions: [
-            {
-                amount: 33,
-                fromUser: "test",
-                toUser: "chikku"
-            }
-        ]
-    }
-
+describe('Testing SplitwiseCreateGroup', () => {
 
     test('renders the group detail page', async () => {
         render(
@@ -140,136 +154,88 @@ describe('Testing SplitwiseCreateGroup', () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByText(/Unable to connect to the server. Please try again later./i)).toBeInTheDocument();
+            expect(screen.getByText(/try again later./i)).toBeInTheDocument();
         });
     });
 
 
-    // test('loading the data to be displayed', async() => {
+    test('loading the data to be displayed', async() => {
 
-    //     sessionStorage.getItem.mockImplementation((key) => {
-    //         if (key === 'username') return 'test';
-    //         return null;
-    //     });
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockData, 
+        });
 
-    //     fetch.mockResolvedValueOnce({
-    //         ok: true,
-    //         json: async () => mockData,
-    //     });
+        render(
+            <MemoryRouter initialEntries={['/splitwise/groups/1']}>
+                    <Routes>
+                        <Route path="/splitwise/groups/:groupId" element={<SplitwiseGroupDetail />} />
+                    </Routes>
+            </MemoryRouter>
+        );
 
-    //     render(
-    //         <BrowserRouter>
-    //             <SplitwiseGroupDetail />
-    //         </BrowserRouter>
-    //     );
-
-    //     await waitFor(() => {
+        await waitFor(() => {
             
-    //         expect(screen.getByText("Logout")).toBeInTheDocument();
-    //         expect(screen.getByText("testGroup")).toBeInTheDocument();
-    //         expect(screen.getByText("Expenses")).toBeInTheDocument();
-    //         expect(screen.getByText("Balances")).toBeInTheDocument();
-    //         expect(screen.getByText("Deleted Expenses")).toBeInTheDocument();
-    //         expect(screen.getByText("Members")).toBeInTheDocument();
-    //         expect(screen.getByText("Total Expenses")).toBeInTheDocument();
+            expect(screen.getByText("Logout")).toBeInTheDocument();
+            expect(screen.getByText("testGroup")).toBeInTheDocument();
+            expect(screen.getByText("Expenses")).toBeInTheDocument();
+            expect(screen.getByText("Balances")).toBeInTheDocument();
+            expect(screen.getByText("Deleted Expenses")).toBeInTheDocument();
+            expect(screen.getByText("Members")).toBeInTheDocument();
+            expect(screen.getByText("Total Expenses")).toBeInTheDocument();
+            expect(screen.getByText("Add Expense")).toBeInTheDocument();
+        });
 
-    //         expect(screen.getByText("Add Expense")).toBeInTheDocument();
-    //         expect(screen.getByText("miami")).toBeInTheDocument();
-    //         expect(screen.getByText("$1000.00 - Date: 6/5/2024")).toBeInTheDocument();
-    //         expect(screen.getByText("You owe $333.00")).toBeInTheDocument();
-    //     });
+    });
 
-    //     await waitFor(() => {
-    //         fireEvent.click(screen.getByText("Add Expense"));
-    //     });
+    test('adding member', async() => {
 
-    //     await waitFor(() => {
-    //         expect(screen.getByPlaceholderText("Expense Name")).toBeInTheDocument();
-    //         expect(screen.getByPlaceholderText("Total Amount")).toBeInTheDocument();
-    //         expect(screen.getByText("Add Payers")).toBeInTheDocument();
-    //         expect(screen.getByText("Add Participants")).toBeInTheDocument();
-    //         expect(screen.getByText("Done")).toBeInTheDocument();
-    //         expect(screen.getByText("Cancel")).toBeInTheDocument();
-    //     });
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockData, 
+        });
 
-    //     fireEvent.change(screen.getByPlaceholderText("Expense Name"), { target: { value: 'Test Expense' } });
-    //     fireEvent.change(screen.getByPlaceholderText("Total Amount"), { target: { value: '100' } });
+        render(
+            <MemoryRouter initialEntries={['/splitwise/groups/1']}>
+                    <Routes>
+                        <Route path="/splitwise/groups/:groupId" element={<SplitwiseGroupDetail />} />
+                    </Routes>
+            </MemoryRouter>
+        );
 
-    //     expect(screen.getByPlaceholderText("Expense Name").value).toBe('Test Expense');
-    //     expect(screen.getByPlaceholderText("Total Amount").value).toBe('100');
+        await waitFor(() => {
+            expect(screen.getByText("Members")).toBeInTheDocument();
+        });
 
-    //     fireEvent.click(screen.getByText("Add Payers"));
+        fireEvent.click(screen.getByText("Members"));
 
-    //     await waitFor(() => {
-    //         expect(screen.getByLabelText("test")).toBeInTheDocument();
-    //         expect(screen.getByLabelText("chikku")).toBeInTheDocument();
-    //     });
+        await waitFor(() => {
+            expect(screen.getByText("test")).toBeInTheDocument();
+            expect(screen.getByText("chikku")).toBeInTheDocument();
+        });
 
-    //     fireEvent.change(screen.getByLabelText("test"), { target: { value: '60' } });
-    //     fireEvent.change(screen.getByLabelText("chikku"), { target: { value: '40' } });
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({}), 
+        });
 
-    //     expect(screen.getByLabelText("test").value).toBe('60');
-    //     expect(screen.getByLabelText("chikku").value).toBe('40');
+        fireEvent.click(screen.getByText("Add Member"));
 
-    //     fireEvent.click(screen.getByText("Close"));
+        await waitFor(() => {
+            expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
+            expect(screen.getByText('Add')).toBeInTheDocument();
+            expect(screen.getByText('Cancel')).toBeInTheDocument();
+        });
 
-    //     fireEvent.click(screen.getByText("Add Participants"));
+        const input = screen.getByPlaceholderText('Username');
+        fireEvent.change(input, { target: { value: 'newuser123' } });
 
-    //     await waitFor(() => {
-    //         expect(screen.getByLabelText("test")).toBeInTheDocument();
-    //         expect(screen.getByLabelText("chikku")).toBeInTheDocument();
-    //     });
+        fireEvent.click(screen.getByText("Add"));
 
-    //     fireEvent.click(screen.getByLabelText("test"));
-    //     fireEvent.click(screen.getByLabelText("chikku"));
+        await waitFor(() => {
+            expect(screen.getByText('Member added successfully!')).toBeInTheDocument();
+        });
+    });
 
-    //     // Verify the checkboxes are checked
-    //     expect(screen.getByLabelText("test").checked).toBe(true);
-    //     expect(screen.getByLabelText("chikku").checked).toBe(true);
-
-    //     // Simulate closing participants section
-    //     fireEvent.click(screen.getByText("Close"));
-
-    //     fetch.mockResolvedValueOnce({
-    //         ok: true,
-    //         json: async () => ({ groupId: 3, amount: 100, expenseName: 'Test Expense', involved: -50, isPayment: false })
-    //     });
-
-
-    //     // fireEvent.click(screen.getByText("Done"));
-
-    //     // await waitFor(() => {
-    //     //     expect(screen.getByText("Expense added successfully!")).toBeInTheDocument();
-    //     // });
-
-    //     // fireEvent.click(screen.getByText("Balances"));
-
-    //     // await waitFor(() => {
-    //     //     expect(screen.getByText("test owes $33 to chikku")).toBeInTheDocument();
-    //     //     expect(screen.getByText("Pay")).toBeInTheDocument();
-    //     // });
-
-
-
-    //     // const deletedExpensesDiv = screen.getByText("Deleted Expenses");
-    //     // fireEvent.click(deletedExpensesDiv);
-
-    //     // await waitFor(() => {
-    //     //     expect(screen.getByText("tampa")).toBeInTheDocument();
-    //     //     //expect(screen.getByText(" - $500.00")).toBeInTheDocument();
-    //     //     expect(screen.getByText("You get back $100.00")).toBeInTheDocument();
-    //     // });
-
-    //     // const membersDiv = screen.getByText("Members");
-    //     // fireEvent.click(membersDiv);
-
-    //     // await waitFor(() => {
-    //     //     expect(screen.getByText("test")).toBeInTheDocument();
-    //     //     expect(screen.getByText("Leave Group")).toBeInTheDocument();
-    //     //     expect(screen.getByText("chikku")).toBeInTheDocument();
-    //     //     expect(screen.getByText("Remove")).toBeInTheDocument();
-    //     // });
-
-    // });
 
 });

@@ -10,6 +10,7 @@ import com.PrathihasProjects.PrathihasSplitwise.entity.ExpenseParticipants;
 import com.PrathihasProjects.PrathihasSplitwise.entity.Expenses;
 import com.PrathihasProjects.PrathihasSplitwise.entity.Groups;
 import com.PrathihasProjects.PrathihasSplitwise.entity.User;
+import com.PrathihasProjects.PrathihasSplitwise.services.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin
@@ -37,6 +39,9 @@ public class ExpenseUpdateController {
 
     @Autowired
     private GroupsDAOImpl theGroupsDAOImpl;
+
+    @Autowired
+    private ExpenseService expenseService;
 
     @PutMapping("/splitwise/groups/{groupId}/expenses/{expenseId}/update")
     public ResponseEntity<?> updateExpense(@PathVariable int groupId, @PathVariable int expenseId, @RequestBody ExpenseDTO expenseDTO, Authentication authentication) {
@@ -97,25 +102,37 @@ public class ExpenseUpdateController {
                 ExpenseParticipants participantDB = expenseParticipantsDAO.findParticipant(expense.getId(), participantUsername);
                 BigDecimal amountOwed = isParticipating ? shareAmount : BigDecimal.ZERO;
 
-                if (participantDB != null) {
-                    participantDB.setAmountOwed(amountOwed);
-                    expenseParticipantsDAO.updateExpenseParticipants(participantDB);
+                if(!isParticipating)
+                {
+                    if(participantDB != null)
+                    {
+                        if(participantDB.getAmountpaid().equals(BigDecimal.ZERO))
+                        {
+                            expenseParticipantsDAO.deleteParticipantByExpenseAndUser(expense.getId(), participantUsername);
+                        }
+                    }
+                }
+                else {
+                    if (participantDB != null) {
+                        participantDB.setAmountOwed(amountOwed);
+                        expenseParticipantsDAO.updateExpenseParticipants(participantDB);
 
-                } else {
-                    // Create new participant record if not found
-                    User participantUser = theUserDAOImpl.findUserByName(participantUsername);
-                    ExpenseParticipants newParticipant = new ExpenseParticipants(expense, participantUser, amountOwed, BigDecimal.ZERO);
-                    newParticipant.setId(new ExpenseParticipantsId(expense.getId(), participantUsername));
-                    expenseParticipantsDAO.save(newParticipant);
+                    } else {
+                        // Create new participant record if not found
+                        User participantUser = theUserDAOImpl.findUserByName(participantUsername);
+                        ExpenseParticipants newParticipant = new ExpenseParticipants(expense, participantUser, amountOwed, BigDecimal.ZERO);
+                        newParticipant.setId(new ExpenseParticipantsId(expense.getId(), participantUsername));
+                        expenseParticipantsDAO.save(newParticipant);
+                    }
                 }
             });
 
+            Map<String, Object> expenseDetails = expenseService.getExpenseDetails(expenseId, groupId, username);
+            if (expenseDetails == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Expense not found or has been deleted");
+            }
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Expense updated successfully.");
-            response.put("updatedExpenseId", expense.getId());
-
-            return ResponseEntity.ok().body(response);
+            return ResponseEntity.ok().body(expenseDetails);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update expense: " + e.getMessage());
         }

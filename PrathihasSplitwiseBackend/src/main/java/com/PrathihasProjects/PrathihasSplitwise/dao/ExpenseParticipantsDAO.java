@@ -17,4 +17,6 @@ public interface ExpenseParticipantsDAO {
 
     void updateExpenseParticipants(ExpenseParticipants participants);
 
+    void deleteParticipantByExpenseAndUser(int expenseId, String username);
+
 }

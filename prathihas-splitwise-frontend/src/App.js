@@ -8,7 +8,7 @@ import SplitwiseLogout from './SplitWiseComponents/SplitwiseLogout';
 import SplitwiseSignupPage from './SplitWiseComponents/SplitwiseSignupPage';
 import SplitwiseGroupsPage from './SplitWiseComponents/SplitwiseGroupsPage';
 import SplitwiseGroupDetail from './SplitWiseComponents/SplitwiseGroupDetail';
-import SplitwiseExpenseDetailPage from './SplitWiseComponents/SplitwiseExpenseDetailPage';
+import SplitwiseExpenseDetailPage from './SplitWiseComponents/ExpenseDetail/SplitwiseExpenseDetailPage';
 import SplitwiseCreateGroup from './SplitWiseComponents/SplitwiseCreateGroup';
 
 

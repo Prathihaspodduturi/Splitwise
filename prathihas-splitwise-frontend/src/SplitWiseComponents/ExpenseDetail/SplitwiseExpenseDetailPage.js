@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Navigate, useNavigate, useParams} from 'react-router-dom';
 import styles from './SplitwiseExpenseDetailPage.module.css';
-import ConfirmModal from '../Modal/ConfirmModal';
+import ConfirmModal from '../../Modal/ConfirmModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ExpenseHeader from './ExpenseHeader';
+import ExpenseParticipants from './ExpenseParticipants';
+import EditDeleteButtons from './EditDeleteButtons';
+import ExpenseForm from './ExpenseForm';
 
 const SplitwiseExpenseDetailPage = () => {
     const { groupId, expenseId } = useParams();
@@ -48,6 +52,8 @@ const SplitwiseExpenseDetailPage = () => {
                     //isChecked: true // Assuming initially all are checked
                 }))
             };
+
+            //console.log(dataWithOutChecked);
 
             //onsole.log("printing");
             setLoading(false);
@@ -145,11 +151,29 @@ const SplitwiseExpenseDetailPage = () => {
             }
 
             const updatedExpense = await response.json();
+
+            const dataWithOutChecked = {
+                ...updatedExpense,
+                participants: updatedExpense.participants.map(participant => ({
+                    ...participant,
+                    //isChecked: true // Assuming initially all are checked
+                }))
+            };
+
+            setEditExpense(dataWithOutChecked);
+            setExpenseDetails(dataWithOutChecked);
             //setExpenseDetails(updatedExpense);
             setEditMode(false);
             setTotalMismatch(false); // Reset on successful update
+
+            console.log(updatedExpense);
+
             toast.success('Updated successfully!');
-            navigate(`/splitwise/groups/${groupId}`);
+
+            //fetchExpenseDetails();
+            /*setTimeout(() => {
+                navigate(`/splitwise/groups/${groupId}`);
+            }, 2000);*/
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
@@ -176,6 +200,7 @@ const SplitwiseExpenseDetailPage = () => {
                 throw new Error(data);
             }
 
+            setShowConfirmModal(false);
             toast.success('Deleted successfully!');
             
             setTimeout(() => {
@@ -202,16 +227,13 @@ const SplitwiseExpenseDetailPage = () => {
                 }
             });
 
-            //console.log(response);
-
+            //console.log(response)
             if (!response.ok) {
                 const data = await response.text();
-
-                //console.log(data);
-                
                 throw new Error(data);
             }
 
+            setShowConfirmModal(false);
             toast.success('Restored successfully!');
 
             setTimeout(() => {
@@ -267,18 +289,22 @@ const SplitwiseExpenseDetailPage = () => {
     
             
             if (!response.ok) {
-                throw new Error('Failed to update payment');
+                const data = await response.text();
+                throw new Error(data);
             }
     
             const updatedExpense = await response.json();
             setEditMode(false);
             toast.success('Payment updated successfully!');
-            navigate(`/splitwise/groups/${groupId}`);
+
+            setTimeout(() => {
+                navigate(`/splitwise/groups/${groupId}`);
+            }, 2000);
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
             } else {
-                setError(error.message);
+                toast.error("Failed to Update");Error(error.message);
             }
         }
     };
@@ -293,164 +319,63 @@ const SplitwiseExpenseDetailPage = () => {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
 
-
-    if(expense.isPayment)
-    {
-        return (
-            <div className={styles.container}>
-                <h1 className={styles.title}>Payment Details</h1>
-
-                {!editMode && (
-                <div className={styles.details}>
-                    <h2 className={styles.expenseName}>{expense.expenseName} ${expense.amount}</h2>
-                    <p className={styles.addedBy}>Added by: {expense.addedBy} on {new Date(expense.dateCreated).toLocaleDateString()}</p>
-                    {expense.updatedBy && <p>Last Updated By: {expense.updatedBy} on {new Date(expense.lastUpdatedDate).toLocaleDateString()}</p>}
-                    {expense.deletedBy && <p>Deleted By: {expense.deletedBy} on {new Date(expense.deletedDate).toLocaleDateString()}</p>}
-                </div>
-                )}
-
-                {editMode ? (
-                    <div className={styles.paymentFormContainer}>
-                        <label className={styles.paymentLabel}>Amount:</label>
-                        <input
-                            type="number"
-                            value={editExpense.amount}
-                            className={styles.paymentInput}
-                            onChange={e => handleInputChange('amount', e.target.value)}
-                        />
-                        <div className={styles.buttonContainer}>
-                        <button className={styles.saveButton} onClick={handleUpdatePayment}>Save Changes</button>
-                        <button className={styles.cancelButton} onClick={() => setEditMode(false)}>Cancel</button>
-                        </div>
-                    </div>
-                ): (
-                    <div className={styles.buttonContainer}>
-                    {!expense.isDeleted ? (
-                        <>
-                            {expense.gmRemovedDate === null && <button className={styles.editButton} onClick={() => setEditMode(true)}>Edit Payment</button>}
-                            {expense.gmRemovedDate === null && <button className={styles.deleteButton} onClick={handleDelete}>Delete Payment</button>}
-                        </>
-                    ) : (
-                        <>
-                            {expense.gmRemovedDate === null && <button  className={styles.restoreButton} onClick={handleRestore}>Restore Payment</button>}
-                        </>
-                    )}
-                </div>
-                )}
-
-                
-            </div>
-        )
-    }
-
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Expense Details</h1>
             {!editMode && (
                 <div className={styles.details}>
-                    <h2 className={styles.expenseName}>{expense.expenseName}</h2>
-                    <p className={styles.expenseAmount}>Amount: ${expense.amount.toFixed(2)}</p>
-                    <p className={styles.addedBy}>Added by: {expense.addedBy} on {new Date(expense.dateCreated).toLocaleDateString()}</p>
-                    {expense.updatedBy && <p>Last Updated By: {expense.updatedBy} on {new Date(expense.lastUpdatedDate).toLocaleDateString()}</p>}
-                    {expense.deletedBy && <p>Deleted By: {expense.deletedBy} on {new Date(expense.deletedDate).toLocaleDateString()}</p>}
-                    {
-                        expense.participants && (
-                            <>
-                                <h3>Paid by:</h3>
-                                <ul>
-                                    {expense.participants.filter(participant => participant.amountPaid > 0).map(participant => (
-                                        (<li key={participant.username}>
-                                            {participant.username}: paid ${participant.amountPaid.toFixed(2)}
-                                        </li>)
-                                    ))}
-                                </ul>
-                            </>
-                        )
-                    }
-                    {expense.participants && (
-                    <>
-                        <h3>Participants:</h3>
-                        <ul>
-                            {expense.participants.filter(participant => participant.amountOwed > 0).map(participant => (
-                                (<li key={participant.username}>
-                                    {participant.username}: Owes ${participant.amountOwed.toFixed(2)}
-                                </li>)
-                            ))}
-                        </ul>
-                    </>
-                    )}
-
-                    <div className={styles.buttonContainer}>
-                        {!expense.isDeleted ? (
-                            <>
-                                {expense.gmRemovedDate === null && <button className={styles.editButton} onClick={() => setEditMode(true)}>Edit Expense</button>}
-                                {expense.gmRemovedDate === null && <button className={styles.deleteButton} onClick={() => { setModalAction('delete'); setShowConfirmModal(true); }}>Delete Expense</button>}
-                            </>
-                        ) : (
-                            <>
-                                {expense.gmRemovedDate === null && <button  className={styles.restoreButton} onClick={() => { setModalAction('restore'); setShowConfirmModal(true); }}>Restore Expense</button>}
-                            </>  
-                        )}
-                    </div>
+                    <ExpenseHeader expense={expense} />
+                    {!expense.isPayment && (<ExpenseParticipants participants={expense.participants} />)}
+                    <EditDeleteButtons
+                        isDeleted={expense.isDeleted}
+                        gmRemovedDate={expense.gmRemovedDate}
+                        setEditMode={setEditMode}
+                        setShowConfirmModal={setShowConfirmModal}
+                        setModalAction={setModalAction}
+                        isPayment={expense.isPayment}
+                    />
                 </div>
             )}
             
-
-            {editMode && (
-                <div className={styles.formContainer}>
-                    <div className={styles.formRow}>
-                    <label>Expense Name:</label>
-                    <input
-                        type="text"
-                        value={editExpense.expenseName}
-                        onChange={e => handleInputChange('expenseName', e.target.value)}
+            {editMode && !expense.isPayment && (
+                <div>
+                    <ExpenseForm 
+                        editExpense={editExpense}
+                        handleInputChange={handleInputChange}
+                        handleParticipantAmountChange={handleParticipantAmountChange}
+                        handleParticipantCheckboxChange={handleParticipantCheckboxChange}
+                        totalMismatch={totalMismatch}
                     />
-                    <div/>
-                    <label>Amount:</label>
-                    <input
-                        type="number"
-                        value={editExpense.amount}
-                        onChange={e => handleInputChange('amount', e.target.value)}
-                    />
-                    <div>
-                        <h3>Payers</h3>
-                        {editExpense.participants.map(participant => (
-                            <div key={participant.username}>
-                                <label>{participant.username}:</label>
-                                <input
-                                    type="number"
-                                    value={participant.amountPaid}
-                                    onChange={e => handleParticipantAmountChange(participant.username, 'amountPaid', e.target.value)}
-                                />
-                            </div>
-                        ))}
+                    <div className={styles.buttonContainer}>
+                        {totalMismatch && <p className="warning">Total expense amount must be equal to the sum of the total contributions by payers.</p>}
+                        <button className={styles.saveButton} onClick={handleUpdate}>Save Changes</button>
+                        <button className={styles.cancelButton} onClick={() => setEditMode(false)}>Cancel</button>
                     </div>
-                    <div>
-                        <h3>Participants</h3>
-                        {editExpense.participants.map(participant => (
-                            <div key={participant.username}>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={participant.isChecked}
-                                        onChange={() => handleParticipantCheckboxChange(participant.username)}
-                                    />
-                                    {participant.username}
-                                </label>
-                            </div>
-                        ))}
-                    </div>
-                    {totalMismatch && <p className="warning">Total expense amount must be equal to the sum of the total contributions by payers.</p>}
-                    <button className={styles.saveButton} onClick={handleUpdate}>Save Changes</button>
-                    <button className={styles.cancelButton} onClick={() => setEditMode(false)}>Cancel</button>
-                </div>
                 </div>
             )}
+
+            {editMode && expense.isPayment && (
+                <div className={styles.formContainer}>
+                    <label htmlFor="amount" className={styles.paymentLabel}>Amount:</label>
+                    <input
+                        id="amount"
+                        type="number"
+                        value={editExpense.amount}
+                        className={styles.paymentInput}
+                        onChange={e => handleInputChange('amount', e.target.value)}
+                    />
+                    <div className={styles.buttonContainer}>
+                        <button className={styles.saveButton} onClick={handleUpdatePayment}>Save Changes</button>
+                        <button className={styles.cancelButton} onClick={() => setEditMode(false)}>Cancel</button>
+                    </div>
+                </div>
+            )}
+
             <ConfirmModal
                 isOpen={showConfirmModal}
                 onClose={() => setShowConfirmModal(false)}
                 onConfirm={modalAction === 'delete' ? handleDelete : handleRestore}
-                message={`Are you sure you want to ${modalAction} this expense?`}
+                message={`Are you sure you want to ${modalAction} this ${expense.isPayment ? 'Payment' : 'Expense'}?`}
             />
             <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </div>

@@ -65,4 +65,19 @@ public class ExpenseParticipantsDAOImpl implements ExpenseParticipantsDAO {
     public void updateExpenseParticipants(ExpenseParticipants participant) {
         entityManager.merge(participant);
     }
+
+    @Override
+    @Transactional
+    public void deleteParticipantByExpenseAndUser(int expenseId, String username) {
+        ExpenseParticipants participant = entityManager.createQuery(
+                        "SELECT ep FROM ExpenseParticipants ep WHERE ep.expense.id = :expenseId AND ep.user.username = :username", ExpenseParticipants.class)
+                .setParameter("expenseId", expenseId)
+                .setParameter("username", username)
+                .getSingleResult();
+        if (participant != null) {
+            entityManager.remove(participant);
+        }
+    }
+
+
 }

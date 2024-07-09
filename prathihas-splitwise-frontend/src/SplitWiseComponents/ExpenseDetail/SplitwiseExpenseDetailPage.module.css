@@ -126,10 +126,6 @@ details h3 {
     background-color: #218838;
 }
 
-.saveButton {
-    background-color: #28a745;
-}
-
 .saveButton:hover{
     background-color: #218838;
 }
@@ -164,11 +160,10 @@ details h3 {
     font-size: 16px; /* Larger font size for better readability */
 }
 
-.paymentFormContainer {
+.formContainer {
     display: flex;
     flex-direction: column;
     margin-top: 20px;
-    gap: 15px; /* Added gap for better spacing between form rows */
 }
 
 .paymentFormRow {
