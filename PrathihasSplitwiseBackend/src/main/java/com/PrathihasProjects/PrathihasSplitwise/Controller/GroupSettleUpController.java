@@ -15,9 +15,12 @@ import java.util.Date;
 @RestController
 @CrossOrigin
 public class GroupSettleUpController {
+    private final GroupsDAOImpl theGroupsDAOImpl;
 
     @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
+    public GroupSettleUpController(GroupsDAOImpl theGroupsDAOImpl) {
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+    }
 
     @PutMapping("/splitwise/groups/{groupid}/settlegroup")
     public ResponseEntity<?> settleGroup(@PathVariable int groupid, Authentication authentication)

@@ -12,7 +12,7 @@ import java.util.Date;
 @Repository
 public class GroupsDAOImpl implements GroupsDAO {
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public GroupsDAOImpl(EntityManager entityManager)
     {
@@ -22,9 +22,8 @@ public class GroupsDAOImpl implements GroupsDAO {
     @Override
     public Groups findGroupById(int id)
     {
-        Groups group = entityManager.find(Groups.class, id);
 
-        return group;
+        return entityManager.find(Groups.class, id);
     }
 
     @Override

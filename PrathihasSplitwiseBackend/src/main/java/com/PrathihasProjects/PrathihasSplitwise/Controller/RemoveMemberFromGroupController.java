@@ -18,21 +18,25 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 public class RemoveMemberFromGroupController {
+    private final GroupMembersDAOImpl groupMembersDAO;
+    private final GroupsDAOImpl theGroupsDAOImpl;
+    private final UserDAOImpl theUserDAOImpl;
 
     @Autowired
-    private GroupMembersDAOImpl groupMembersDAO;
-
-    @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
-
-    @Autowired
-    private UserDAOImpl theUserDAOImpl;
+    public RemoveMemberFromGroupController(GroupMembersDAOImpl groupMembersDAO,
+                                           GroupsDAOImpl theGroupsDAOImpl,
+                                           UserDAOImpl theUserDAOImpl) {
+        this.groupMembersDAO = groupMembersDAO;
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+        this.theUserDAOImpl = theUserDAOImpl;
+    }
 
     @PutMapping("/splitwise/groups/{groupId}/removemember")
     public ResponseEntity<?> removeMember(@PathVariable int groupId, @RequestBody Map<String, String> requestBody, Authentication authentication)
     {
         try
         {
+            System.out.println("recieved request");
             String memberUsername = requestBody.get("username");
             if (memberUsername == null || memberUsername.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Member username is required");

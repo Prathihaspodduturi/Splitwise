@@ -40,29 +40,29 @@ public class ExpensesDAOImpl implements ExpensesDAO {
 
 
 
-    @Override
-    public boolean deleteExpense(int expenseId) {
-        Expenses expense = entityManager.find(Expenses.class, expenseId);
-
-        if(expense != null)
-        {
-            expense.setDeleted(true);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean undoDeletion(int expenseId) {
-        Expenses expense = entityManager.find(Expenses.class, expenseId);
-
-        if(expense != null)
-        {
-            expense.setDeleted(false);
-            return true;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean deleteExpense(int expenseId) {
+//        Expenses expense = entityManager.find(Expenses.class, expenseId);
+//
+//        if(expense != null)
+//        {
+//            expense.setDeleted(true);
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean undoDeletion(int expenseId) {
+//        Expenses expense = entityManager.find(Expenses.class, expenseId);
+//
+//        if(expense != null)
+//        {
+//            expense.setDeleted(false);
+//            return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public Expenses findExpenseById(int expenseId) {

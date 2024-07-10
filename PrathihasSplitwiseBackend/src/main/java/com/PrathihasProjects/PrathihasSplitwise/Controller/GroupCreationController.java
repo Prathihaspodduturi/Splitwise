@@ -22,15 +22,18 @@ import java.util.Date;
 @RestController
 @CrossOrigin
 public class GroupCreationController {
+    private final GroupMembersDAOImpl groupMembersDAO;
+    private final GroupsDAOImpl theGroupsDAOImpl;
+    private final UserDAOImpl theUserDAOImpl;
 
     @Autowired
-    private GroupMembersDAOImpl groupMembersDAO;
-
-    @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
-
-    @Autowired
-    private UserDAOImpl theUserDAOImpl;
+    public GroupCreationController(GroupMembersDAOImpl groupMembersDAO,
+                                   GroupsDAOImpl theGroupsDAOImpl,
+                                   UserDAOImpl theUserDAOImpl) {
+        this.groupMembersDAO = groupMembersDAO;
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+        this.theUserDAOImpl = theUserDAOImpl;
+    }
 
     @PostMapping("/splitwise/creategroup")
     public ResponseEntity<?> createGroup(@RequestBody GroupDTO groupDTO , Authentication authentication)

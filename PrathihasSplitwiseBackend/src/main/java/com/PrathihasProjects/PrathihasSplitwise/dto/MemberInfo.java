@@ -23,7 +23,7 @@ public class MemberInfo {
     }
 
     public String getRemovedBy() {
-        return removedBy;
+          return removedBy;
     }
 
     public void setRemovedBy(String removedBy) {

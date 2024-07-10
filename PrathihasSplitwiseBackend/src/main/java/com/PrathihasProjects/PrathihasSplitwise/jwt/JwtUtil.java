@@ -31,9 +31,8 @@ public class JwtUtil {
 
     public String getUsernameFromToken(String token) {
 
-        String tempusername = getClaimFromToken(token, Claims::getSubject);
         //System.out.println("In jwtutil: "+tempusername);
-        return tempusername;
+        return getClaimFromToken(token, Claims::getSubject);
     }
 
     private Boolean isTokenExpired(String token) {

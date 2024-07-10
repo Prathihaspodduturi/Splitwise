@@ -21,15 +21,18 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class ExpenseDeleteController {
+    private final ExpensesDAOImpl expensesDAO;
+    private final ExpenseParticipantsDAOImpl expenseParticipantsDAO;
+    private final UserDAOImpl theUserDAOImpl;
 
     @Autowired
-    private ExpensesDAOImpl expensesDAO;
-
-    @Autowired
-    private ExpenseParticipantsDAOImpl expenseParticipantsDAO;
-
-    @Autowired
-    private UserDAOImpl theUserDAOImpl;
+    public ExpenseDeleteController(ExpensesDAOImpl expensesDAO,
+                                   ExpenseParticipantsDAOImpl expenseParticipantsDAO,
+                                   UserDAOImpl theUserDAOImpl) {
+        this.expensesDAO = expensesDAO;
+        this.expenseParticipantsDAO = expenseParticipantsDAO;
+        this.theUserDAOImpl = theUserDAOImpl;
+    }
 
     @PutMapping("/splitwise/groups/{groupId}/expenses/{expenseId}/delete")
     public ResponseEntity<?> deleteExpense(@PathVariable int groupId, @PathVariable int expenseId, Authentication authentication) {

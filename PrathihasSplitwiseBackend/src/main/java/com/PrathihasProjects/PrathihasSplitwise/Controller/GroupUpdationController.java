@@ -12,10 +12,12 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 public class GroupUpdationController {
+    private final GroupsDAOImpl theGroupsDAOImpl;
 
     @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
-
+    public GroupUpdationController(GroupsDAOImpl theGroupsDAOImpl) {
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+    }
     @PutMapping("/splitwise/groups/{groupId}/update")
     public ResponseEntity<?> updateGroupName(@PathVariable int groupId, @RequestBody Map<String, String> requestBody) {
         try {

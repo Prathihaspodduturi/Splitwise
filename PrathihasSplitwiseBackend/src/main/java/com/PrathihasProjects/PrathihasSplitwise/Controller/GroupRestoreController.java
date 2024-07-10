@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class GroupRestoreController {
 
-    @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
+    private final GroupsDAOImpl theGroupsDAOImpl;
 
+    @Autowired
+    public GroupRestoreController(GroupsDAOImpl theGroupsDAOImpl) {
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+    }
     @PutMapping("/splitwise/groups/{groupId}/restore")
     public ResponseEntity<?> restoreGroup(@PathVariable int groupId) {
         try {

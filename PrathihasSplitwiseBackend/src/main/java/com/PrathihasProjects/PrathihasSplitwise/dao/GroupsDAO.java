@@ -6,15 +6,15 @@ import java.util.Date;
 
 public interface GroupsDAO {
 
-    public void save(Groups groups);
+    void save(Groups groups);
 
-    public Groups findGroupById(int id);
+    Groups findGroupById(int id);
 
-    public boolean deletegroupById(int id, String username, Date date);
+    boolean deletegroupById(int id, String username, Date date);
 
-    public boolean settlegroupById(int id, String username, Date date);
+    boolean settlegroupById(int id, String username, Date date);
 
-    public boolean restoreGroup(int id);
+    boolean restoreGroup(int id);
 
-    public void updateGroupName(Groups group);
+    void updateGroupName(Groups group);
 }

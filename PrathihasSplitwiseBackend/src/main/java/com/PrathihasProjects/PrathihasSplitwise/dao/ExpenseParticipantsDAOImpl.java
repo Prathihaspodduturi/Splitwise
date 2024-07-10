@@ -1,19 +1,19 @@
 package com.PrathihasProjects.PrathihasSplitwise.dao;
 
 import com.PrathihasProjects.PrathihasSplitwise.entity.ExpenseParticipants;
-import com.PrathihasProjects.PrathihasSplitwise.entity.User;
+//import com.PrathihasProjects.PrathihasSplitwise.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 @Repository
 public class ExpenseParticipantsDAOImpl implements ExpenseParticipantsDAO {
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public ExpenseParticipantsDAOImpl(EntityManager entityManager)
     {
@@ -26,16 +26,16 @@ public class ExpenseParticipantsDAOImpl implements ExpenseParticipantsDAO {
         entityManager.persist(participants);
     }
 
-    @Override
-    public List<User> getParticipants(int expenseId) {
-        List<ExpenseParticipants> participants = entityManager.createQuery(
-                        "SELECT ep FROM ExpenseParticipants ep WHERE ep.expense.id = :expenseId", ExpenseParticipants.class)
-                .setParameter("expenseId", expenseId)
-                .getResultList();
-        return participants.stream()
-                .map(ExpenseParticipants::getUser)
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<User> getParticipants(int expenseId) {
+//        List<ExpenseParticipants> participants = entityManager.createQuery(
+//                        "SELECT ep FROM ExpenseParticipants ep WHERE ep.expense.id = :expenseId", ExpenseParticipants.class)
+//                .setParameter("expenseId", expenseId)
+//                .getResultList();
+//        return participants.stream()
+//                .map(ExpenseParticipants::getUser)
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public ExpenseParticipants findParticipant(int expenseId, String username)

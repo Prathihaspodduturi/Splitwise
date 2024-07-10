@@ -1,0 +1,157 @@
+.expensesSection {
+    background-color: #ffffff; /* White background for a cleaner look */
+    padding: 20px;
+    margin: 20px auto; /* Space below the section */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: auto;
+    flex-grow: 1;
+    position: relative;
+    max-width: 80%;
+}
+
+/* Expenses Heading styling */
+.expensesHeader {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+    margin: -20px -20px 10px -20px; 
+}
+
+/* Add Expense button styling */
+.addExpenseButton {
+    background-color: #007bff; /* Blue background */
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 40px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+}
+
+.addExpenseButton:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-3px); 
+}
+
+/* Media query for medium screens */
+@media (min-width: 768px) {
+    .addExpenseButton {
+        padding: 15px 30px; /* Increased padding */
+        font-size: 18px; /* Increased font size */
+    }
+}
+
+/* Media query for large screens */
+@media (min-width: 2000px) {
+    .addExpenseButton {
+        padding: 18px 36px; /* Further increased padding */
+        font-size: 20px; /* Further increased font size */
+    }
+}
+
+/* Styling for the ul element */
+.expensesList {
+    list-style-type: none; /* Remove black dots */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+/* Styling for each expense item */
+.expenseItem {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    font-size: 16px; 
+    z-index: 10; /* Ensure expenses are below the button */
+}
+
+.expenseItem:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    z-index: 20; /* Bring hovered expense item to the top */
+    background-color: #e0f7fa;
+}
+
+/* Media query for medium screens */
+@media (min-width: 768px) {
+    .expenseItem {
+        padding: 18px;
+        margin-bottom: 18px;
+        font-size: 18px;
+    }
+}
+
+/* Media query for large screens */
+@media (min-width: 2000px) {
+    .expenseItem {
+        padding: 20px;
+        margin-bottom: 20px;
+        font-size: 30px;
+    }
+}
+
+
+.expenseItem strong {
+    color: #343a40;
+    display: block; 
+    margin-bottom: 8px;
+}
+
+.expenseItemDetails {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+/* Media query for medium screens */
+@media (min-width: 768px) {
+    .expenseItemDetails {
+        font-size: 18px; /* Increased font size for details */
+    }
+}
+
+/* Media query for large screens */
+@media (min-width: 2000px) {
+    .expenseItemDetails {
+        font-size: 20px; /* Further increased font size for details */
+    }
+}
+
+/* Styling for expense item details */
+.expenseDetails {
+    font-size: 14px;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.expenseGetBack {
+    color: #28a745; /* Green for amounts to get back */
+}
+
+.expenseOwe {
+    color: #dc3545; /* Red for amounts owed */
+}
+
+.expenseNeutral {
+    color: #6c757d; /* Gray for neutral text */
+}
+
+.appContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+

@@ -1,0 +1,103 @@
+.listBalancesContainer {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-top: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.listBalancesContainer h3 {
+    color: #333333;
+    margin-bottom: 15px;
+}
+
+.listBalancesItem {
+    background: #f8f9fa;
+    border-left: 5px solid #007bff; /* Bootstrap primary color for visual cue */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balancesHeading {
+    font-size: 19px;
+}
+
+.listBalancesItem p {
+    margin: 0; /* Removes default margin */
+    color: #555; /* Subtle text color for readability */
+    font-size: 19px;
+}
+
+.listBalancesItem:Hover {
+    background-color: #e2e6ea; /* Slightly darker on hover for interactive feel */
+    transform: scale(1.03);
+
+}
+
+/* Enhancing visual separation and alignment */
+.listBalancesItem:not(:last-child) {
+    border-bottom: 1px solid #dee2e6; /* Light grey border for separation */
+}
+
+.balancesPayButton {
+    padding: 5px 10px;
+    background-color: #4CAF50; /* Green background for pay button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.balancesPayButton:hover {
+    background-color: #2196F3; /* Blue on hover */
+}
+
+/* Media query for medium screens */
+@media (min-width: 768px) {
+    .listBalancesItem {
+        padding: 15px;
+        margin-bottom: 12px;
+        font-size: 19px; /* Increased font size */
+    }
+
+    .balancesPayButton {
+        padding: 7px 13px; /* Increased padding */
+        font-size: 18px; /* Increased font size */
+    }
+
+    .balancesHeading {
+        font-size: 21px;
+    }
+}
+
+/* Media query for large screens */
+@media (min-width: 2000px) {
+    .listBalancesItem {
+        padding: 20px;
+        margin-bottom: 15px;
+        font-size: 25px; /* Further increased font size */
+    }
+
+    .listBalancesItem p{
+        padding: 18px;
+        margin-bottom: 15px;
+        font-size: 25px; /* Increased font size */
+    }
+
+    .balancesPayButton {
+        padding: 18px 24px; /* Further increased padding */
+        font-size: 25px; /* Further increased font size */
+    }
+
+    .balancesHeading {
+        font-size: 25px;
+    }
+}

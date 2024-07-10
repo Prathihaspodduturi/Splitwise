@@ -1,20 +1,28 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
-    line-height: 1.6;
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
 }
 
+.background {
+    background: url('https://www.transparenttextures.com/patterns/white-wall.png'), linear-gradient(to bottom, #ffffff, #e0eafc);
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+}
 
 /* General page enhancements */
 .app-container {
     padding: 20px;
-    background-color: #f9f9f9;
     margin: auto;
     max-width: 960px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     border-radius: 8px;
     margin-top: 20px;
+    flex:1;
 }
 
 
@@ -234,6 +242,10 @@ button:hover {
     color: #333;
     display: block; /* Make sure the name is on a new line */
     margin-bottom: 5px;
+}
+
+.expenseItem :hover{
+    transform: scale(1.03);
 }
 
 .expenseItemDetails {
@@ -523,49 +535,6 @@ button:hover {
 }
 
 
-.listBalancesContainer {
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 20px;
-    margin-top: 20px;
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.listBalancesContainer h3 {
-    color: #333333;
-    margin-bottom: 15px;
-}
-
-.listBalancesItem {
-    background: #f8f9fa;
-    border-left: 5px solid #007bff; /* Bootstrap primary color for visual cue */
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.listBalancesItem p {
-    margin: 0; /* Removes default margin */
-    color: #555; /* Subtle text color for readability */
-    font-size: 16px;
-}
-
-.listBalancesItem:Hover {
-    background-color: #e2e6ea; /* Slightly darker on hover for interactive feel */
-}
-
-/* Enhancing visual separation and alignment */
-.listBalancesItem:not(:last-child) {
-    border-bottom: 1px solid #dee2e6; /* Light grey border for separation */
-}
-
-
 .deletedExpensesContainer {
     background: #fff;
     border-radius: 8px;
@@ -609,54 +578,6 @@ button:hover {
     border-bottom: 1px solid #dee2e6;
 }
 
-
-.membersContainer {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    margin-top: 20px;
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.membersContainer h3 {
-    color: #333;
-    border-bottom: 2px solid #2196F3;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-}
-
-.membersItem {
-    padding: 10px;
-    margin-bottom: 8px;
-    background-color: #f9f9f9;
-    border-left: 5px solid #2196F3;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.membersItem:hover {
-    background-color: #e1f5fe;
-    transform: scale(1.02);
-}
-
-.username {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-}
-
-.usernameDetail {
-    font-size: 14px;
-    color: #666;
-    text-align: right;
-}
-
-
 .totalExpensesContainer {
     padding: 20px;
     background-color: white;
@@ -693,66 +614,6 @@ button:hover {
     color: #2196F3;
     font-weight: bold;
 }
-
-.addMemberFormContainer {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-top: 20px;
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.addMemberForm {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.addMemberFormInput {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-}
-
-.addMemberFormButton {
-    padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-}
-
-.addMemberFormButton:hover {
-    background-color: #45a049;
-}
-
-.addMemberFormButtonGroup {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.balancesPayButton {
-    padding: 5px 10px;
-    background-color: #4CAF50; /* Green background for pay button */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-.balancesPayButton:hover {
-    background-color: #2196F3; /* Blue on hover */
-}
-
 
 .paymentModal {
     position: fixed;
@@ -814,19 +675,7 @@ button:hover {
     background-color: #d32f2f;
 }
 
-.removeMemberButton {
-    margin-left: 10px;
-    padding: 5px 10px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
 
-.removeMemberButton:hover {
-    background-color: #d32f2f;
-}
 
 
 .paymentDetails {

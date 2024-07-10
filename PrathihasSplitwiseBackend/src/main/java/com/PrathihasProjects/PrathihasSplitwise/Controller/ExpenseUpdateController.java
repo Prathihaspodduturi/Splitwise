@@ -20,28 +20,29 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @CrossOrigin
 public class ExpenseUpdateController {
+    private final UserDAOImpl theUserDAOImpl;
+    private final ExpensesDAOImpl expensesDAO;
+    private final ExpenseParticipantsDAOImpl expenseParticipantsDAO;
+    private final GroupsDAOImpl theGroupsDAOImpl;
+    private final ExpenseService expenseService;
 
     @Autowired
-    private UserDAOImpl theUserDAOImpl;
-
-    @Autowired
-    private ExpensesDAOImpl expensesDAO;
-
-    @Autowired
-    private ExpenseParticipantsDAOImpl expenseParticipantsDAO;
-
-    @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
-
-    @Autowired
-    private ExpenseService expenseService;
+    public ExpenseUpdateController(UserDAOImpl theUserDAOImpl,
+                                   ExpensesDAOImpl expensesDAO,
+                                   ExpenseParticipantsDAOImpl expenseParticipantsDAO,
+                                   GroupsDAOImpl theGroupsDAOImpl,
+                                   ExpenseService expenseService) {
+        this.theUserDAOImpl = theUserDAOImpl;
+        this.expensesDAO = expensesDAO;
+        this.expenseParticipantsDAO = expenseParticipantsDAO;
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+        this.expenseService = expenseService;
+    }
 
     @PutMapping("/splitwise/groups/{groupId}/expenses/{expenseId}/update")
     public ResponseEntity<?> updateExpense(@PathVariable int groupId, @PathVariable int expenseId, @RequestBody ExpenseDTO expenseDTO, Authentication authentication) {

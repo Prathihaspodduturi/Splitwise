@@ -14,8 +14,12 @@ import java.util.ArrayList;
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
+    private final UserDAOImpl theUserDAOImpl;
+
     @Autowired
-    private UserDAOImpl theUserDAOImpl;
+    public MyUserDetailsService(UserDAOImpl theUserDAOImpl) {
+        this.theUserDAOImpl = theUserDAOImpl;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -20,9 +20,12 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 public class GetAllGroupsController {
+    private final GroupMembersDAOImpl groupMembersDAO;
 
     @Autowired
-    private GroupMembersDAOImpl groupMembersDAO;
+    public GetAllGroupsController(GroupMembersDAOImpl groupMembersDAO) {
+        this.groupMembersDAO = groupMembersDAO;
+    }
     @PostMapping("/splitwise/groups")
     public ResponseEntity<?> getGroups() {
         try {

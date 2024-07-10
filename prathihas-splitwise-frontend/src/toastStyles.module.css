@@ -1,0 +1,42 @@
+/* File: toastStyles.css */
+
+.ToastifyToast-container {
+    width: auto;
+    max-width: 100%;
+    padding: 10px;
+}
+
+.ToastifyToast {
+    font-size: 16px;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.ToastifyToast-body {
+    display: flex;
+    align-items: center;
+}
+
+/* Media query for small screens */
+@media (max-width: 600px) {
+    .Toastify__toast {
+        font-size: 12px;
+        padding: 10px;
+    }
+}
+
+/* Media query for medium screens */
+@media (min-width: 601px) and (max-width: 1200px) {
+    .Toastify__toast {
+        font-size: 14px;
+        padding: 12px;
+    }
+}
+
+/* Media query for large screens */
+@media (min-width: 1201px) {
+    .Toastify__toast {
+        font-size: 25px;
+        padding: 20px;
+    }
+}

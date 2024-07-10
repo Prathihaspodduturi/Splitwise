@@ -35,3 +35,27 @@
     background-color: gray;
     color: white;
 }
+
+
+/* Media query for larger screens */
+@media (min-width: 768px) {
+    .modalContent {
+        width: 500px; /* Increased width for medium screens */
+    }
+
+    .confirmButton, .cancelButton {
+        padding: 10px 20px; /* Increased padding for larger buttons */
+    }
+}
+
+@media (min-width: 2000px) {
+    .modalContent {
+        width: 1200px; /* Further increased width for very large screens */
+        font-size: 25px;
+    }
+
+    .confirmButton, .cancelButton {
+        padding: 30px 40px; /* Further increased padding for larger buttons */
+        font-size: 25px;;
+    }
+}

@@ -15,9 +15,12 @@ import java.util.Date;
 @RestController
 @CrossOrigin
 public class GroupDeletionController {
+    private final GroupsDAOImpl theGroupsDAOImpl;
 
     @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
+    public GroupDeletionController(GroupsDAOImpl theGroupsDAOImpl) {
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+    }
 
     @PutMapping("/splitwise/groups/{groupid}/delete")
     public ResponseEntity<?> deleteGroup(@PathVariable int groupid, Authentication authentication)

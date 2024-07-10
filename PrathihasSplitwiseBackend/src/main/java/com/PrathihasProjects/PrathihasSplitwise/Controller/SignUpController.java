@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 public class SignUpController {
+    private final UserDAOImpl theUserDAOImpl;
 
     @Autowired
-    private UserDAOImpl theUserDAOImpl;
+    public SignUpController(UserDAOImpl theUserDAOImpl) {
+        this.theUserDAOImpl = theUserDAOImpl;
+    }
 
     @PostMapping("/splitwise/signup")
     public ResponseEntity<?> signupController(@RequestBody User newUser)

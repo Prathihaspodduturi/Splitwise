@@ -3,8 +3,6 @@ package com.PrathihasProjects.PrathihasSplitwise.services;
 import com.PrathihasProjects.PrathihasSplitwise.dao.*;
 import com.PrathihasProjects.PrathihasSplitwise.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,18 +13,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class ExpenseService {
+    private final GroupsDAOImpl theGroupsDAOImpl;
+    private final ExpensesDAOImpl expensesDAO;
+    private final ExpenseParticipantsDAOImpl expenseParticipantsDAO;
+    private final GroupMembersDAOImpl groupMembersDAO;
 
     @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
-
-    @Autowired
-    private ExpensesDAOImpl expensesDAO;
-
-    @Autowired
-    private ExpenseParticipantsDAOImpl expenseParticipantsDAO;
-
-    @Autowired
-    private GroupMembersDAOImpl groupMembersDAO;
+    public ExpenseService(GroupsDAOImpl theGroupsDAOImpl,
+                          ExpensesDAOImpl expensesDAO,
+                          ExpenseParticipantsDAOImpl expenseParticipantsDAO,
+                          GroupMembersDAOImpl groupMembersDAO) {
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+        this.expensesDAO = expensesDAO;
+        this.expenseParticipantsDAO = expenseParticipantsDAO;
+        this.groupMembersDAO = groupMembersDAO;
+    }
 
     // Method to retrieve and format expense details
     public Map<String, Object> getExpenseDetails(int expenseId, int groupId, String username) {

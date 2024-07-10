@@ -12,30 +12,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @RestController
 @CrossOrigin
 public class GetExpenseDetailsController {
+    private final GroupsDAOImpl theGroupsDAOImpl;
+    private final ExpensesDAOImpl expensesDAO;
+
+    private final ExpenseService expenseService;
 
     @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
-
-    @Autowired
-    private ExpensesDAOImpl expensesDAO;
-
-    @Autowired
-    private ExpenseParticipantsDAOImpl expenseParticipantsDAO;
-
-    @Autowired
-    private GroupMembersDAOImpl groupMembersDAO;
-
-    @Autowired
-    private ExpenseService expenseService;
+    public GetExpenseDetailsController(GroupsDAOImpl theGroupsDAOImpl,
+                                       ExpensesDAOImpl expensesDAO,
+                                       ExpenseService expenseService) {
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+        this.expensesDAO = expensesDAO;
+        this.expenseService = expenseService;
+    }
 
     @GetMapping("/splitwise/groups/{groupId}/expenses/{expenseId}")
     public ResponseEntity<?> getExpenseDetails(@PathVariable int groupId, @PathVariable int expenseId, Authentication authentication) {

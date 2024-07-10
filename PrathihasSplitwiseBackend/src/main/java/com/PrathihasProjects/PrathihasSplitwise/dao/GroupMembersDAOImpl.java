@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Repository
 public class GroupMembersDAOImpl implements GroupMembersDAO {
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public GroupMembersDAOImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -48,7 +48,7 @@ public class GroupMembersDAOImpl implements GroupMembersDAO {
     public List<MemberInfo> findMembersByGroupId(int groupId) {
         return entityManager.createQuery(
                         "SELECT new com.PrathihasProjects.PrathihasSplitwise.dto.MemberInfo(gm.user.username, gm.removedBy.username, gm.removedDate) " +
-                                "FROM GroupMembers gm WHERE gm.group.id = :groupId", MemberInfo.class)
+                                "FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.removedBy Is NULL ", MemberInfo.class)
                 .setParameter("groupId", groupId)
                 .getResultList();
     }
@@ -63,9 +63,24 @@ public class GroupMembersDAOImpl implements GroupMembersDAO {
                     .setParameter("groupId", groupId)
                     .getSingleResult();
 
-            return user == null;
+            return user != null;
         } catch (NoResultException e) {
             return false;
+        }
+    }
+
+    @Override
+    public User isOldMember(String username, int groupId)
+    {
+        try {
+
+            return entityManager.createQuery(
+                            "SELECT gm.user FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.user.username = :username and gm.removedBy IS NOT NULL", User.class)
+                    .setParameter("username", username)
+                    .setParameter("groupId", groupId)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
     }
 
@@ -73,13 +88,12 @@ public class GroupMembersDAOImpl implements GroupMembersDAO {
     public GroupMembers getDetails(int groupId, String username) {
 
         try {
-            GroupMembers gmDetails = entityManager.createQuery(
+
+            return entityManager.createQuery(
                             "SELECT gm FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.user.username = :username", GroupMembers.class)
                     .setParameter("username", username)
                     .setParameter("groupId", groupId)
                     .getSingleResult();
-
-            return gmDetails;
         } catch (NoResultException e) {
             return null;
         }

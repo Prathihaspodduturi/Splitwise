@@ -10,12 +10,12 @@ public interface ExpensesDAO {
 
     List<Expenses> groupExpenses (int groupId);
 
-    public boolean deleteExpense(int expenseId);
+    //boolean deleteExpense(int expenseId);
 
-    public boolean undoDeletion(int expenseId);
+    //boolean undoDeletion(int expenseId);
 
     Expenses findExpenseById(int expenseId);
 
-    public void updateExpense(Expenses expense);
+    void updateExpense(Expenses expense);
 
 }

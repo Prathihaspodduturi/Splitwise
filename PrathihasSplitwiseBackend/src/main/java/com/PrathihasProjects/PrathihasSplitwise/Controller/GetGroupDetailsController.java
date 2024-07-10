@@ -1,6 +1,5 @@
 package com.PrathihasProjects.PrathihasSplitwise.Controller;
 
-import com.PrathihasProjects.PrathihasSplitwise.dao.ExpenseParticipantsDAOImpl;
 import com.PrathihasProjects.PrathihasSplitwise.dao.ExpensesDAOImpl;
 import com.PrathihasProjects.PrathihasSplitwise.dao.GroupMembersDAOImpl;
 import com.PrathihasProjects.PrathihasSplitwise.dao.GroupsDAOImpl;
@@ -16,25 +15,30 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import com.PrathihasProjects.PrathihasSplitwise.services.GroupDetailsService;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @RestController
 @CrossOrigin
 public class GetGroupDetailsController {
 
-    @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
+    private final GroupsDAOImpl theGroupsDAOImpl;
+    private final GroupMembersDAOImpl groupMembersDAO;
+    private final ExpensesDAOImpl expensesDAO;
+    private final GroupDetailsService groupDetailsService;
 
     @Autowired
-    private GroupMembersDAOImpl groupMembersDAO;
+    public GetGroupDetailsController(GroupsDAOImpl theGroupsDAOImpl,
+                                     GroupMembersDAOImpl groupMembersDAO,
+                                     ExpensesDAOImpl expensesDAO,
+                                     GroupDetailsService groupDetailsService) {
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+        this.groupMembersDAO = groupMembersDAO;
+        this.expensesDAO = expensesDAO;
+        this.groupDetailsService = groupDetailsService;
+    }
 
-    @Autowired
-    private ExpensesDAOImpl expensesDAO;
-
-    @Autowired
-    private ExpenseParticipantsDAOImpl expenseParticipantsDAO;
 
     @GetMapping("/splitwise/groups/{groupId}")
     public ResponseEntity<?> getGroupDetails(@PathVariable int groupId, Authentication authentication) {
@@ -46,15 +50,17 @@ public class GetGroupDetailsController {
 
             String username = authentication.getName();
 
-            GroupMembers gmGroupMembers = groupMembersDAO.getDetails(groupId,username);
+            GroupMembersHelper gmDetails = groupDetailsService.getGmDetails(groupId, username);
 
-            GroupMembersHelper gmDetails = new GroupMembersHelper(gmGroupMembers.getUser().getUsername(), gmGroupMembers.getGroup().getId(), gmGroupMembers.getAddedBy().getUsername(), gmGroupMembers.getAddedDate());
-
-            if(gmGroupMembers.getRemovedBy() != null)
-            {
-                gmDetails.setRemovedBy(gmGroupMembers.getRemovedBy().getUsername());
-                gmDetails.setRemovedDate(gmGroupMembers.getRemovedDate());
-            }
+//            GroupMembers gmGroupMembers = groupMembersDAO.getDetails(groupId,username);
+//
+//            GroupMembersHelper gmDetails = new GroupMembersHelper(gmGroupMembers.getUser().getUsername(), gmGroupMembers.getGroup().getId(), gmGroupMembers.getAddedBy().getUsername(), gmGroupMembers.getAddedDate());
+//
+//            if(gmGroupMembers.getRemovedBy() != null)
+//            {
+//                gmDetails.setRemovedBy(gmGroupMembers.getRemovedBy().getUsername());
+//                gmDetails.setRemovedDate(gmGroupMembers.getRemovedDate());
+//            }
             // Fetch expenses related to the group
             //List<Expenses> expenses = ExpensesDAO.groupExpenses(groupId);
 
@@ -66,88 +72,95 @@ public class GetGroupDetailsController {
 
             Map<String, Object> response = new HashMap<>();
 
-            List<Map<String,Object>> detailedExpenses = new ArrayList<>();
+            List<Map<String,Object>> detailedExpenses = groupDetailsService.getDetailedExpenses(expenses, username);
 
-            for (Expenses expense : expenses) {
-                Map<String, Object> expenseDetails = new HashMap<>();
-                expenseDetails.put("id", expense.getId());
-                expenseDetails.put("expenseName", expense.getExpenseName());
-                expenseDetails.put("dateCreated", expense.getDateCreated());
-                expenseDetails.put("amount", expense.getAmount());
-                expenseDetails.put("addedBy", expense.getAddedBy().getUsername());
-                expenseDetails.put("deleted", expense.isDeleted());
-                expenseDetails.put("isPayment", expense.isPayment());
+            System.out.println("In groupDetails"+detailedExpenses);
+            System.out.println("In groupDetails"+detailedExpenses.size());
 
-                User deletedByUser = expense.getDeletedBy();
-                User updatedByUser = expense.getUpdatedBy();
+//            List<Map<String,Object>> detailedExpenses = new ArrayList<>();
+//
+//            for (Expenses expense : expenses) {
+//                Map<String, Object> expenseDetails = new HashMap<>();
+//                expenseDetails.put("id", expense.getId());
+//                expenseDetails.put("expenseName", expense.getExpenseName());
+//                expenseDetails.put("dateCreated", expense.getDateCreated());
+//                expenseDetails.put("amount", expense.getAmount());
+//                expenseDetails.put("addedBy", expense.getAddedBy().getUsername());
+//                expenseDetails.put("deleted", expense.isDeleted());
+//                expenseDetails.put("isPayment", expense.isPayment());
+//
+//                User deletedByUser = expense.getDeletedBy();
+//                User updatedByUser = expense.getUpdatedBy();
+//
+//                if(updatedByUser != null) {
+//                    expenseDetails.put("updatedBy", updatedByUser.getUsername());
+//                    expenseDetails.put("lastUpdatedDate", expense.getLastUpdatedDate());
+//                }
+//
+//                if(deletedByUser != null)
+//                {
+//                    expenseDetails.put("deletedBy", deletedByUser.getUsername());
+//                    expenseDetails.put("deletedDate", expense.getDeletedDate());
+//                }
+//
+//                ExpenseParticipants participant = expenseParticipantsDAO.findParticipant(expense.getId(),username);
+//                if(participant == null){
+//                    expenseDetails.put("notInvolved", true);
+//                    detailedExpenses.add(expenseDetails);
+//                    continue;
+//                }
+//
+//                BigDecimal zero = BigDecimal.ZERO;
+//                if(participant.getAmountpaid().compareTo(zero) == 0 && participant.getAmountOwed().compareTo(zero) == 0)
+//                {
+//                    expenseDetails.put("notInvolved", true);
+//                }
+//                else
+//                {
+//                    expenseDetails.put("involved", participant.getAmountpaid().subtract(participant.getAmountOwed()));
+//                }
+//
+//                detailedExpenses.add(expenseDetails);
+//            }
 
-                if(updatedByUser != null) {
-                    expenseDetails.put("updatedBy", updatedByUser.getUsername());
-                    expenseDetails.put("lastUpdatedDate", expense.getLastUpdatedDate());
-                }
+            List<Transaction> transactions = groupDetailsService.getAllTransactions(expenses);
 
-                if(deletedByUser != null)
-                {
-                    expenseDetails.put("deletedBy", deletedByUser.getUsername());
-                    expenseDetails.put("deletedDate", expense.getDeletedDate());
-                }
-
-                ExpenseParticipants participant = expenseParticipantsDAO.findParticipant(expense.getId(),username);
-                if(participant == null){
-                    expenseDetails.put("notInvolved", true);
-                    detailedExpenses.add(expenseDetails);
-                    continue;
-                }
-
-                BigDecimal zero = BigDecimal.ZERO;
-                if(participant.getAmountpaid().compareTo(zero) == 0 && participant.getAmountOwed().compareTo(zero) == 0)
-                {
-                    expenseDetails.put("notInvolved", true);
-                }
-                else
-                {
-                    expenseDetails.put("involved", participant.getAmountpaid().subtract(participant.getAmountOwed()));
-                }
-
-                detailedExpenses.add(expenseDetails);
-            }
-
-            List<ExpenseParticipants> participants = new ArrayList<>();
-
-            for(int i=0;i<expenses.size();i++)
-            {
-                if(!expenses.get(i).isDeleted()) {
-                    List<ExpenseParticipants> tempParticipants = expenseParticipantsDAO.findByExpenseId(expenses.get(i).getId());
-
-                    if (!tempParticipants.isEmpty()) {
-                        participants.addAll(tempParticipants);
-                    }
-                }
-            }
-
-            Map<String, BigDecimal> netBalances = new HashMap<>();
-            for (ExpenseParticipants participant : participants) {
-                if(!participant.isDeleted()) {
-                    String usernameFromParticipant = participant.getUser().getUsername();
-                    netBalances.putIfAbsent(usernameFromParticipant, BigDecimal.ZERO);
-                    BigDecimal paid = participant.getAmountpaid();
-                    BigDecimal owed = participant.getAmountOwed();
-                    BigDecimal balance = netBalances.get(usernameFromParticipant).add(paid).subtract(owed);
-                    netBalances.put(usernameFromParticipant, balance);
-                }
-            }
-
-            Map<String, BigDecimal> creditors = new HashMap<>();
-            Map<String, BigDecimal> debtors = new HashMap<>();
-            for (Map.Entry<String, BigDecimal> entry : netBalances.entrySet()) {
-                if (entry.getValue().compareTo(BigDecimal.ZERO) > 0) {
-                    creditors.put(entry.getKey(), entry.getValue());
-                } else if (entry.getValue().compareTo(BigDecimal.ZERO) < 0) {
-                    debtors.put(entry.getKey(), entry.getValue().abs());
-                }
-            }
-
-            List<Transaction> transactions = resolveDebts(creditors, debtors);
+//            List<ExpenseParticipants> participants = new ArrayList<>();
+//
+//            for(int i=0;i<expenses.size();i++)
+//            {
+//                if(!expenses.get(i).isDeleted()) {
+//                    List<ExpenseParticipants> tempParticipants = expenseParticipantsDAO.findByExpenseId(expenses.get(i).getId());
+//
+//                    if (!tempParticipants.isEmpty()) {
+//                        participants.addAll(tempParticipants);
+//                    }
+//                }
+//            }
+//
+//            Map<String, BigDecimal> netBalances = new HashMap<>();
+//            for (ExpenseParticipants participant : participants) {
+//                if(!participant.isDeleted()) {
+//                    String usernameFromParticipant = participant.getUser().getUsername();
+//                    netBalances.putIfAbsent(usernameFromParticipant, BigDecimal.ZERO);
+//                    BigDecimal paid = participant.getAmountpaid();
+//                    BigDecimal owed = participant.getAmountOwed();
+//                    BigDecimal balance = netBalances.get(usernameFromParticipant).add(paid).subtract(owed);
+//                    netBalances.put(usernameFromParticipant, balance);
+//                }
+//            }
+//
+//            Map<String, BigDecimal> creditors = new HashMap<>();
+//            Map<String, BigDecimal> debtors = new HashMap<>();
+//            for (Map.Entry<String, BigDecimal> entry : netBalances.entrySet()) {
+//                if (entry.getValue().compareTo(BigDecimal.ZERO) > 0) {
+//                    creditors.put(entry.getKey(), entry.getValue());
+//                } else if (entry.getValue().compareTo(BigDecimal.ZERO) < 0) {
+//                    debtors.put(entry.getKey(), entry.getValue().abs());
+//                }
+//            }
+//
+//            List<Transaction> transactions = resolveDebts(creditors, debtors);
 
             //GroupMembers gmDetails = GroupMembersDAO.getDetails(groupId, username);
 
@@ -190,27 +203,27 @@ public class GetGroupDetailsController {
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }
 
-    private List<Transaction> resolveDebts(Map<String, BigDecimal> creditors, Map<String, BigDecimal> debtors) {
-        List<Transaction> transactions = new ArrayList<>();
-        for (Map.Entry<String, BigDecimal> creditor : creditors.entrySet()) {
-            BigDecimal amountToSettle = creditor.getValue();
-            Iterator<Map.Entry<String, BigDecimal>> debtorIterator = debtors.entrySet().iterator();
-            while (debtorIterator.hasNext() && amountToSettle.compareTo(BigDecimal.ZERO) > 0) {
-                Map.Entry<String, BigDecimal> debtor = debtorIterator.next();
-                BigDecimal possiblePayment = debtor.getValue().min(amountToSettle);
-                transactions.add(new Transaction(debtor.getKey(), creditor.getKey(), possiblePayment));
-                amountToSettle = amountToSettle.subtract(possiblePayment);
-                debtor.setValue(debtor.getValue().subtract(possiblePayment));
-                if (debtor.getValue().compareTo(BigDecimal.ZERO) == 0) {
-                    debtorIterator.remove();
-                }
-            }
-        }
-        return transactions;
-    }
+//    private List<Transaction> resolveDebts(Map<String, BigDecimal> creditors, Map<String, BigDecimal> debtors) {
+//        List<Transaction> transactions = new ArrayList<>();
+//        for (Map.Entry<String, BigDecimal> creditor : creditors.entrySet()) {
+//            BigDecimal amountToSettle = creditor.getValue();
+//            Iterator<Map.Entry<String, BigDecimal>> debtorIterator = debtors.entrySet().iterator();
+//            while (debtorIterator.hasNext() && amountToSettle.compareTo(BigDecimal.ZERO) > 0) {
+//                Map.Entry<String, BigDecimal> debtor = debtorIterator.next();
+//                BigDecimal possiblePayment = debtor.getValue().min(amountToSettle);
+//                transactions.add(new Transaction(debtor.getKey(), creditor.getKey(), possiblePayment));
+//                amountToSettle = amountToSettle.subtract(possiblePayment);
+//                debtor.setValue(debtor.getValue().subtract(possiblePayment));
+//                if (debtor.getValue().compareTo(BigDecimal.ZERO) == 0) {
+//                    debtorIterator.remove();
+//                }
+//            }
+//        }
+//        return transactions;
+//    }
 }

@@ -21,15 +21,18 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 public class AddMemberToGroupController {
+    private final GroupsDAOImpl theGroupsDAOImpl;
+    private final UserDAOImpl theUserDAOImpl;
+    private final GroupMembersDAOImpl groupMembersDAO;
 
     @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
-
-    @Autowired
-    private UserDAOImpl theUserDAOImpl;
-
-    @Autowired
-    private GroupMembersDAOImpl groupMembersDAO;
+    public AddMemberToGroupController(GroupsDAOImpl theGroupsDAOImpl,
+                                      UserDAOImpl theUserDAOImpl,
+                                      GroupMembersDAOImpl groupMembersDAO) {
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+        this.theUserDAOImpl = theUserDAOImpl;
+        this.groupMembersDAO = groupMembersDAO;
+    }
 
     @PostMapping("/splitwise/groups/{groupId}/addmember")
     public ResponseEntity<?> addMemberToGroup(@PathVariable int groupId, @RequestBody Map<String, String> requestBody, Authentication authentication) {
@@ -59,7 +62,22 @@ public class AddMemberToGroupController {
             // Check if user is already a member of the group
             boolean isAlreadyMember = groupMembersDAO.isMember(newUsername, groupId);
             if (isAlreadyMember) {
+                System.out.println("inside 1");
                 return ResponseEntity.badRequest().body("User is already a member of this group");
+            }
+
+            User oldMember = groupMembersDAO.isOldMember(newUsername, groupId);
+
+            if(oldMember !=null)
+            {
+                GroupMembers gmTemp = groupMembersDAO.getDetails(groupId, newUsername);
+                gmTemp.setAddedBy(curUser);
+                gmTemp.setRemovedBy(null);
+                gmTemp.setRemovedDate(null);
+                gmTemp.setAddedDate(new Date());
+                groupMembersDAO.save(gmTemp);
+                List<MemberInfo> members = groupMembersDAO.findMembersByGroupId(groupId);
+                return ResponseEntity.ok().body(members);
             }
 
             // Create and save the new group member

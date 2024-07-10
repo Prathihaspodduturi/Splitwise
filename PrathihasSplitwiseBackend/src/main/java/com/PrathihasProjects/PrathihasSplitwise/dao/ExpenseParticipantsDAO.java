@@ -1,7 +1,7 @@
 package com.PrathihasProjects.PrathihasSplitwise.dao;
 
 import com.PrathihasProjects.PrathihasSplitwise.entity.ExpenseParticipants;
-import com.PrathihasProjects.PrathihasSplitwise.entity.User;
+//import com.PrathihasProjects.PrathihasSplitwise.entity.User;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public interface ExpenseParticipantsDAO {
 
     void save(ExpenseParticipants participants);
 
-    List<User> getParticipants(int expenseId);
+    //List<User> getParticipants(int expenseId);
 
     ExpenseParticipants findParticipant(int expenseId, String username);
 

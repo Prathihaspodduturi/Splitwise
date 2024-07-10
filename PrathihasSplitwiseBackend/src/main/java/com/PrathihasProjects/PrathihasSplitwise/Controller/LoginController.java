@@ -21,18 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 public class LoginController {
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public LoginController(AuthenticationManager authenticationManager,
+                           JwtUtil jwtUtil,
+                           UserDetailsService userDetailsService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+    }
 
     @PostMapping("/splitwise/login")
-    public ResponseEntity<String> loginController (@RequestBody User authenticationRequest) throws Exception
+    public ResponseEntity<String> loginController (@RequestBody User authenticationRequest)
     {
         try{
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));

@@ -1,15 +1,12 @@
 package com.PrathihasProjects.PrathihasSplitwise.Controller;
 
 import com.PrathihasProjects.PrathihasSplitwise.compositeKey.ExpenseParticipantsId;
-import com.PrathihasProjects.PrathihasSplitwise.dao.ExpenseParticipantsDAOImpl;
-import com.PrathihasProjects.PrathihasSplitwise.dao.ExpensesDAOImpl;
-import com.PrathihasProjects.PrathihasSplitwise.dao.GroupsDAOImpl;
-import com.PrathihasProjects.PrathihasSplitwise.dao.UserDAOImpl;
+import com.PrathihasProjects.PrathihasSplitwise.dao.*;
 import com.PrathihasProjects.PrathihasSplitwise.dto.ExpenseDTO;
-import com.PrathihasProjects.PrathihasSplitwise.entity.ExpenseParticipants;
-import com.PrathihasProjects.PrathihasSplitwise.entity.Expenses;
-import com.PrathihasProjects.PrathihasSplitwise.entity.Groups;
-import com.PrathihasProjects.PrathihasSplitwise.entity.User;
+import com.PrathihasProjects.PrathihasSplitwise.entity.*;
+import com.PrathihasProjects.PrathihasSplitwise.helper.GroupMembersHelper;
+import com.PrathihasProjects.PrathihasSplitwise.helper.Transaction;
+import com.PrathihasProjects.PrathihasSplitwise.services.GroupDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,25 +15,30 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin
 public class AddExpenseController {
 
-    @Autowired
-    private UserDAOImpl theUserDAOImpl;
+    private final UserDAOImpl theUserDAOImpl;
+    private final ExpensesDAOImpl expensesDAO;
+    private final ExpenseParticipantsDAOImpl expenseParticipantsDAO;
+    private final GroupsDAOImpl theGroupsDAOImpl;
+    private final GroupDetailsService groupDetailsService;
 
     @Autowired
-    private ExpensesDAOImpl expensesDAO;
-
-    @Autowired
-    private ExpenseParticipantsDAOImpl expenseParticipantsDAO;
-
-    @Autowired
-    private GroupsDAOImpl theGroupsDAOImpl;
+    public AddExpenseController(UserDAOImpl theUserDAOImpl,
+                                ExpensesDAOImpl expensesDAO,
+                                ExpenseParticipantsDAOImpl expenseParticipantsDAO,
+                                GroupsDAOImpl theGroupsDAOImpl,
+                                GroupDetailsService groupDetailsService) {
+        this.theUserDAOImpl = theUserDAOImpl;
+        this.expensesDAO = expensesDAO;
+        this.expenseParticipantsDAO = expenseParticipantsDAO;
+        this.theGroupsDAOImpl = theGroupsDAOImpl;
+        this.groupDetailsService = groupDetailsService;
+    }
 
     @PostMapping("/splitwise/groups/{groupId}/addExpense")
     public ResponseEntity<?> addExpense(@PathVariable int groupId, @RequestBody ExpenseDTO expenseDTO, Authentication authentication)
@@ -98,23 +100,23 @@ public class AddExpenseController {
                 }
             });
 
-            Map<String, Object> expenseDetails = new HashMap<>();
-            expenseDetails.put("id", expense.getId());
-            expenseDetails.put("expenseName", expense.getExpenseName());
-            expenseDetails.put("dateCreated", expense.getDateCreated());
-            expenseDetails.put("amount", expense.getAmount());
 
-            ExpenseParticipants participant = expenseParticipantsDAO.findParticipant(expense.getId(),username);
-            if(participant != null) {
-                BigDecimal zero = BigDecimal.ZERO;
-                if (participant.getAmountpaid().compareTo(zero) == 0 && participant.getAmountOwed().compareTo(zero) == 0) {
-                    expenseDetails.put("not involved", 0);
-                } else {
-                    expenseDetails.put("involved", participant.getAmountpaid().subtract(participant.getAmountOwed()));
-                }
-            }
+            GroupMembersHelper gmDetails = groupDetailsService.getGmDetails(groupId, username);
 
-            return ResponseEntity.ok(expenseDetails);
+            List<Expenses> expenses = expensesDAO.groupExpenses(groupId);
+
+            List<Map<String,Object>> detailedExpenses = groupDetailsService.getDetailedExpenses(expenses, username);
+
+            List<Transaction> transactions = groupDetailsService.getAllTransactions(expenses);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("transactions", transactions);
+            response.put("detailedExpenses", detailedExpenses);
+            response.put("gmDetails",gmDetails);
+            System.out.println("detailedExpenses"+ detailedExpenses);
+
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add expense: " + e.getMessage());
         }
