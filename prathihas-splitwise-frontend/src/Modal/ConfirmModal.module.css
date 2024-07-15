@@ -6,9 +6,11 @@
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(1px); /* This will blur the background */
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 9000;
 }
 
 .modalContent {
@@ -50,7 +52,7 @@
 
 @media (min-width: 2000px) {
     .modalContent {
-        width: 1200px; /* Further increased width for very large screens */
+        width: 800px; /* Further increased width for very large screens */
         font-size: 25px;
     }
 

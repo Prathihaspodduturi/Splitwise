@@ -76,13 +76,21 @@
     transition: transform 0.2s;
     font-size: 16px; 
     z-index: 10; /* Ensure expenses are below the button */
+    cursor: pointer;
+    position: relative;
 }
 
 .expenseItem:hover {
     transform: translateY(-10px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    z-index: 20; /* Bring hovered expense item to the top */
+    z-index: 20;
     background-color: #e0f7fa;
+}
+
+.expenseItem:hover .expenseDetails {
+    transform: none;
+    box-shadow: none;
+    background-color: #f8f9fa;
 }
 
 /* Media query for medium screens */
@@ -131,10 +139,14 @@
 
 /* Styling for expense item details */
 .expenseDetails {
+    
     font-size: 14px;
     padding: 8px;
-    border-radius: 4px;
     margin-top: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 14px;
+    background: none;
+    border: none;
 }
 
 .expenseGetBack {

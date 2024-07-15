@@ -3,7 +3,6 @@ package com.PrathihasProjects.PrathihasSplitwise.Controller;
 import com.PrathihasProjects.PrathihasSplitwise.dao.ExpensesDAOImpl;
 import com.PrathihasProjects.PrathihasSplitwise.dao.GroupMembersDAOImpl;
 import com.PrathihasProjects.PrathihasSplitwise.dao.GroupsDAOImpl;
-import com.PrathihasProjects.PrathihasSplitwise.dto.MemberInfo;
 import com.PrathihasProjects.PrathihasSplitwise.entity.*;
 import com.PrathihasProjects.PrathihasSplitwise.helper.GroupMembersHelper;
 import com.PrathihasProjects.PrathihasSplitwise.helper.Transaction;
@@ -64,7 +63,7 @@ public class GetGroupDetailsController {
             // Fetch expenses related to the group
             //List<Expenses> expenses = ExpensesDAO.groupExpenses(groupId);
 
-            List<MemberInfo> members = groupMembersDAO.findMembersByGroupId(groupId);
+            List<String> members = groupMembersDAO.findMembersByGroupId(groupId);
 
 
             List<Expenses> expenses = expensesDAO.groupExpenses(groupId);
@@ -74,8 +73,8 @@ public class GetGroupDetailsController {
 
             List<Map<String,Object>> detailedExpenses = groupDetailsService.getDetailedExpenses(expenses, username);
 
-            System.out.println("In groupDetails"+detailedExpenses);
-            System.out.println("In groupDetails"+detailedExpenses.size());
+            //.out.println("In groupDetails"+detailedExpenses);
+            //System.out.println("In groupDetails"+detailedExpenses.size());
 
 //            List<Map<String,Object>> detailedExpenses = new ArrayList<>();
 //

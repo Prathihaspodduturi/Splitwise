@@ -6,14 +6,13 @@ const ExpenseHeader = ({ expense }) => {
 
   return (
     <div>
-      <h2 className={styles.expenseName}>{expense.expenseName}</h2>
       {expense.amount && <p className={styles.expenseAmount}>Amount: ${expense.amount.toFixed(2)}</p>}
-      <p className={styles.addedBy}>Added by: {expense.addedBy} on {new Date(expense.dateCreated).toLocaleDateString()}</p>
+      <p className={styles.commonText}>Added by: {expense.addedBy} on {new Date(expense.dateCreated).toLocaleDateString()}</p>
       {expense.updatedBy && (
-        <p className={styles.updatedBy}>Last Updated By: {expense.updatedBy} on {new Date(expense.lastUpdatedDate).toLocaleDateString()}</p>
+        <p className={styles.commonText}>Last Updated By: {expense.updatedBy} on {new Date(expense.lastUpdatedDate).toLocaleDateString()}</p>
       )}
       {expense.deletedBy && (
-        <p className={styles.deletedBy}>Deleted By: {expense.deletedBy} on {new Date(expense.deletedDate).toLocaleDateString()}</p>
+        <p className={styles.commonText}>Deleted By: {expense.deletedBy} on {new Date(expense.deletedDate).toLocaleDateString()}</p>
       )}
     </div>
   );

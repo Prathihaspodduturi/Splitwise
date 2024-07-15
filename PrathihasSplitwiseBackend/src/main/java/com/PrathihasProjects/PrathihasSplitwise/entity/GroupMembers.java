@@ -1,27 +1,23 @@
 package com.PrathihasProjects.PrathihasSplitwise.entity;
 
-import com.PrathihasProjects.PrathihasSplitwise.compositeKey.GroupMembersId;
 import jakarta.persistence.*;
-
 import java.util.Date;
 
 @Entity
 @Table(name = "group_members")
 public class GroupMembers {
 
-    @EmbeddedId
-    private GroupMembersId id;  // Embedded ID instance
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
-    @MapsId("groupId")  // Maps the groupId part of the composite ID
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Groups group;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
-    @MapsId("username")  // Maps the username part of the composite ID
     @JoinColumn(name = "username", referencedColumnName = "username")
     private User user;
-
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "removed_by", referencedColumnName = "username", nullable = true)
@@ -40,18 +36,19 @@ public class GroupMembers {
     // Constructors
     public GroupMembers() {}
 
-    public GroupMembers(Groups group, User user) {
+    public GroupMembers(Groups group, User user, Date addedDate, User addedBy) {
         this.group = group;
         this.user = user;
-        this.id = new GroupMembersId(group.getId(), user.getUsername());
+        this.addedDate = addedDate;
+        this.addedBy = addedBy;
     }
 
-    // Getters and setters
-    public GroupMembersId getId() {
+    // Getters and Setters
+    public int getId() {
         return id;
     }
 
-    public void setId(GroupMembersId id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -70,7 +67,6 @@ public class GroupMembers {
     public void setUser(User user) {
         this.user = user;
     }
-
 
     public User getRemovedBy() {
         return removedBy;
@@ -116,6 +112,4 @@ public class GroupMembers {
                 ", addedBy=" + addedBy +
                 '}';
     }
-
 }
-

@@ -1,10 +1,8 @@
 package com.PrathihasProjects.PrathihasSplitwise.Controller;
 
-import com.PrathihasProjects.PrathihasSplitwise.compositeKey.GroupMembersId;
 import com.PrathihasProjects.PrathihasSplitwise.dao.GroupMembersDAOImpl;
 import com.PrathihasProjects.PrathihasSplitwise.dao.GroupsDAOImpl;
 import com.PrathihasProjects.PrathihasSplitwise.dao.UserDAOImpl;
-import com.PrathihasProjects.PrathihasSplitwise.dto.MemberInfo;
 import com.PrathihasProjects.PrathihasSplitwise.entity.GroupMembers;
 import com.PrathihasProjects.PrathihasSplitwise.entity.Groups;
 import com.PrathihasProjects.PrathihasSplitwise.entity.User;
@@ -66,17 +64,19 @@ public class AddMemberToGroupController {
                 return ResponseEntity.badRequest().body("User is already a member of this group");
             }
 
-            User oldMember = groupMembersDAO.isOldMember(newUsername, groupId);
-
-            if(oldMember !=null)
+            boolean oldMember = groupMembersDAO.isOldMember(newUsername, groupId);
+            System.out.println("oldMember"+oldMember);
+            if(oldMember)
             {
+
                 GroupMembers gmTemp = groupMembersDAO.getDetails(groupId, newUsername);
                 gmTemp.setAddedBy(curUser);
                 gmTemp.setRemovedBy(null);
                 gmTemp.setRemovedDate(null);
                 gmTemp.setAddedDate(new Date());
                 groupMembersDAO.save(gmTemp);
-                List<MemberInfo> members = groupMembersDAO.findMembersByGroupId(groupId);
+                List<String> members = groupMembersDAO.findMembersByGroupId(groupId);
+
                 return ResponseEntity.ok().body(members);
             }
 
@@ -84,11 +84,10 @@ public class AddMemberToGroupController {
             GroupMembers newMember = new GroupMembers();
             newMember.setUser(userToAdd);
             newMember.setGroup(group);
-            newMember.setId(new GroupMembersId(groupId, newUsername));
             newMember.setAddedBy(curUser);
             newMember.setAddedDate(new Date());
             groupMembersDAO.save(newMember);
-            List<MemberInfo> members = groupMembersDAO.findMembersByGroupId(groupId);
+            List<String> members = groupMembersDAO.findMembersByGroupId(groupId);
             return ResponseEntity.ok().body(members);
         }
         catch(Exception e) {

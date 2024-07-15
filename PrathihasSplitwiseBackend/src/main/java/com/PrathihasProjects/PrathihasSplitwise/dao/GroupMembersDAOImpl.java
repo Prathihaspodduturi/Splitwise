@@ -1,6 +1,5 @@
 package com.PrathihasProjects.PrathihasSplitwise.dao;
 
-import com.PrathihasProjects.PrathihasSplitwise.dto.MemberInfo;
 import com.PrathihasProjects.PrathihasSplitwise.entity.GroupMembers;
 import com.PrathihasProjects.PrathihasSplitwise.entity.Groups;
 import com.PrathihasProjects.PrathihasSplitwise.entity.User;
@@ -37,18 +36,10 @@ public class GroupMembersDAOImpl implements GroupMembersDAO {
         return members.stream().map(GroupMembers::getGroup).collect(Collectors.toList());
     }
 
-    /*@Override
-    public List<GroupMembers> findMembersByGroupId(int groupId) {
+    public List<String> findMembersByGroupId(int groupId) {
         return entityManager.createQuery(
-                        "SELECT gm FROM GroupMembers gm WHERE gm.group.id = :groupId", GroupMembers.class)
-                .setParameter("groupId", groupId)
-                .getResultList();
-    }*/
-
-    public List<MemberInfo> findMembersByGroupId(int groupId) {
-        return entityManager.createQuery(
-                        "SELECT new com.PrathihasProjects.PrathihasSplitwise.dto.MemberInfo(gm.user.username, gm.removedBy.username, gm.removedDate) " +
-                                "FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.removedBy Is NULL ", MemberInfo.class)
+                        "SELECT gm.user.username FROM GroupMembers gm WHERE gm.group.id = :groupId AND gm.addedDate IS NOT NULL AND gm.removedDate IS NULL",
+                        String.class)
                 .setParameter("groupId", groupId)
                 .getResultList();
     }
@@ -57,30 +48,32 @@ public class GroupMembersDAOImpl implements GroupMembersDAO {
     public boolean isMember(String username, int groupId) {
 
         try {
-            User user = entityManager.createQuery(
-                            "SELECT gm.user FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.user.username = :username and gm.removedBy IS NULL", User.class)
+            GroupMembers latestMembership = entityManager.createQuery(
+                            "SELECT gm FROM GroupMembers gm WHERE gm.group.id = :groupId AND gm.user.username = :username AND removedBy IS NULL", GroupMembers.class)
                     .setParameter("username", username)
                     .setParameter("groupId", groupId)
                     .getSingleResult();
 
-            return user != null;
+            return latestMembership != null;
         } catch (NoResultException e) {
             return false;
         }
     }
 
     @Override
-    public User isOldMember(String username, int groupId)
-    {
-        try {
+    public boolean isOldMember(String username, int groupId) {
 
-            return entityManager.createQuery(
-                            "SELECT gm.user FROM GroupMembers gm WHERE gm.group.id = :groupId and gm.user.username = :username and gm.removedBy IS NOT NULL", User.class)
+        try {
+            GroupMembers latestMembership = entityManager.createQuery(
+                            "SELECT gm FROM GroupMembers gm WHERE gm.group.id = :groupId AND gm.user.username = :username AND removedBy IS NOT NULL", GroupMembers.class)
                     .setParameter("username", username)
                     .setParameter("groupId", groupId)
                     .getSingleResult();
+
+            return latestMembership != null;
         } catch (NoResultException e) {
-            return null;
+
+            return false;
         }
     }
 

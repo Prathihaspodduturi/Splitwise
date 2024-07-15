@@ -83,6 +83,10 @@ public class ExpenseUpdateController {
             // Handle payers
             Map<String, BigDecimal> payers = expenseDTO.getPayers();
 
+            //System.out.println("Payers"+ payers);
+
+            //System.out.println("Paritipants")
+
             payers.forEach((payerUsername, amountPaid) -> {
                 ExpenseParticipants participantDB = expenseParticipantsDAO.findParticipant(expense.getId(), payerUsername);
                 if (participantDB != null) {

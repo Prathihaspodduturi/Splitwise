@@ -134,8 +134,8 @@ public class GroupDetailsService {
             detailedExpenses.add(expenseDetails);
         }
 
-        System.out.println("In service"+detailedExpenses);
-        System.out.println("In service"+detailedExpenses.size());
+        //System.out.println("In service"+detailedExpenses);
+        //System.out.println("In service"+detailedExpenses.size());
         return detailedExpenses;
     }
 

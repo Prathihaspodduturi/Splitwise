@@ -9,7 +9,9 @@ const EditDeleteButtons = ({
     setEditMode,
     setShowConfirmModal,
     setModalAction,
-    isPayment
+    isPayment,
+    handleAction,
+    handleRestoreAction 
 }) => { 
 
     //console.log("editDleteButtons isPayment"+isPayment);
@@ -25,9 +27,20 @@ const EditDeleteButtons = ({
         restoreLabel = "Restore Payment";
     }
 
-    const handleActionInitiation = (action) => {
-        setModalAction(action);
-        setShowConfirmModal(true);
+    // const handleActionInitiation = (action) => {
+    //     setModalAction(action);
+    //     setShowConfirmModal(true);
+    //     //setBlurBackground(true);
+    // }
+
+    const handleDeleteMethod = () => {
+        const message = `Are you sure you want to delete this ${isPayment ? 'Payment' : 'Expense'}?`
+        handleAction('delete', message);
+    }
+
+    const handleRestoreMethod = () => {
+        const message = `Are you sure you want to restore this ${isPayment ? 'Payment' : 'Expense'}?`
+        handleAction('restore', message);
     }
 
     return (
@@ -42,9 +55,7 @@ const EditDeleteButtons = ({
                     {gmRemovedDate === null && (
                         <button 
                             className={styles.deleteButton} 
-                            onClick={() => {
-                                handleActionInitiation('delete')
-                            }}
+                            onClick={handleDeleteMethod}
                         >
                             {deleteLabel}
                         </button>
@@ -55,9 +66,7 @@ const EditDeleteButtons = ({
                     {gmRemovedDate === null && (
                         <button 
                             className={styles.restoreButton} 
-                            onClick={() => {
-                                handleActionInitiation('restore')
-                            }}
+                            onClick={handleRestoreMethod}
                         >
                             {restoreLabel}
                         </button>

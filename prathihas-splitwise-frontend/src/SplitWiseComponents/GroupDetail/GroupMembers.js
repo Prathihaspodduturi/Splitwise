@@ -8,20 +8,22 @@ const GroupMembers = ({members, group, gmDetails, handleAddMember, handleRemoveM
         toggleAddMemberForm(false);
     }
 
-    return (
+    //console.log("in GroupMembers"+gmDetails);
 
+    return (
+        
         <div>
             <div className={styles.membersContainer}>
                         <h3 className={styles.username}>Group Members</h3>
                         <ul>
-                            {members.filter(member => member.removedBy === null).map(member => ( 
-                                <li key={member.username} className={styles.membersItem}>
-                                    <span className={styles.username}>{member.username}</span>
-                                    {(!group.settledUp && gmDetails.removedDate === null) && (
-                                        currentUser === member.username ? 
-                                            <button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>Leave Group</button>
+                            {members.map(username => ( 
+                                <li key={username} className={styles.membersItem}>
+                                    <span className={styles.username}>{username}</span>
+                                    {(!group.settledUp) && (gmDetails.removedDate === null) && (
+                                        currentUser === username ? 
+                                            <button onClick={() => handleRemoveMember(username)} className={styles.removeMemberButton}>Leave Group</button>
                                             :
-                                            <button onClick={() => handleRemoveMember(member.username)} className={styles.removeMemberButton}>
+                                            <button onClick={() => handleRemoveMember(username)} className={styles.removeMemberButton}>
                                                 Remove
                                             </button>
                                     )}
@@ -29,7 +31,7 @@ const GroupMembers = ({members, group, gmDetails, handleAddMember, handleRemoveM
                             ))}
                         </ul>
 
-                        {(!group.settledUp && gmDetails.removedDate === null) && <div onClick={toggleAddMemberForm} className={styles.addMemberButton} >
+                        {!group.settledUp && <div onClick={toggleAddMemberForm} className={styles.addMemberButton} >
                         {showAddMemberForm ? 'Hide Add Member Form' : 'Add Member'}
                         </div>}
                         {showAddMemberForm && (

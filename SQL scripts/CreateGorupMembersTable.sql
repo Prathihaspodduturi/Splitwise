@@ -1,11 +1,14 @@
+
+
 CREATE TABLE `group_members` (
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `group_id` int NOT NULL,
   `username` varchar(50) NOT NULL,
   `removed_by` varchar(50) DEFAULT NULL,
-  `removed_Date` datetime DEFAULT NULL,
+  `removed_date` datetime DEFAULT NULL,
   `added_by` varchar(50) DEFAULT NULL,
   `added_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`group_id`,`username`),
+  UNIQUE KEY `unique_group_user` (`group_id`, `username`),
   KEY `username` (`username`),
   KEY `group_members_ibfk_3` (`removed_by`),
   KEY `group_members_ibfk_4` (`added_by`),

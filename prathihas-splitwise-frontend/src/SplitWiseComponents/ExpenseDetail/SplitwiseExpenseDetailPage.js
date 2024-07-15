@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Navigate, useNavigate, useParams} from 'react-router-dom';
 import styles from './SplitwiseExpenseDetailPage.module.css';
-import ConfirmModal from '../../Modal/ConfirmModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ExpenseHeader from './ExpenseHeader';
@@ -9,23 +7,19 @@ import ExpenseParticipants from './ExpenseParticipants';
 import EditDeleteButtons from './EditDeleteButtons';
 import ExpenseForm from './ExpenseForm';
 
-const SplitwiseExpenseDetailPage = () => {
-    const { groupId, expenseId } = useParams();
+const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, handleAction, setEverythingToNull}) => {
+
     const [expense, setExpenseDetails] = useState(null);
     const [editExpense, setEditExpense] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [editMode, setEditMode] = useState(false);
     const [totalMismatch, setTotalMismatch] = useState(false);
-    const [connectionError, setConnectionError] = useState('');
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [modalAction, setModalAction] = useState(''); // 'delete' or 'restore'
-
-
-    const navigate = useNavigate();
+    const [connectionError, setConnectionError] = useState(''); 
 
     const fetchExpenseDetails = async () => {
         const token = sessionStorage.getItem('token');
+        console.log("expense id"+expenseId);
         setError('');
         setConnectionError('');
         try {
@@ -75,7 +69,7 @@ const SplitwiseExpenseDetailPage = () => {
     useEffect(() => {
         //console.log("inside useeffect");
         fetchExpenseDetails();
-    }, []);
+    }, [expenseId]);
 
 
     const handleInputChange = (name, value) => {
@@ -83,7 +77,7 @@ const SplitwiseExpenseDetailPage = () => {
             ...prev,
             [name]: value
         }));
-        // Reset the mismatch error when amount is edited
+        
         if (name === "amount") {
             setTotalMismatch(false);
         }
@@ -132,6 +126,7 @@ const SplitwiseExpenseDetailPage = () => {
             payers: payers
         };
 
+        console.log("updatePayload",updatePayload);
         try {
             setError('');
             setConnectionError('');
@@ -166,10 +161,13 @@ const SplitwiseExpenseDetailPage = () => {
             setEditMode(false);
             setTotalMismatch(false); // Reset on successful update
 
-            console.log(updatedExpense);
+            //console.log(updatedExpense);
 
             toast.success('Updated successfully!');
 
+            setTimeout(() => {
+                fetchExpenses();
+            }, 2000);
             //fetchExpenseDetails();
             /*setTimeout(() => {
                 navigate(`/splitwise/groups/${groupId}`);
@@ -200,11 +198,10 @@ const SplitwiseExpenseDetailPage = () => {
                 throw new Error(data);
             }
 
-            setShowConfirmModal(false);
-            toast.success('Deleted successfully!');
+            setEverythingToNull();
             
             setTimeout(() => {
-                navigate(`/splitwise/groups/${groupId}`);
+                fetchExpenses();
             }, 2000);
 
         } catch (error) {
@@ -218,6 +215,7 @@ const SplitwiseExpenseDetailPage = () => {
 
 
     const handleRestore = async () => {
+
         try {
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/expenses/${expenseId}/restore`, {
                 method: 'PUT',
@@ -233,11 +231,10 @@ const SplitwiseExpenseDetailPage = () => {
                 throw new Error(data);
             }
 
-            setShowConfirmModal(false);
-            toast.success('Restored successfully!');
+            setEverythingToNull();
 
             setTimeout(() => {
-                navigate(`/splitwise/groups/${groupId}`);
+                fetchExpenses();
             }, 2000);
             
         } catch (error) {
@@ -298,7 +295,7 @@ const SplitwiseExpenseDetailPage = () => {
             toast.success('Payment updated successfully!');
 
             setTimeout(() => {
-                navigate(`/splitwise/groups/${groupId}`);
+                fetchExpenses();
             }, 2000);
         } catch (error) {
             if (error instanceof TypeError) {
@@ -308,7 +305,17 @@ const SplitwiseExpenseDetailPage = () => {
             }
         }
     };
-    
+
+    console.log("action in expenseDetail", action);
+
+    useEffect(() => {
+        if (action === 'restore') {
+            handleRestore();
+        } else if (action === 'delete') {
+            handleDelete();
+        }
+    }, [action]);
+
     if(connectionError)
     {
         return (
@@ -321,7 +328,6 @@ const SplitwiseExpenseDetailPage = () => {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Expense Details</h1>
             {!editMode && (
                 <div className={styles.details}>
                     <ExpenseHeader expense={expense} />
@@ -330,9 +336,8 @@ const SplitwiseExpenseDetailPage = () => {
                         isDeleted={expense.isDeleted}
                         gmRemovedDate={expense.gmRemovedDate}
                         setEditMode={setEditMode}
-                        setShowConfirmModal={setShowConfirmModal}
-                        setModalAction={setModalAction}
                         isPayment={expense.isPayment}
+                        handleAction={handleAction}
                     />
                 </div>
             )}
@@ -371,15 +376,16 @@ const SplitwiseExpenseDetailPage = () => {
                 </div>
             )}
 
-            <ConfirmModal
-                isOpen={showConfirmModal}
-                onClose={() => setShowConfirmModal(false)}
-                onConfirm={modalAction === 'delete' ? handleDelete : handleRestore}
-                message={`Are you sure you want to ${modalAction} this ${expense.isPayment ? 'Payment' : 'Expense'}?`}
-            />
-            <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
-        </div>
+            
+            </div>
     );
 };
 
 export default SplitwiseExpenseDetailPage;
+
+{/* <ConfirmModal
+                isOpen={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                onConfirm={modalAction === 'delete' ? handleDelete : handleRestore}
+                message={`Are you sure you want to ${modalAction} this ${expense.isPayment ? 'Payment' : 'Expense'}?`}
+            /> */}

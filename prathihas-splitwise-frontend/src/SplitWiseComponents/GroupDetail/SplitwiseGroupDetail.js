@@ -14,6 +14,7 @@ import ConfirmModal from '../../Modal/ConfirmModal';
 import styles1 from '../../toastStyles.module.css';
 
 
+
 const SplitwiseGroupDetail = () => {
 
     const currentUser = sessionStorage.getItem('username');
@@ -45,8 +46,6 @@ const SplitwiseGroupDetail = () => {
     const [showGroupMembers, setShowGroupMembers] = useState(false);
     const [showExpenses, setShowExpenses] = useState(true);
     const [showDeletedExpenses, setShowDeletedExpenses] = useState(false);
-    const [activeExpenses, setActiveExpenses] = useState([]);
-    const [deletedExpenses, setDeletedExpenses] = useState([]);
     const [showBalances, setShowBalances] = useState(false);
     const [balances, setBalances] = useState([]);
     
@@ -62,6 +61,9 @@ const SplitwiseGroupDetail = () => {
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [memberToRemove, setMemberToRemove] = useState(null);
 
+    const [action, setAction] = useState(null);
+    const [showMessage, setShowMessage] = useState(null);
+    const [tempAction, setTempAction] = useState(null);
 
     const fetchGroupDetails = useCallback(async () => {
         setError('');
@@ -83,33 +85,40 @@ const SplitwiseGroupDetail = () => {
             const data = await response.json();
             //console.log("data", data);
             setMembers(data.members);
-            console.log("detailed", JSON.stringify(data.detailedExpenses, null, 2));
+            //console.log("detailed", JSON.stringify(data.detailedExpenses, null, 2));
             
             //console.log("detailedExpenses"+data.detailedExpenses);
             setGroup(data.group);
             setGmDetails(data.gmDetails); 
 
-            
-
             const filteredExpenses = data.detailedExpenses.filter(exp => {
                 const expDate = new Date(exp.dateCreated);
                 const addedDate = new Date(data.gmDetails.addedDate);
                 const removedDate = data.gmDetails.removedDate ? new Date(data.gmDetails.removedDate) : new Date();
-                return expDate >= addedDate && expDate <= removedDate;
+            
+                const updatedDate = exp.lastUpdatedDate ? new Date(exp.lastUpdatedDate) : null;
+                const deletedDate = exp.deletedDate ? new Date(exp.deletedDate) : null;
+            
+                const isExpDateValid = expDate >= addedDate && expDate <= removedDate;
+                const isUpdatedDateValid = updatedDate ? (updatedDate >= addedDate && updatedDate <= removedDate) : false;
+                const isDeletedDateValid = deletedDate ? (deletedDate >= addedDate && deletedDate <= removedDate) : false;
+            
+                return isExpDateValid || isUpdatedDateValid || isDeletedDateValid;
             });
 
-            console.log("filteredExpenses", JSON.stringify(filteredExpenses, null, 2));
-            const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
-            setExpenses(data.detailedExpenses);
-            const tempActiveExpenses = sortedExpenses.filter(exp => !exp.deleted);
-            const tempDeletedExpenses = sortedExpenses.filter(exp => exp.deleted);
-            setActiveExpenses(tempActiveExpenses);
-            setDeletedExpenses(tempDeletedExpenses);
+            
+            //console.log("filteredExpenses", JSON.stringify(filteredExpenses, null, 2));
+            // const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
+            // setExpenses(data.detailedExpenses);
+            // const tempActiveExpenses = sortedExpenses.filter(exp => !exp.deleted);
+            // const tempDeletedExpenses = sortedExpenses.filter(exp => exp.deleted);
+            // setActiveExpenses(tempActiveExpenses);
+            // setDeletedExpenses(tempDeletedExpenses);
             setNewGroupName(data.groupName);
-            console.log(data.deletedExpenses);
-            console.log(sortedExpenses);
-            console.log("active"+activeExpenses)
-            console.log("expenses"+expenses);
+            //console.log(data.deletedExpenses);
+            //console.log(sortedExpenses);
+            //console.log("active"+activeExpenses)
+            //console.log("expenses"+expenses);
             //console.log(data.transactions);
             setBalances(data.transactions);
 
@@ -127,7 +136,7 @@ const SplitwiseGroupDetail = () => {
     useEffect(() => {
         //console.log("print inside useEffect");
         fetchGroupDetails();
-    }, []);
+    }, [groupId]);
 
     const handleUpdateGroupName = async (event) => {
         event.preventDefault();
@@ -350,12 +359,12 @@ const SplitwiseGroupDetail = () => {
             });
 
 
-            const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
-            setExpenses(sortedExpenses);
-            const tempActiveExpenses = sortedExpenses.filter(exp => !exp.deleted);
-            const tempDeletedExpenses = sortedExpenses.filter(exp => exp.deleted);
-            setActiveExpenses(tempActiveExpenses);
-            setDeletedExpenses(tempDeletedExpenses);
+            // const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
+            // setExpenses(sortedExpenses);
+            // const tempActiveExpenses = sortedExpenses.filter(exp => !exp.deleted);
+            // const tempDeletedExpenses = sortedExpenses.filter(exp => exp.deleted);
+            // setActiveExpenses(tempActiveExpenses);
+            // setDeletedExpenses(tempDeletedExpenses);
             //setNewGroupName(data.groupName);
             //console.log(data.transactions);
             setBalances(data.transactions);
@@ -448,11 +457,11 @@ const SplitwiseGroupDetail = () => {
             console.log("ater deleted");
 
             console.log("before setting active");
-            setActiveExpenses(tempActiveExpenses);
+            //setActiveExpenses(tempActiveExpenses);
             console.log("after setting active");
 
             console.log("before setting deleted");
-            setDeletedExpenses(tempDeletedExpenses);
+            //setDeletedExpenses(tempDeletedExpenses);
             console.log("after setting deleted");
 
             setBalances(data.transactions);
@@ -461,24 +470,25 @@ const SplitwiseGroupDetail = () => {
             if (error instanceof TypeError) {
                 setConnectionError("Please try again later.");
             } else {
-                toast.errorMessage(error.message);
+                toast.error(error.message);
             }
         }
     };
 
 
-    const handleRemoveMember = async (memberUsername) => {
+    const handleRemoveMember = async () => {
         if (!memberToRemove) return;
 
         setError('');
         setConnectionError('');
 
         console.log("inside 10");
+        console.log(memberToRemove);
         console.log(balances);
         const netBalance = balances.reduce((acc, balance) => {
-            if (balance.fromUser === memberUsername) {
+            if (balance.fromUser === memberToRemove) {
                 return acc - balance.amount;
-            } else if (balance.toUser === memberUsername) {
+            } else if (balance.toUser === memberToRemove) {
                 return acc + balance.amount;
             }
             return acc;
@@ -490,12 +500,13 @@ const SplitwiseGroupDetail = () => {
         // Check if the net balance is zero
         if (netBalance !== 0) {
             //closeConfirmModal();
-            if(currentUser === memberUsername)
+            if(currentUser === memberToRemove)
             {
-                toast.errorMessage(`Balances not settled up. Please settle all balances before leaving.`);
+                toast.error(`Balances not settled up. Please settle all balances before leaving.`);
+                closeConfirmModal()
                 return;
             }
-            toast.errorMessage(`Balances not settled up for ${memberUsername}. Please settle all balances before removing.`);
+            toast.error(`Balances not settled up for ${memberToRemove}. Please settle all balances before removing.`);
             closeConfirmModal()
             return;
         }
@@ -520,7 +531,16 @@ const SplitwiseGroupDetail = () => {
                 }
     
                 closeConfirmModal();
-                toast.success(`${memberToRemove} has been removed successfully!`);
+
+                if(currentUser === memberToRemove)
+                {
+                    toast.success(`You left the group successfully!`);
+                }
+                else
+                {
+                    toast.success(`${memberToRemove} has been removed successfully!`);
+                }
+
                 
                 // Re-fetch the group details to update the list of members
                 fetchGroupDetails();
@@ -530,7 +550,7 @@ const SplitwiseGroupDetail = () => {
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
                 } else {
-                    setError(error.message);
+                    toast.error(error.message);
                 }
             }
     };
@@ -683,6 +703,30 @@ const SplitwiseGroupDetail = () => {
         setPaymentAmount('');
     };
     
+    const handleShowPaymentModalClick = (e) => {
+        e.stopPropagation();
+    }
+
+    const handleAction = (act, message) => {
+        setAction(act);
+        setShowMessage(message);
+        setIsConfirmModalOpen(true);
+    }
+
+    const handleTempAction  = () => {
+        setTempAction(action);
+    }
+
+    const setEverythingToNull = () => {
+        if(tempAction === 'delete')
+            toast.success('Deleted Successfully!')
+        else
+            toast.success('Restored Successfully!');
+
+        setAction(null);
+        setShowMessage(null);
+        setTempAction(null);
+    }
 
     if (connectionError) {
         return (
@@ -694,6 +738,9 @@ const SplitwiseGroupDetail = () => {
 
     if (error) return <p>{error}</p>;
 
+    console.log("showMessage"+showMessage);
+    console.log("action"+action);
+    console.log("tempAction"+tempAction);
 
     if(showUpdateForm)
     {
@@ -751,14 +798,14 @@ const SplitwiseGroupDetail = () => {
                             {showPayers && (
                                 <div>
                                     <div>
-                                        {members.map(member => (
-                                            <div key={member.username} className={styles.inputGroup}>
-                                                <label htmlFor={member.username}>{member.username}</label>
+                                        {members.map(memberUser => (
+                                            <div key={memberUser} className={styles.inputGroup}>
+                                                <label htmlFor={memberUser}>{memberUser}</label>
                                                 <input
                                                     type="number"
-                                                    id={member.username}
-                                                    value={payers.get(member.username) || ''}
-                                                    onChange={e => setPayers(new Map(payers.set(member.username, e.target.value)))}
+                                                    id={memberUser}
+                                                    value={payers.get(memberUser) || ''}
+                                                    onChange={e => setPayers(new Map(payers.set(memberUser, e.target.value)))}
                                                 />
                                             </div>
                                         ))}
@@ -776,14 +823,14 @@ const SplitwiseGroupDetail = () => {
                             {showParticipants && (
                                 <div>
                                     <div>
-                                        {members.map(member => (
-                                            <div key={member.username} className={styles.inputGroup}>
-                                                <label htmlFor={member.username}>{member.username}</label>
+                                        {members.map(memberUser => (
+                                            <div key={memberUser} className={styles.inputGroup}>
+                                                <label htmlFor={memberUser}>{memberUser}</label>
                                                 <input
                                                     type="checkbox"
-                                                    id={member.username}
-                                                    checked={!!participants.get(member.username)}
-                                                    onChange={e => setParticipants(new Map(participants.set(member.username, e.target.checked)))}
+                                                    id={memberUser}
+                                                    checked={!!participants.get(memberUser)}
+                                                    onChange={e => setParticipants(new Map(participants.set(memberUser, e.target.checked)))}
                                                 />
                                             </div>
                                         ))}
@@ -792,8 +839,8 @@ const SplitwiseGroupDetail = () => {
                                 </div>
                             )}
                             
-                            <div className={styles.flexRowAddExpense}>
-                                <button type="submit" className={`${styles.buttonSubmitAddExpense} ${styles.flexButtonAddExpense}`}>Done</button>
+                            <div className={styles.updateFormButtonGroup}>
+                                <button type="submit" className={`${styles.buttonSubmitAddExpense}`}>Done</button>
                                 <button type="button" onClick={cancelAddExpense} className={`${styles.buttonCancelAddExpense} ${styles.flexButton}`}>
                                     Cancel
                                 </button>
@@ -805,30 +852,6 @@ const SplitwiseGroupDetail = () => {
             className={styles1.ToastifyToast}/>
             </div>
             
-        );
-    }
-
-
-    if (showPaymentModal) {
-        return (
-            <div className={styles.paymentModal}>
-                <h4>{selectedBalance.fromUser} to {selectedBalance.toUser}</h4>
-                <div className={styles.paymentModalContent}>
-                    <label htmlFor="paymentAmount">Amount to Pay:</label>
-                    <input
-                        type="number"
-                        id="paymentAmount"
-                        className={styles.paymentModalInput}
-                        value={paymentAmount}
-                        onChange={e => setPaymentAmount(e.target.value)}
-                        placeholder="Enter amount"
-                    />
-                    <button onClick={() => handlePayment(selectedBalance)} className={styles.paymentConfirmButton}>Confirm Payment</button>
-                    <button onClick={closePaymentModal} className={styles.paymentCancelButton}>Cancel</button>
-                </div>
-                <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover 
-                className={styles1.ToastifyToast}/>
-            </div>
         );
     }
     
@@ -871,40 +894,30 @@ const SplitwiseGroupDetail = () => {
 
                 {showExpenses && (
                     <div>
+                    {(!group.settledUp && gmDetails.removedDate === null) && (
+                    <button onClick={toggleAddExpense} className={styles.addExpenseButton}>
+                        Add Expense
+                    </button>
+                    )}
                     <ExpensesList 
-                        group={group}
-                        expenses={expenses} 
-                        activeExpenses={activeExpenses}
                         groupId={groupId}
-                        gmDetails={gmDetails}
-                        toggleAddExpense={toggleAddExpense}
+                        whichExpenses={true}
+                        action={tempAction}
+                        handleAction={handleAction}
+                        setEverythingToNull={setEverythingToNull}
                     />
                     </div>
                 )}
                 
                 {showDeletedExpenses && (
-                    <div className={styles.deletedExpensesContainer}>
-                        <h3>All Deleted Expenses</h3>
-                        {deletedExpenses.length > 0 ? (
-                            <ul>
-                            {deletedExpenses.map((expense, index) => (
-                                <li key={index} className={styles.deletedExpensesItem}>
-                                    <strong>
-                                        <NavLink to={`/splitwise/groups/${groupId}/expenses/${expense.id}`}>
-                                            {expense.expenseName}
-                                        </NavLink>
-                                    </strong> - ${expense.amount.toFixed(2)}
-                                    (Date: {new Date(expense.dateCreated).toLocaleDateString()})
-                                    {expense.notInvolved ?
-                                        <p>Not involved</p> :
-                                        <p>You {expense.involved >= 0 ? 'get back' : 'owe'} ${Math.abs(expense.involved).toFixed(2)}</p>
-                                    }
-                                </li>
-                            ))}
-                        </ul>
-                        ) : (
-                            <p>No deleted expenses.</p>
-                        )}
+                    <div>
+                    <ExpensesList 
+                        groupId={groupId}
+                        whichExpenses={false}
+                        action={tempAction}
+                        handleAction={handleAction}
+                        setEverythingToNull={setEverythingToNull}
+                    />
                     </div>
                 )} 
 
@@ -953,13 +966,44 @@ const SplitwiseGroupDetail = () => {
                 )
             }
 
-            <ConfirmModal
+            {showPaymentModal && (
+                <div className={styles.paymentModal} onClick={closePaymentModal}>
+                <div className={styles.paymentModalContent} onClick={handleShowPaymentModalClick}>
+                    <h3>{selectedBalance.fromUser} to {selectedBalance.toUser}</h3>
+                    <label htmlFor="paymentAmount">Amount to Pay:</label>
+                    <input
+                        type="number"
+                        id="paymentAmount"
+                        className={styles.paymentModalInput}
+                        value={paymentAmount}
+                        onChange={e => setPaymentAmount(e.target.value)}
+                        placeholder="Enter amount"
+                    />
+                    <button onClick={() => handlePayment(selectedBalance)} className={styles.paymentConfirmButton}>Confirm Payment</button>
+                    <button onClick={closePaymentModal} className={styles.paymentCancelButton}>Cancel</button>
+                </div>
+                <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover 
+                className={styles1.ToastifyToast}/>
+            </div>
+            )}
+
+
+
+            {memberToRemove !== null && (<ConfirmModal
                 isOpen={isConfirmModalOpen}
                 onClose={closeConfirmModal}
                 onConfirm={handleRemoveMember}
-                message={`Are you sure you want to remove ${memberToRemove} from the group?`}
-            />
-            <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover 
+                message={`Are you sure you want to ${currentUser === memberToRemove ? 'leave' : 'remove ' + memberToRemove + ' from'} the group?`}
+            />)}
+
+            {showMessage !== null && (<ConfirmModal
+                isOpen={isConfirmModalOpen}
+                onClose={closeConfirmModal}
+                onConfirm={handleTempAction}
+                message={showMessage}
+            />)}
+
+            <ToastContainer position="top-center" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss={false} draggable={true} pauseOnHover={true} 
             className={styles1.ToastifyToast}/>
         </div>
         
