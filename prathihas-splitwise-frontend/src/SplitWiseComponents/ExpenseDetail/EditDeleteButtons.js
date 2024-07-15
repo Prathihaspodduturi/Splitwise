@@ -7,11 +7,8 @@ const EditDeleteButtons = ({
     isDeleted,
     gmRemovedDate,
     setEditMode,
-    setShowConfirmModal,
-    setModalAction,
     isPayment,
     handleAction,
-    handleRestoreAction 
 }) => { 
 
     //console.log("editDleteButtons isPayment"+isPayment);

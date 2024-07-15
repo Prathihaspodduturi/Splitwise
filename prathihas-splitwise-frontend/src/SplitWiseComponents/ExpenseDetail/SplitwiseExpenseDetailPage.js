@@ -349,6 +349,12 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
         }
     }, [action]);
 
+    const handleCancelButton = () => {
+        setTotalMismatch('');
+        setEditMode(false);
+        setEditExpense({ ...expense });
+    }
+
     if(connectionError)
     {
         return (
@@ -359,7 +365,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
 
-    console.log("totalMismatch", totalMismatch);
+    //console.log("totalMismatch", totalMismatch);
 
     return (
         <div className={styles.container}>
@@ -388,7 +394,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                     <div className={styles.buttonContainer}>
                         {totalMismatch && <p className={styles.warning}>{totalMismatch}</p>}
                         <button className={styles.saveButton} onClick={handleUpdate}>Save Changes</button>
-                        <button className={styles.cancelButton} onClick={() => setEditMode(false)}>Cancel</button>
+                        <button className={styles.cancelButton} onClick={handleCancelButton}>Cancel</button>
                     </div>
                 </div>
             )}
@@ -405,7 +411,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                     />
                     <div className={styles.buttonContainer}>
                         <button className={styles.saveButton} onClick={handleUpdatePayment}>Save Changes</button>
-                        <button className={styles.cancelButton} onClick={() => setEditMode(false)}>Cancel</button>
+                        <button className={styles.cancelButton} onClick={handleCancelButton}>Cancel</button>
                     </div>
                 </div>
             )}
