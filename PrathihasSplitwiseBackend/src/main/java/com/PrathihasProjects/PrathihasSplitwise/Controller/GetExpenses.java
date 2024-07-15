@@ -25,17 +25,14 @@ import java.util.Map;
 public class GetExpenses {
 
     private final GroupsDAOImpl theGroupsDAOImpl;
-    private final GroupMembersDAOImpl groupMembersDAO;
     private final ExpensesDAOImpl expensesDAO;
     private final GroupDetailsService groupDetailsService;
 
     @Autowired
     public GetExpenses(GroupsDAOImpl theGroupsDAOImpl,
-                                     GroupMembersDAOImpl groupMembersDAO,
                                      ExpensesDAOImpl expensesDAO,
                                      GroupDetailsService groupDetailsService) {
         this.theGroupsDAOImpl = theGroupsDAOImpl;
-        this.groupMembersDAO = groupMembersDAO;
         this.expensesDAO = expensesDAO;
         this.groupDetailsService = groupDetailsService;
     }

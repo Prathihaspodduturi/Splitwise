@@ -23,8 +23,8 @@ const SplitwiseGroupDetail = () => {
     const navigate = useNavigate();
     const [group, setGroup] = useState(null);
     const [gmDetails, setGmDetails] = useState(null); 
-    const [expenses, setExpenses] = useState([]);
-    const [members, setMembers] = useState([]);
+
+    const [members, setMembers] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -83,43 +83,11 @@ const SplitwiseGroupDetail = () => {
             }
 
             const data = await response.json();
-            //console.log("data", data);
             setMembers(data.members);
-            //console.log("detailed", JSON.stringify(data.detailedExpenses, null, 2));
-            
-            //console.log("detailedExpenses"+data.detailedExpenses);
             setGroup(data.group);
             setGmDetails(data.gmDetails); 
-
-            const filteredExpenses = data.detailedExpenses.filter(exp => {
-                const expDate = new Date(exp.dateCreated);
-                const addedDate = new Date(data.gmDetails.addedDate);
-                const removedDate = data.gmDetails.removedDate ? new Date(data.gmDetails.removedDate) : new Date();
             
-                const updatedDate = exp.lastUpdatedDate ? new Date(exp.lastUpdatedDate) : null;
-                const deletedDate = exp.deletedDate ? new Date(exp.deletedDate) : null;
-            
-                const isExpDateValid = expDate >= addedDate && expDate <= removedDate;
-                const isUpdatedDateValid = updatedDate ? (updatedDate >= addedDate && updatedDate <= removedDate) : false;
-                const isDeletedDateValid = deletedDate ? (deletedDate >= addedDate && deletedDate <= removedDate) : false;
-            
-                return isExpDateValid || isUpdatedDateValid || isDeletedDateValid;
-            });
-
-            
-            //console.log("filteredExpenses", JSON.stringify(filteredExpenses, null, 2));
-            // const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
-            // setExpenses(data.detailedExpenses);
-            // const tempActiveExpenses = sortedExpenses.filter(exp => !exp.deleted);
-            // const tempDeletedExpenses = sortedExpenses.filter(exp => exp.deleted);
-            // setActiveExpenses(tempActiveExpenses);
-            // setDeletedExpenses(tempDeletedExpenses);
             setNewGroupName(data.groupName);
-            //console.log(data.deletedExpenses);
-            //console.log(sortedExpenses);
-            //console.log("active"+activeExpenses)
-            //console.log("expenses"+expenses);
-            //console.log(data.transactions);
             setBalances(data.transactions);
 
             setIsLoading(false);
@@ -195,16 +163,14 @@ const SplitwiseGroupDetail = () => {
             }
 
             toast.success('Member added successfully!');
-            //toast.success('Member added successfully!');
-            //setConnectionError("Member added successfully!");
+
             const data = await response.json();
-            console.log(data);
+            //console.log(data);
             setMembers(data);
             
             setNewUsername('');
             setShowAddMemberForm(false);
-            //fetchGroupDetails(); 
-            //console.log(members);
+            
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Please try again later.");
@@ -346,27 +312,8 @@ const SplitwiseGroupDetail = () => {
 
             const data = await response.json();
 
-            //console.log("data", data);
-            //console.log(data.deletedExpenses);
-            //setGroup(data.group);
             setGmDetails(data.gmDetails); 
 
-            const filteredExpenses = data.detailedExpenses.filter(exp => {
-                const expDate = new Date(exp.dateCreated);
-                const addedDate = new Date(data.gmDetails.addedDate);
-                const removedDate = data.gmDetails.removedDate ? new Date(data.gmDetails.removedDate) : new Date();
-                return expDate >= addedDate && expDate <= removedDate;
-            });
-
-
-            // const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
-            // setExpenses(sortedExpenses);
-            // const tempActiveExpenses = sortedExpenses.filter(exp => !exp.deleted);
-            // const tempDeletedExpenses = sortedExpenses.filter(exp => exp.deleted);
-            // setActiveExpenses(tempActiveExpenses);
-            // setDeletedExpenses(tempDeletedExpenses);
-            //setNewGroupName(data.groupName);
-            //console.log(data.transactions);
             setBalances(data.transactions);
 
             toast.success('Expense added successfully!');
@@ -422,50 +369,14 @@ const SplitwiseGroupDetail = () => {
     
             const data = await response.json();
 
-            // console.log(data.detailedExpenses);
-            // console.log(data.transactions);
-
             toast.success('Payment recorded successfully!');
 
             setTimeout(() => {
                 setShowPaymentModal(false);
             }, 2000);
-            
-
-            console.log("before filtered");
-
-            const filteredExpenses = data.detailedExpenses.filter(exp => {
-                const expDate = new Date(exp.dateCreated);
-                const addedDate = new Date(data.gmDetails.addedDate);
-                const removedDate = data.gmDetails.removedDate ? new Date(data.gmDetails.removedDate) : new Date();
-                return expDate >= addedDate && expDate <= removedDate;
-            });
-
-            console.log("after filtered");
-            const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
-
-            console.log("before sorted");
-            setExpenses(sortedExpenses);
-            console.log("after sorted");
-
-            console.log("before active");
-            const tempActiveExpenses = sortedExpenses.filter(exp => !exp.deleted);
-            console.log("after active");
-
-            console.log("before deleted");
-            const tempDeletedExpenses = sortedExpenses.filter(exp => exp.deleted);
-            console.log("ater deleted");
-
-            console.log("before setting active");
-            //setActiveExpenses(tempActiveExpenses);
-            console.log("after setting active");
-
-            console.log("before setting deleted");
-            //setDeletedExpenses(tempDeletedExpenses);
-            console.log("after setting deleted");
 
             setBalances(data.transactions);
-            console.log("after transactions");
+            //console.log("after transactions");
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Please try again later.");
@@ -532,6 +443,8 @@ const SplitwiseGroupDetail = () => {
     
                 closeConfirmModal();
 
+                //const responseMembers = await response.json();
+
                 if(currentUser === memberToRemove)
                 {
                     toast.success(`You left the group successfully!`);
@@ -540,10 +453,8 @@ const SplitwiseGroupDetail = () => {
                 {
                     toast.success(`${memberToRemove} has been removed successfully!`);
                 }
-
                 
-                // Re-fetch the group details to update the list of members
-                fetchGroupDetails();
+                setMembers(prevMembers => prevMembers.filter(member => member !== memberToRemove));
             } catch (error) {
                 closeConfirmModal();
                 console.log(error);

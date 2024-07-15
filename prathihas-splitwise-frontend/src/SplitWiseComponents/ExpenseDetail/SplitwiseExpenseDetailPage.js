@@ -14,7 +14,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [editMode, setEditMode] = useState(false);
-    const [totalMismatch, setTotalMismatch] = useState(false);
+    const [totalMismatch, setTotalMismatch] = useState('');
     const [connectionError, setConnectionError] = useState(''); 
 
     const fetchExpenseDetails = async () => {
@@ -79,7 +79,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
         }));
         
         if (name === "amount") {
-            setTotalMismatch(false);
+            setTotalMismatch('');
         }
     };
 
@@ -108,17 +108,50 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
             totalContributions = totalContributions + (parseFloat(participant.amountPaid) || 0);
         })
         if (totalContributions !== parseFloat(editExpense.amount)) {
-            setTotalMismatch(true);
+            setTotalMismatch("Total expense amount must be equal to the sum of the total contributions by payers.");
             return; 
         }
 
         const participants = {};
         const payers = {};
 
+        let payersCount = 0, participantCount = 0;
+
+        let payerUsername="", participantUsername="";
+
         editExpense.participants.forEach(participant => {
             participants[participant.username] = participant.isChecked;
+            if(participant.isChecked)
+            {
+                participantCount++;
+                participantUsername = participant.username;
+            }
+
             payers[participant.username] = parseFloat(participant.amountPaid) || 0;
+
+            if(payers[participant.username] > 0)
+            {
+                payersCount++;
+                payerUsername = participant.username;
+            }
         });
+
+        if(participantCount === 0)
+        {
+            setTotalMismatch("No participant selected");
+            return;
+        }
+        else
+        {
+            if(participantCount === 1)
+            {
+                if(payersCount === 1 && participantUsername === payerUsername)
+                {
+                    setTotalMismatch("The only participant and payer are the same");
+                    return;
+                }
+            }
+        }
 
         const updatePayload = {
             ...editExpense,
@@ -159,7 +192,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
             setExpenseDetails(dataWithOutChecked);
             //setExpenseDetails(updatedExpense);
             setEditMode(false);
-            setTotalMismatch(false); // Reset on successful update
+            setTotalMismatch(''); // Reset on successful update
 
             //console.log(updatedExpense);
 
@@ -326,6 +359,8 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
 
+    console.log("totalMismatch", totalMismatch);
+
     return (
         <div className={styles.container}>
             {!editMode && (
@@ -349,10 +384,9 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                         handleInputChange={handleInputChange}
                         handleParticipantAmountChange={handleParticipantAmountChange}
                         handleParticipantCheckboxChange={handleParticipantCheckboxChange}
-                        totalMismatch={totalMismatch}
                     />
                     <div className={styles.buttonContainer}>
-                        {totalMismatch && <p className="warning">Total expense amount must be equal to the sum of the total contributions by payers.</p>}
+                        {totalMismatch && <p className={styles.warning}>{totalMismatch}</p>}
                         <button className={styles.saveButton} onClick={handleUpdate}>Save Changes</button>
                         <button className={styles.cancelButton} onClick={() => setEditMode(false)}>Cancel</button>
                     </div>

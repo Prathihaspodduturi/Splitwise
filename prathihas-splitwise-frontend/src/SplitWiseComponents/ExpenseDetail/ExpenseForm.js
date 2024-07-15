@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './SplitwiseExpenseDetailPage.module.css';
 
-const ExpenseForm = ({ editExpense, handleInputChange, handleParticipantAmountChange, handleParticipantCheckboxChange, totalMismatch, handleUpdate, setEditMode }) => {
+const ExpenseForm = ({ editExpense, handleInputChange, handleParticipantAmountChange, handleParticipantCheckboxChange}) => {
     return (
         <div className={styles.formContainer}>
             <div className={styles.formRow}>
