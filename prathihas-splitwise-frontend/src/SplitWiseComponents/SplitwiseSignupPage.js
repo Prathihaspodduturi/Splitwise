@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './SplitwiseSignupPage.module.css';
+import styles from './SplitwiseLoginPage.module.css';
 
 const SplitwiseSignupPage = () => {
     const navigate = useNavigate();
@@ -58,10 +58,11 @@ const SplitwiseSignupPage = () => {
     }
 
     return (
-        <div className={styles.container}>
-            {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+        <div className={styles.page}>
+            <div className={styles.container}>
+            {errorMessage && <div className={styles.error}>{errorMessage}</div>}
             {signUpMessage && <div className={styles.signUpMessage}>{signUpMessage}</div>}
-            <h2>Sign Up</h2>
+            <h2 className={styles.heading}>Sign Up</h2>
             <form onSubmit={handleSubmit}>
                 <div className={styles.formGroup}>
                     <label htmlFor="username" className={styles.label}>Username:</label>
@@ -74,9 +75,11 @@ const SplitwiseSignupPage = () => {
                 <button className={styles.button} type="submit">Sign Up</button>
             </form>
             <div>
-                <p>Already a user: <span onClick={handleLoginRedirect} className={styles.link}>Login Here</span></p> 
+                <p className={styles.para}>Already a user: <span onClick={handleLoginRedirect} className={styles.promptLink}>Login Here</span></p> 
             </div>
         </div>
+        </div>
+        
     );
 };
 

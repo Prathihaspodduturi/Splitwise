@@ -76,12 +76,13 @@ const SplitwiseLoginPage  = () => {
     }
 
     return (
-      <div className={styles.container}>
+      <div className={styles.page}>
+        <div className={styles.container}>
           {connectionError && (<div className={styles.error}>{connectionError}</div>)}
           {error && <div className={styles.error}>{error}</div>}
           {!connectionError && (
               <>
-                  <h1>Please login to your account</h1>
+                  <h1 className={styles.heading}>Please login to your account</h1>
                   <form onSubmit={handleSubmit}>
                       <div className={styles.formGroup}>
                           <label htmlFor="username" className={styles.label}>Username:</label>
@@ -100,13 +101,15 @@ const SplitwiseLoginPage  = () => {
                                  className={styles.input} />
                       </div>
                       <button type="submit" className={styles.button}>Log In</button>
-                      <div className={styles.signUpPrompt}>
-                          <p>Don't have an account? <span className={styles.signUpLink} onClick={handleSignUpReDirect}>Sign Up</span></p>
+                      <div className={styles.prompt}>
+                          <p className={styles.para}>Don't have an account? <span className={styles.promptLink} onClick={handleSignUpReDirect}>Sign Up</span></p>
                       </div>
                   </form>
               </>
           )}
       </div>
+      </div>
+      
     );
 };
 

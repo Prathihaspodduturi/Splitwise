@@ -520,12 +520,6 @@ const SplitwiseGroupDetail = () => {
     // Function to toggle add expense form visibility
     const toggleAddExpense = () => {
         setShowAddExpenseForm(true);
-        setShowExpenses(false);
-        setShowBalances(false);
-        setShowAddMemberForm(false);
-        setShowDeletedExpenses(false);
-        setShowGroupMembers(false);
-        setShowEditOptions(false);
         //console.log("showExpenses", showExpenses);
     };
 
@@ -678,98 +672,14 @@ const SplitwiseGroupDetail = () => {
         ); 
     }
 
-
-    if(showAddExpenseForm) {
-        return (
-            <div className={`${styles.appContainer} ${blurBackground ? styles.blurred : ''}`}>
-                {showAddExpenseForm && (
-                    <div className={styles.addExpenseContainer}>
-                        <form onSubmit={handleAddExpense} className={styles.formContainerAddExpense}>
-                            <input
-                                type="text"
-                                className={styles.inputAddExpense}
-                                placeholder="Expense Name"
-                                value={newExpenseName}
-                                onChange={e => setNewExpenseName(e.target.value)}
-                                required
-                            />
-                            <input
-                                type="number"
-                                className={styles.inputAddExpense}
-                                placeholder="Total Amount"
-                                value={newExpenseAmount}
-                                onChange={e => setNewExpenseAmount(e.target.value)}
-                                required
-                            />
-                            <div onClick={togglePayers} className={`${styles.buttonAddExpense} ${styles.flexButtonAddExpense}`}>
-                                Add Payers
-                            </div>
-
-                            
-                            {showPayers && (
-                                <div>
-                                    <div>
-                                        {members.map(memberUser => (
-                                            <div key={memberUser} className={styles.inputGroup}>
-                                                <label htmlFor={memberUser}>{memberUser}</label>
-                                                <input
-                                                    type="number"
-                                                    id={memberUser}
-                                                    value={payers.get(memberUser) || ''}
-                                                    onChange={e => setPayers(new Map(payers.set(memberUser, e.target.value)))}
-                                                />
-                                            </div>
-                                        ))}
-                                        <button onClick={() => setShowPayers(false)}>Close</button>
-                                    </div>
-                                </div>
-                            )}
-
-    
-                            <div onClick={toggleParticipants} className={`${styles.buttonAddExpense} ${styles.flexButtonAddExpense}`}>
-                                Add Participants
-                            </div>
-
-
-                            {showParticipants && (
-                                <div>
-                                    <div>
-                                        {members.map(memberUser => (
-                                            <div key={memberUser} className={styles.inputGroup}>
-                                                <label htmlFor={memberUser}>{memberUser}</label>
-                                                <input
-                                                    type="checkbox"
-                                                    id={memberUser}
-                                                    checked={!!participants.get(memberUser)}
-                                                    onChange={e => setParticipants(new Map(participants.set(memberUser, e.target.checked)))}
-                                                />
-                                            </div>
-                                        ))}
-                                        <button onClick={() => setShowParticipants(false)}>Close</button>
-                                    </div>
-                                </div>
-                            )}
-                            
-                            <div className={styles.updateFormButtonGroup}>
-                                <button type="submit" className={`${styles.buttonSubmitAddExpense}`}>Done</button>
-                                <button type="button" onClick={cancelAddExpense} className={`${styles.buttonCancelAddExpense} ${styles.flexButton}`}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
-            <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover 
-            className={styles1.ToastifyToast}/>
-            </div>
-            
-        );
-    }
+    const handleExpenseFormOverlayClick = (e) => {
+        e.stopPropagation();
+    };
     
     return (
         <div className={styles.background}>
 
-    <div className={`${styles.appContainer} ${blurBackground ? styles.blurred : ''}`}>
+            <div className={`${styles.appContainer} ${blurBackground ? styles.blurred : ''}`}>
                 <NavLink to="/splitwise/logout" className={styles.logoutLink}>Logout</NavLink>
                 <div className={styles.groupNameContainer}>
                     <h2>{group.groupName} {gmDetails.removedBy === null && <FaEdit className={styles.editIcon} onClick={toggleEditIconForm} />}</h2>
@@ -822,13 +732,13 @@ const SplitwiseGroupDetail = () => {
                 
                 {showDeletedExpenses && (
                     <div>
-                    <ExpensesList 
-                        groupId={groupId}
-                        whichExpenses={false}
-                        action={tempAction}
-                        handleAction={handleAction}
-                        setEverythingToNull={setEverythingToNull}
-                    />
+                        <ExpensesList 
+                            groupId={groupId}
+                            whichExpenses={false}
+                            action={tempAction}
+                            handleAction={handleAction}
+                            setEverythingToNull={setEverythingToNull}
+                        />
                     </div>
                 )} 
 
@@ -874,7 +784,7 @@ const SplitwiseGroupDetail = () => {
                     <button className={styles.editCancelButton} type="submit" onClick={cancelShowEditOptions}>back</button>
                     </div>
                 </div>
-                )
+            )
             }
 
             {showPaymentModal && (
@@ -898,7 +808,87 @@ const SplitwiseGroupDetail = () => {
             </div>
             )}
 
+            {showAddExpenseForm && (
+                <div className={styles.expenseFormOverlay} onClick={cancelAddExpense}>
+                    <div className={styles.addExpenseContainer} onClick={handleExpenseFormOverlayClick}>
+                        <form onSubmit={handleAddExpense}>
+                            <input
+                                type="text"
+                                placeholder="Expense Name"
+                                className={styles.inputAddExpense}
+                                value={newExpenseName}
+                                onChange={e => setNewExpenseName(e.target.value)}
+                                required
+                            />
+                            <input
+                                type="number"
+                                placeholder="Total Amount"
+                                className={styles.inputAddExpense}
+                                value={newExpenseAmount}
+                                onChange={e => setNewExpenseAmount(e.target.value)}
+                                required
+                            />
 
+                            <div className={styles.buttonContainer}>
+                                <button type="button" onClick={togglePayers} className={showPayers ? styles.activeButton : styles.inActiveButton}>
+                                    Add Payers
+                                </button>
+                                <button type="button" onClick={toggleParticipants} className={showParticipants ? styles.activeButton : styles.inActiveButton}>
+                                    Add Participants
+                                </button>
+                            </div>
+                            
+
+                            
+                            {showPayers && (
+                                    <div className={styles.participantsSection}>
+                                        {members.map(memberUser => (
+                                            <div key={memberUser}>
+                                                <label htmlFor={memberUser} className={styles.labelForm}>
+                                                {memberUser}: 
+                                                <input
+                                                    type="number"
+                                                    id={memberUser}
+                                                    value={payers.get(memberUser) || ''}
+                                                    className={styles.inputForm}
+                                                    onChange={e => setPayers(new Map(payers.set(memberUser, e.target.value)))}
+                                                />
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                            )}
+
+                            {showParticipants && (
+                            
+                                    <div className={styles.participantsSection}>
+                                        {members.map(memberUser => (
+                                            <div key={memberUser}>
+                                                <label htmlFor={memberUser} className={styles.labelForm}>
+                                                <input
+                                                    type="checkbox"
+                                                    id={memberUser}
+                                                    checked={!!participants.get(memberUser)}
+                                                    onChange={e => setParticipants(new Map(participants.set(memberUser, e.target.checked)))}
+                                                />
+                                                {memberUser}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                
+                            )}
+                            
+                            <div className={styles.decisionButtonContainer}>
+                                <button type="submit" className={styles.buttonSubmitAddExpense}>Done</button>
+                                <button type="button" className={styles.buttonCancelAddExpense} onClick={cancelAddExpense}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>   
+                </div>   
+            )}
 
             {memberToRemove !== null && (<ConfirmModal
                 isOpen={isConfirmModalOpen}

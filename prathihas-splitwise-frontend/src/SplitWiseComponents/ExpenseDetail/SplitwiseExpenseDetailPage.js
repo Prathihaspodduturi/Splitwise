@@ -370,7 +370,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
     return (
         <div className={styles.container}>
             {!editMode && (
-                <div className={styles.details}>
+                <div>
                     <ExpenseHeader expense={expense} />
                     {!expense.isPayment && (<ExpenseParticipants participants={expense.participants} />)}
                     <EditDeleteButtons
@@ -406,7 +406,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                         id="amount"
                         type="number"
                         value={editExpense.amount}
-                        className={styles.paymentInput}
+                        className={styles.paymentInputForm}
                         onChange={e => handleInputChange('amount', e.target.value)}
                     />
                     <div className={styles.buttonContainer}>

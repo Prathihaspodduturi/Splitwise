@@ -5,49 +5,57 @@ const ExpenseForm = ({ editExpense, handleInputChange, handleParticipantAmountCh
     return (
         <div className={styles.formContainer}>
             <div className={styles.formRow}>
-                <label htmlFor="expenseName">Expense Name:</label>
+                <label htmlFor="expenseName" className={styles.labelForm}>Expense Name:</label>
                 <input
                     id="expenseName"
                     type="text"
                     value={editExpense.expenseName}
+                    className={styles.inputForm}
                     onChange={e => handleInputChange('expenseName', e.target.value)}
                 />
             <div/>
-            <label htmlFor="amount">Amount:</label>
-            <input
-                id="amount"
-                type="number"
-                value={editExpense.amount}
-                onChange={e => handleInputChange('amount', e.target.value)}
-            />
-            <div>
-                <h3>Payers</h3>
-                {editExpense.participants.map(participant => (
-                    <div key={participant.username}>
-                        <label htmlFor={"amountPaid" + participant.username}>{participant.username}:</label>
-                        <input
-                            id={"amountPaid" + participant.username}
-                            type="number"
-                            value={participant.amountPaid}
-                            onChange={e => handleParticipantAmountChange(participant.username, 'amountPaid', e.target.value)}
-                        />
-                    </div>
-                ))}
+            <div className={styles.formRow}>
+                <label htmlFor="amount" className={styles.labelForm}>Amount:</label>
+                <input
+                    id="amount"
+                    type="number"
+                    className={styles.inputForm}
+                    value={editExpense.amount}
+                    onChange={e => handleInputChange('amount', e.target.value)}
+                />
             </div>
-            <div>
-                <h3>Participants</h3>
-                {editExpense.participants.map(participant => (
-                    <div key={participant.username}>
-                        <label>
+            <div className={styles.participantsContainer}>
+                <div className={styles.partcipantsSection}>
+                    <h3>Payers</h3>
+                    {editExpense.participants.map(participant => (
+                        <div key={participant.username}>
+                            <label htmlFor={"amountPaid" + participant.username} className={styles.labelForm}>{participant.username}:</label>
                             <input
-                                type="checkbox"
-                                checked={participant.isChecked}
-                                onChange={() => handleParticipantCheckboxChange(participant.username)}
+                                id={"amountPaid" + participant.username}
+                                type="number"
+                                value={participant.amountPaid}
+                                className={styles.inputForm}
+                                onChange={e => handleParticipantAmountChange(participant.username, 'amountPaid', e.target.value)}
                             />
-                            {participant.username}
-                        </label>
-                    </div>
-                ))}
+                        </div>
+                    ))}
+                </div>
+                <div className={styles.participantsSection}>
+                    <h3>Participants</h3>
+                    {editExpense.participants.map(participant => (
+                        <div key={participant.username}>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={participant.isChecked}
+                                    className={styles.userNameForm}
+                                    onChange={() => handleParticipantCheckboxChange(participant.username)}
+                                />
+                                {participant.username}
+                            </label>
+                        </div>
+                    ))}
+                </div>
             </div>
             </div>
         </div>

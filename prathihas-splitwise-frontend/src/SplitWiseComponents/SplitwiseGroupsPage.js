@@ -105,7 +105,8 @@ const SplitwiseGroupsPage = () => {
     }
 
     return (
-        <div className={styles.container}>
+        <div className={styles.background}>
+            <div className={styles.container}>
             <NavLink to="/splitwise/logout" className={styles.topRightLink}>Logout</NavLink>
             {isLoading && <p>Loading...</p>}
             {error && <div>{error}</div>}
@@ -162,6 +163,7 @@ const SplitwiseGroupsPage = () => {
             )}
             <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </div>
+        </div> 
     );
     
 }

@@ -241,75 +241,6 @@ html, body {
     overflow-y: auto; 
 }
 
-
-.formContainerAddExpense {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 50%;
-}
-
-.scrollableFormContainerAddExpense {
-    max-height: 500px; 
-    overflow-y: auto; 
-    padding: 20px; 
-}
-
-
-.inputAddExpense, .inputGroupAddExpense {
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-}
-
-.buttonAddExpense, .buttonSubmitAddExpense, .buttonCancelAddExpense {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    margin-top: 10px;
-    cursor: pointer;
-    text-align: center;
-}
-
-.buttonAddExpense:hover, .buttonSubmitAddExpense:hover, .buttonCancelAddExpense:hover {
-    background-color: #45a049;
-}
-
-.flexRowAddExpense {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.flexButtonAddExpense {
-    flex: 1; /* Each button takes equal space */
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.labelAddExpense {
-    font-size: 14px;
-    color: #333;
-}
-
-.scrollableContainerAddExpense {
-    height: 200px;
-    overflow-y: auto; /* Enables vertical scrolling */
-    padding: 10px;
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.checkboxAddExpense {
-    margin-left: 5px;
-}
-
-
 .modalOverlay {
     position: fixed;
     top: 50%;
@@ -326,24 +257,9 @@ html, body {
     overflow-y: auto;
 }
 
-
-.addExpenseContainer {
-    background-color: #f9f9f9; /* Light gray background for the section */
-    align-items: center;
-    justify-content: center;
-}
-
 .modalContent {
     display: flex;
     flex-direction: column;
-}
-
-.inputGroup {
-    margin-bottom: 10px;
-}
-
-.inputGroup label {
-    margin-right: 10px;
 }
 
 .deletedExpensesContainer {
@@ -533,3 +449,152 @@ html, body {
 
 /* SplitwiseGroupsPage.module.css */
 
+/* Blurred background style */
+.blurred {
+    filter: blur(8px);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Container for adding expenses, styled as a modal */
+.addExpenseContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050; /* Ensure it is above other content */
+    width: 90%;
+    max-width: 500px; /* Responsive width with a max limit */
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Form elements styling */
+.inputAddExpense {
+    width: 100%;
+    max-width: 275px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.inputAddExpense:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Buttons inside the form */
+.inActiveButton, .buttonSubmitAddExpense, .buttonCancelAddExpense, .activeButton {
+    padding: 10px 20px;
+    background-color: #2196F3; /* Light green background */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-grow: 0;
+}
+
+.activeButton {
+    background-color: darkblue;
+}
+
+.buttonCancelAddExpense, .buttonSubmitAddExpense{
+    background-color: #4CAF50;
+}
+
+/* Form button group styling */
+.updateFormButtonGroup {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.updateFormButtonGroup button {
+    flex: 1;
+    margin: 0 5px;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: start; /* Align buttons to the start of the container */
+    gap: 10px; /* Space between buttons */
+}
+
+.decisionButtonContainer {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the end (right) of the container */
+    gap: 10px; /* Space between buttons */
+}
+
+.expenseFormOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(1px); /* This will blur the background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+}
+
+
+.participantsSection {
+    width: 45%; /* Ensure both sections take equal space */
+    font-size: 18px; /* Increase font size */
+    padding: 15px; /* Add padding for better spacing */
+    box-sizing: border-box; 
+}
+
+.participantsSection h3 {
+    margin-bottom: 10px; /* Reduce bottom margin on h3 if it's large */
+    font-size: 20px; 
+}
+
+.participantsSection ul {
+    list-style-type: none; /* Remove list bullets */
+    padding: 0; /* Remove default padding */
+}
+
+.participantsSection li, .participantsSection h3 {
+    margin-bottom: 5px; /* Add some space between items */
+    font-size: 18px;
+}
+
+.inputForm, .labelForm {
+    font-size: 16px; /* Increase font size */
+}
+
+.inputForm {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; 
+    font-size: 16px; /* Increase font size for inputs */
+    margin-left: 15px
+}
+
+.labelForm {
+    display: flex;
+    margin-bottom: 5px;
+    font-weight: bold;
+    align-items: center
+}
+
+.userNameForm
+{
+    font-size: 16px;
+}
