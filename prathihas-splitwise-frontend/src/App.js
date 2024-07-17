@@ -37,17 +37,6 @@ const router = createBrowserRouter([
         path: '/splitwise/groups/:groupId', // Route for specific group details
         element: <SplitwiseGroupDetail />
       },
-      {
-        path: '/splitwise/groups/:groupId/expenses/:expenseId',  // Route for specific expense details
-        element: <SplitwiseExpenseDetailPage />
-      },
-      {
-        path: '/splitwise/groups/creategroup',
-        element: <SplitwiseCreateGroup/>
-      },
-      {
-        path: 'splitwise/groups/:groupId/expenses/:expenseId/updateexpense'
-      }
 ])
 
 function App() {

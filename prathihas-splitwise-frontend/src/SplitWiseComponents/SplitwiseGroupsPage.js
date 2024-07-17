@@ -3,6 +3,8 @@ import { NavLink, useNavigate, Link } from 'react-router-dom';
 import styles from './SplitwiseGroupsPage.module.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ConfirmModal from "../Modal/ConfirmModal";
+import SplitwiseCreateGroup from "./SplitwiseCreateGroup";
 
 const SplitwiseGroupsPage = () => {
     const [allGroups, setGroups] = useState([]);
@@ -14,9 +16,15 @@ const SplitwiseGroupsPage = () => {
 
     const [activeSection, setActiveSection] = useState(null);
 
-    const navigate = useNavigate();
+    const [restoring, setRestoring] = useState(null);
+    const [restoreGroupId, setRestoreGroupId] = useState(null);
+    const [restoreGroupName, setRestoreGroupName] = useState(null);
 
-    useEffect(() => {
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+    const [showCreateGroupForm, setShowCreateGroupForm] = useState(false);
+
+
         const fetchGroups = async () => {
             const token = sessionStorage.getItem('token');
             setError('');
@@ -49,12 +57,13 @@ const SplitwiseGroupsPage = () => {
             }
         };
 
+    useEffect(() => {
         fetchGroups();
-    }, []);
+    }, [fetchGroups]);
 
-    const handleRestoreGroup = async (groupId, groupName) => {
+    const handleRestoreGroup = async () => {
         try{
-        const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/restore`, {
+        const response = await fetch(`http://localhost:8080/splitwise/groups/${restoreGroupId}/restore`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -66,15 +75,17 @@ const SplitwiseGroupsPage = () => {
             const data = await response.text();
             throw new Error(data);
         } else {
-            toast.success(`Group ${groupName} restored successfully`);
+            closeConfirmModal();
+            toast.success(`Group ${restoreGroupName} restored successfully`);
             setGroups(allGroups.map(group => {
-                if (group.id === groupId) {
+                if (group.id === restoreGroupId) {
                     return { ...group, deleted: false };
                 }
                 return group;
             }));
         }
         }catch (error) {
+            closeConfirmModal();
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
             }
@@ -89,8 +100,23 @@ const SplitwiseGroupsPage = () => {
     }
 
     const handleCreateGroup = () => {
-        navigate("/splitwise/groups/creategroup");
+        setShowCreateGroupForm(true);
     }
+
+    const handleToggleRestore = (groupId, groupName) => {
+        setRestoring(true);
+        setRestoreGroupId(groupId);
+        setRestoreGroupName(groupName);
+        setIsConfirmModalOpen(true);
+    }
+
+    const closeConfirmModal = () => {
+        setRestoring(false);
+        setRestoreGroupId(null);
+        setRestoreGroupName(null);
+        setIsConfirmModalOpen(false);
+        setShowCreateGroupForm(false);
+    };
 
     const isLoggedIn = sessionStorage.getItem('token');
 
@@ -104,8 +130,10 @@ const SplitwiseGroupsPage = () => {
         return (<div>Loading...</div>);
     }
 
+    console.log("restoring", restoring);
+
     return (
-        <div className={styles.background}>
+        <div className={styles.page}>
             <div className={styles.container}>
             <NavLink to="/splitwise/logout" className={styles.topRightLink}>Logout</NavLink>
             {isLoading && <p>Loading...</p>}
@@ -129,6 +157,15 @@ const SplitwiseGroupsPage = () => {
                 ))}
             </ul>
 
+            {showCreateGroupForm === true && (
+                <SplitwiseCreateGroup 
+                    setShowCreateGroupForm={setShowCreateGroupForm}
+                    closeConfirmModal={closeConfirmModal}
+                    fetchGroups={fetchGroups}
+                    setGroups={setGroups}
+                />
+            )
+            }
             <div className={styles.toggleContainer}>
                 <h2 className={`${styles.toggleButton} ${activeSection === 'settled' ? styles.toggleButtonActive : ''}`} onClick={() => toggleSection('settled')}>
                 {activeSection === 'settled' ? 'Hide Settled Groups' : 'Show Settled Groups'}
@@ -155,13 +192,23 @@ const SplitwiseGroupsPage = () => {
                 <ul className={styles.groupList}>
                     {allGroups.filter(group => group.deleted && group.removedDate === null).map(group => (
                         <li key={group.id} className={`${styles.groupItem} ${styles.groupItemDeleted}`}>
-                            {group.groupName} - {group.groupDescription}
-                            <button onClick={() => handleRestoreGroup(group.id, group.groupName)} className={styles.button}>Restore</button>
+                            <NavLink to={`/splitwise/groups/${group.id}`} className={styles.navLink}>
+                                {group.groupName}
+                            </NavLink>  {group.groupDescription}
+                            <button onClick={() => handleToggleRestore(group.id, group.groupName)} className={styles.button}>Restore</button>
                         </li>
                     ))}
                 </ul>
             )}
-            <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+
+            {restoring === true && (<ConfirmModal
+                isOpen={isConfirmModalOpen}
+                onClose={closeConfirmModal}
+                onConfirm={handleRestoreGroup}
+                message={`Are you sure you want to restore this group?`}
+            />)}
+
+            <ToastContainer position="top-center" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss={false} draggable={true} pauseOnHover={true} />
         </div>
         </div> 
     );

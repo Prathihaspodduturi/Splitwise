@@ -51,18 +51,6 @@ public class GetGroupDetailsController {
 
             GroupMembersHelper gmDetails = groupDetailsService.getGmDetails(groupId, username);
 
-//            GroupMembers gmGroupMembers = groupMembersDAO.getDetails(groupId,username);
-//
-//            GroupMembersHelper gmDetails = new GroupMembersHelper(gmGroupMembers.getUser().getUsername(), gmGroupMembers.getGroup().getId(), gmGroupMembers.getAddedBy().getUsername(), gmGroupMembers.getAddedDate());
-//
-//            if(gmGroupMembers.getRemovedBy() != null)
-//            {
-//                gmDetails.setRemovedBy(gmGroupMembers.getRemovedBy().getUsername());
-//                gmDetails.setRemovedDate(gmGroupMembers.getRemovedDate());
-//            }
-            // Fetch expenses related to the group
-            //List<Expenses> expenses = ExpensesDAO.groupExpenses(groupId);
-
             List<String> members = groupMembersDAO.findMembersByGroupId(groupId);
 
 
@@ -115,23 +103,4 @@ public class GetGroupDetailsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }
-
-//    private List<Transaction> resolveDebts(Map<String, BigDecimal> creditors, Map<String, BigDecimal> debtors) {
-//        List<Transaction> transactions = new ArrayList<>();
-//        for (Map.Entry<String, BigDecimal> creditor : creditors.entrySet()) {
-//            BigDecimal amountToSettle = creditor.getValue();
-//            Iterator<Map.Entry<String, BigDecimal>> debtorIterator = debtors.entrySet().iterator();
-//            while (debtorIterator.hasNext() && amountToSettle.compareTo(BigDecimal.ZERO) > 0) {
-//                Map.Entry<String, BigDecimal> debtor = debtorIterator.next();
-//                BigDecimal possiblePayment = debtor.getValue().min(amountToSettle);
-//                transactions.add(new Transaction(debtor.getKey(), creditor.getKey(), possiblePayment));
-//                amountToSettle = amountToSettle.subtract(possiblePayment);
-//                debtor.setValue(debtor.getValue().subtract(possiblePayment));
-//                if (debtor.getValue().compareTo(BigDecimal.ZERO) == 0) {
-//                    debtorIterator.remove();
-//                }
-//            }
-//        }
-//        return transactions;
-//    }
 }

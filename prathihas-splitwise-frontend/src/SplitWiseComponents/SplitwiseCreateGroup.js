@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-const SplitwiseCreateGroup = () => {
+const SplitwiseCreateGroup = ({setShowCreateGroupForm, closeConfirmModal, setGroups}) => {
     const navigate = useNavigate();
 
     const [groupName, setGroupName] = useState('');
@@ -33,14 +33,18 @@ const SplitwiseCreateGroup = () => {
                 throw new Error(data);
             }
 
-            const data = await response.json(); 
+            const data = await response.text();
+
             toast.success(`Group ${groupName} created successfully`);
 
+            closeConfirmModal();
+
             setTimeout(() => {
-                navigate('/splitwise/groups');
-            }, 1000);
+                setGroups(prev => [... prev, ...data]);
+            }, 2000);
 
         } catch (error) {
+            closeConfirmModal();
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
             } else {
@@ -49,10 +53,6 @@ const SplitwiseCreateGroup = () => {
         }
     };
 
-    const handleCancel = () => {
-        navigate("/splitwise/groups");
-    }
-
     if (connectionError) {
         return (
           <div className={styles.errorMessage}>{connectionError}</div>
@@ -60,7 +60,8 @@ const SplitwiseCreateGroup = () => {
     }
 
     return (
-        <div className={styles.container}>
+        <div className={styles.modalOverlay} onClick={() => setShowCreateGroupForm(false)}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <form onSubmit={handleCreateGroup} className={styles.form}>
                 <div>
                     <label htmlFor="groupName" className={styles.formLabel}>Group Name:</label>
@@ -83,9 +84,10 @@ const SplitwiseCreateGroup = () => {
                     />
                 </div>
                 <button type="submit" className={styles.button}>Submit</button>
-                <button type="button" onClick={handleCancel} className={styles.buttonCancel}>Cancel</button>
+                <button type="button" onClick={() => setShowCreateGroupForm(false)} className={styles.buttonCancel}>Cancel</button>
             </form>
-            <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+            <ToastContainer position="top-center" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss={false} draggable={true} pauseOnHover={true} />
+        </div>
         </div>
     );
 

@@ -19,7 +19,7 @@ const GroupMembers = ({members, group, gmDetails, handleAddMember, handleRemoveM
                             {members.map(username => ( 
                                 <li key={username} className={styles.membersItem}>
                                     <span className={styles.username}>{username}</span>
-                                    {(!group.settledUp) && (gmDetails.removedDate === null) && (
+                                    {(!group.settledUp) && (!group.deletedBy) && (gmDetails.removedDate === null) && (
                                         currentUser === username ? 
                                             <button onClick={() => handleRemoveMember(username)} className={styles.removeMemberButton}>Leave Group</button>
                                             :
@@ -31,7 +31,7 @@ const GroupMembers = ({members, group, gmDetails, handleAddMember, handleRemoveM
                             ))}
                         </ul>
 
-                        {!group.settledUp && <div onClick={toggleAddMemberForm} className={styles.addMemberButton} >
+                        {!group.settledUp && !group.deletedDate && <div onClick={toggleAddMemberForm} className={styles.addMemberButton} >
                         {showAddMemberForm ? 'Hide Add Member Form' : 'Add Member'}
                         </div>}
                         {showAddMemberForm && (

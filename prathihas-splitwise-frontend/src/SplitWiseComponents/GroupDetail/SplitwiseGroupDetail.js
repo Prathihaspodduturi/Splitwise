@@ -12,6 +12,7 @@ import GroupMembers from './GroupMembers';
 import ExpensesList from './ExpensesList';
 import ConfirmModal from '../../Modal/ConfirmModal';
 import styles1 from '../../toastStyles.module.css';
+import { FaArrowLeft } from 'react-icons/fa';
 
 
 
@@ -52,8 +53,6 @@ const SplitwiseGroupDetail = () => {
     const [showEditOptions, setShowEditOptions] = useState(false);
     const [connectionError, setConnectionError] = useState('');
 
-    const [blurBackground, setBlurBackground] = useState(false);
-
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedBalance, setSelectedBalance] = useState(null);
     const [paymentAmount, setPaymentAmount] = useState('');
@@ -64,6 +63,9 @@ const SplitwiseGroupDetail = () => {
     const [action, setAction] = useState(null);
     const [showMessage, setShowMessage] = useState(null);
     const [tempAction, setTempAction] = useState(null);
+
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isSettling, setIsSettling] = useState(false);
 
     const fetchGroupDetails = useCallback(async () => {
         setError('');
@@ -130,7 +132,6 @@ const SplitwiseGroupDetail = () => {
             setNewGroupName(updatedGroup.groupName);
             setShowUpdateForm(false); // Hide the form after successful update
             setShowExpenses(true);
-            setBlurBackground(false);
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
@@ -187,11 +188,11 @@ const SplitwiseGroupDetail = () => {
         const hasOutstandingBalances = balances.some(balance => balance.amount !== 0);
 
         if (hasOutstandingBalances) {
-            alert('Cannot settle group while there are outstanding balances.');
+            toast.error('Cannot settle group while there are outstanding balances.');
+            closeConfirmModal();
             return;
         }
 
-        if (window.confirm('Are you sure you want to delete this group?')) {
             try {
                 const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/settlegroup`, {
                     method: 'PUT',
@@ -205,21 +206,24 @@ const SplitwiseGroupDetail = () => {
                     throw new Error('Failed to settle up group');
                 }
 
-                alert('Group settled successfully!');
-                navigate('/splitwise/groups');
+                closeConfirmModal();
+                toast.success('Group settled successfully!');
+                
+                setTimeout(() => {
+                    navigate('/splitwise/groups');
+                }, 2000)
             } catch (error) {
+                closeConfirmModal();
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
                 } else {
                     setError(error.message);
                 }
             }
-        }
     };
 
 
     const handleDeleteGroup = async () => {
-        if (window.confirm('Are you sure you want to delete this group?')) {
             setError('');
             setConnectionError('');
             try {
@@ -235,16 +239,20 @@ const SplitwiseGroupDetail = () => {
                     throw new Error('Failed to delete group');
                 }
 
-                alert('Group deleted successfully!');
-                navigate('/splitwise/groups');
+                closeConfirmModal();
+                toast.success("Group has been deleted");
+                
+                setTimeout(() => {
+                    navigate('/splitwise/groups');
+                }, 2000)
             } catch (error) {
+                closeConfirmModal();
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
                 } else {
                     setError(error.message);
                 }
             }
-        }
     };
 
     const handleAddExpense = async (event) => {
@@ -475,8 +483,19 @@ const SplitwiseGroupDetail = () => {
     const closeConfirmModal = () => {
         setMemberToRemove(null);
         setIsConfirmModalOpen(false);
+        setIsDeleting(false);
+        setIsSettling(false);
     };
 
+    const openDeleteModal = () => {
+        setIsDeleting(true);
+        setIsConfirmModalOpen(true);
+    }
+
+    const openSettleModal = () => {
+        setIsSettling(true);
+        setIsConfirmModalOpen(true);
+    }
 
     // Function to toggle balances visibility
     const toggleBalances = () => {
@@ -487,6 +506,7 @@ const SplitwiseGroupDetail = () => {
         setShowAddExpenseForm(false);
         setShowExpenses(false);
         setShowEditOptions(false);
+        fetchGroupDetails();
     };
 
     // Function to toggle add member form visibility within Members section
@@ -537,41 +557,23 @@ const SplitwiseGroupDetail = () => {
         setShowAddExpenseForm(false);  // This will hide the form
         setShowExpenses(true);
         setPayers(new Map());
+        setShowParticipants(false);
+        setShowPayers(false);
         setParticipants(new Map());
         setShowEditOptions(false);
     };
-
-    const toggleUpdateForm = () => {
-
-        setShowUpdateForm(true);
-        setShowExpenses(false);
-        setShowAddExpenseForm(false);
-        setShowBalances(false);
-        setShowAddMemberForm(false);
-        setShowDeletedExpenses(false);
-        setShowGroupMembers(false);
-        setShowEditOptions(false);
-    }
 
     const toggleEditIconForm = () => {
 
         setShowEditOptions(true);
         setShowEditOptions(!showEditOptions);
-        setBlurBackground(!blurBackground);  // This will toggle the blur eff
         
     }
 
     const cancelUpdatingGroupName = () => {
+        setNewGroupName('');
         setShowUpdateForm(false);
-        setShowEditOptions(true);
-        setShowExpenses(true);
-    }
-
-    const cancelShowEditOptions = () => {
-        setShowEditOptions(false);
-        setBlurBackground(false);
-        setShowExpenses(true);
-    }    
+    }  
     
     const togglePayers = () => {
         setShowPayers(!showPayers);
@@ -583,18 +585,6 @@ const SplitwiseGroupDetail = () => {
         setShowParticipants(!showParticipants);
         setShowPayers(false);
     }
-
-    const togglePayerModal = () => {
-        setShowPayers(!showPayers);
-        setShowParticipants(false); // Hide participants modal
-    };
-
-    const toggleParticipantModal = () => {
-        setShowParticipants(true)
-        //setBlurBackground(true); // Ensure background is blurred
-        ; // Show participant modal
-        setShowPayers(false); // Hide payer modal
-    };
 
     const openPaymentModal = (balance) => {
         setSelectedBalance(balance);
@@ -647,31 +637,6 @@ const SplitwiseGroupDetail = () => {
     console.log("action"+action);
     console.log("tempAction"+tempAction);
 
-    if(showUpdateForm)
-    {
-        return (
-            <div>
-                {showUpdateForm && (
-                    <form onSubmit={handleUpdateGroupName} className={styles.updateForm}>
-                        <label className={styles.updateFormLabel} htmlFor="newGroupName">New Name:</label>
-                        <input
-                            type="text"
-                            value={newGroupName}
-                            onChange={(e) => setNewGroupName(e.target.value)} required
-                            className={styles.updateFormInput}
-                        />
-                        <div className={styles.updateFormButtonGroup}>
-                            <button className={styles.updateFormConfirmButton} type="submit">Submit</button>
-                            <button className={styles.updateFormCancelButton} type="button" onClick={cancelUpdatingGroupName}>Cancel</button>
-                        </div>   
-                    </form>
-                )}
-                <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover 
-                className={styles1.ToastifyToast}/>
-            </div>
-        ); 
-    }
-
     const handleExpenseFormOverlayClick = (e) => {
         e.stopPropagation();
     };
@@ -679,7 +644,10 @@ const SplitwiseGroupDetail = () => {
     return (
         <div className={styles.background}>
 
-            <div className={`${styles.appContainer} ${blurBackground ? styles.blurred : ''}`}>
+            <div className={styles.appContainer}>
+                <button onClick={() => navigate(-1)} className={styles.backButton}>
+                    <FaArrowLeft /> Back
+                </button>
                 <NavLink to="/splitwise/logout" className={styles.logoutLink}>Logout</NavLink>
                 <div className={styles.groupNameContainer}>
                     <h2>{group.groupName} {gmDetails.removedBy === null && <FaEdit className={styles.editIcon} onClick={toggleEditIconForm} />}</h2>
@@ -695,7 +663,21 @@ const SplitwiseGroupDetail = () => {
                         )
                     ) : group.settledUp ? (
                         <p className={styles.groupStatusSettledUp}>Group was settled by {group.settledBy} on {new Date(group.settledDate).toLocaleDateString()}</p>
-                    ) : null}
+                    ) : group.deletedBy ? (<p>Group was deleted by {group.deletedBy} on {new Date(group.deletedDate).toLocaleDateString()}</p>) : null}
+                    {showEditOptions && 
+                        (<div>
+                                <button className={styles.editOptionButton} onClick={() => setShowUpdateForm(true)}>
+                                    Change Group Name
+                                </button>
+                                <button className={styles.editOptionButton}  onClick={openSettleModal}>
+                                    SettleUp Group
+                                </button>
+                                <button className={styles.deleteOptionButton}  onClick={openDeleteModal}>
+                                    Delete Group
+                                </button>
+                            </div>
+                        )
+                    }
                 </div>
 
                 <div className={styles.optionsContainer}>
@@ -715,7 +697,7 @@ const SplitwiseGroupDetail = () => {
 
                 {showExpenses && (
                     <div>
-                    {(!group.settledUp && gmDetails.removedDate === null) && (
+                    {(!group.settledUp && gmDetails.removedDate === null && !group.deletedDate) && (
                     <button onClick={toggleAddExpense} className={styles.addExpenseButton}>
                         Add Expense
                     </button>
@@ -742,6 +724,24 @@ const SplitwiseGroupDetail = () => {
                     </div>
                 )} 
 
+                {showUpdateForm && (
+                    <div className={styles.modalOverlay} onClick={cancelUpdatingGroupName}>
+                        <form onClick={(e) => e.stopPropagation()} onSubmit={handleUpdateGroupName} className={styles.updateForm}>
+                        <label className={styles.updateFormLabel} htmlFor="newGroupName">New Name:</label>
+                        <input
+                            type="text"
+                            value={newGroupName}
+                            onChange={(e) => setNewGroupName(e.target.value)} required
+                            className={styles.updateFormInput}
+                        />
+                        <div className={styles.updateFormButtonGroup}>
+                            <button className={styles.updateFormConfirmButton} type="submit">Submit</button>
+                            <button className={styles.updateFormCancelButton} type="button" onClick={cancelUpdatingGroupName}>Cancel</button>
+                        </div>   
+                    </form>
+                    </div>
+                )}
+            
 
                 {showGroupMembers && (
                     <GroupMembers 
@@ -764,28 +764,10 @@ const SplitwiseGroupDetail = () => {
                     balances={balances}
                     gmDetails={gmDetails}
                     openPaymentModal={openPaymentModal}
+                    deletedBy={group.deletedBy}
                 />
                 )}
             </div>
-
-
-            {showEditOptions && 
-            (<div className={styles.modalShowEditOptions}>
-                    <button className={styles.editOptionButton} onClick={toggleUpdateForm}>
-                        Change Group Name
-                    </button>
-                    <button className={styles.editOptionButton}  onClick={handleSettleGroup}>
-                        SettleUp Group
-                    </button>
-                    <button className={styles.editOptionButton}  onClick={handleDeleteGroup}>
-                        Delete Group
-                    </button>
-                    <div className="button-group">
-                    <button className={styles.editCancelButton} type="submit" onClick={cancelShowEditOptions}>back</button>
-                    </div>
-                </div>
-            )
-            }
 
             {showPaymentModal && (
                 <div className={styles.paymentModal} onClick={closePaymentModal}>
@@ -803,8 +785,6 @@ const SplitwiseGroupDetail = () => {
                     <button onClick={() => handlePayment(selectedBalance)} className={styles.paymentConfirmButton}>Confirm Payment</button>
                     <button onClick={closePaymentModal} className={styles.paymentCancelButton}>Cancel</button>
                 </div>
-                <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover 
-                className={styles1.ToastifyToast}/>
             </div>
             )}
 
@@ -904,6 +884,19 @@ const SplitwiseGroupDetail = () => {
                 message={showMessage}
             />)}
 
+            {isDeleting && (<ConfirmModal
+                isOpen={isConfirmModalOpen}
+                onClose={closeConfirmModal}
+                onConfirm={handleDeleteGroup}
+                message={`Are you sure you want to delete this group?`}
+            />)}
+
+            {isSettling && (<ConfirmModal
+                isOpen={isConfirmModalOpen}
+                onClose={closeConfirmModal}
+                onConfirm={handleSettleGroup}
+                message={`Are you sure you want to settle this group?`}
+            />)}
             <ToastContainer position="top-center" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss={false} draggable={true} pauseOnHover={true} 
             className={styles1.ToastifyToast}/>
         </div>
