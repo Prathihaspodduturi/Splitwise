@@ -11,7 +11,6 @@ const EditDeleteButtons = ({
     handleAction,
 }) => { 
 
-    //console.log("editDleteButtons isPayment"+isPayment);
 
     let editLabel = "Edit Expense";
     let deleteLabel = "Delete Expense";
@@ -24,11 +23,7 @@ const EditDeleteButtons = ({
         restoreLabel = "Restore Payment";
     }
 
-    // const handleActionInitiation = (action) => {
-    //     setModalAction(action);
-    //     setShowConfirmModal(true);
-    //     //setBlurBackground(true);
-    // }
+    
 
     const handleDeleteMethod = () => {
         const message = `Are you sure you want to delete this ${isPayment ? 'Payment' : 'Expense'}?`

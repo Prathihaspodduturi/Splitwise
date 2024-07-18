@@ -21,6 +21,7 @@ const SplitwiseGroupDetail = () => {
     const currentUser = sessionStorage.getItem('username');
 
     const { groupId } = useParams();
+
     const navigate = useNavigate();
     const [group, setGroup] = useState(null);
     const [gmDetails, setGmDetails] = useState(null); 
@@ -66,8 +67,11 @@ const SplitwiseGroupDetail = () => {
 
     const [isDeleting, setIsDeleting] = useState(false);
     const [isSettling, setIsSettling] = useState(false);
+    const [refreshExpenses, setRefreshExpenses] = useState(false);
 
-    const fetchGroupDetails = useCallback(async () => {
+    console.log("inside groupdetail");
+
+    const fetchGroupDetails = async () => {
         setError('');
         setConnectionError('');
         try {
@@ -79,6 +83,14 @@ const SplitwiseGroupDetail = () => {
                 },
             });
 
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                return;
+            }
+            else
+            {
             if (!response.ok) {
                 const data = await response.text();
                 throw new Error(data);
@@ -93,18 +105,19 @@ const SplitwiseGroupDetail = () => {
             setBalances(data.transactions);
 
             setIsLoading(false);
+        }
         } catch (error) {
             setIsLoading(false);
             if (error instanceof TypeError) {
-                setConnectionError("try again later.");
+                setConnectionError("Unable to connect to server try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
             } else {
                 setError(error.message);
             }
         }
-    }, [groupId]);
+    };
 
     useEffect(() => {
-        //console.log("print inside useEffect");
         fetchGroupDetails();
     }, [groupId]);
 
@@ -122,6 +135,14 @@ const SplitwiseGroupDetail = () => {
                 body: JSON.stringify({ groupName: newGroupName })
             });
 
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                return;
+            }
+            else
+            {
             if (!response.ok) {
                 throw new Error('Failed to update group name');
             }
@@ -132,9 +153,11 @@ const SplitwiseGroupDetail = () => {
             setNewGroupName(updatedGroup.groupName);
             setShowUpdateForm(false); // Hide the form after successful update
             setShowExpenses(true);
+        }
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 3000);
             } else {
                 toast.error(error.message);
             }
@@ -156,25 +179,30 @@ const SplitwiseGroupDetail = () => {
                 body: JSON.stringify({ "newUsername" : newUsername })
             });
 
-
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                return;
+            }
+            else{
             if (!response.ok) {
                 const data = await response.text();
-                console.log("coming here 2");
                 throw new Error(data);
             }
 
             toast.success('Member added successfully!');
 
             const data = await response.json();
-            //console.log(data);
             setMembers(data);
             
             setNewUsername('');
             setShowAddMemberForm(false);
-            
+        }
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 3000);
             } else {
                 toast.error(error.message);
             }
@@ -202,6 +230,13 @@ const SplitwiseGroupDetail = () => {
                     },
                 });
 
+                if (response.status === 403) {
+                    // Handle forbidden request
+                    setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                    setTimeout(() => navigate('/splitwise/logout'), 5000);
+                    return;
+                }
+                else{
                 if (!response.ok) {
                     throw new Error('Failed to settle up group');
                 }
@@ -212,10 +247,12 @@ const SplitwiseGroupDetail = () => {
                 setTimeout(() => {
                     navigate('/splitwise/groups');
                 }, 2000)
+            }
             } catch (error) {
                 closeConfirmModal();
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
+                    setTimeout(() => navigate('/splitwise/logout'), 3000);
                 } else {
                     setError(error.message);
                 }
@@ -235,6 +272,13 @@ const SplitwiseGroupDetail = () => {
                     },
                 });
 
+                if (response.status === 403) {
+                    // Handle forbidden request
+                    setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                    setTimeout(() => navigate('/splitwise/logout'), 5000);
+                    return;
+                }
+                else{
                 if (!response.ok) {
                     throw new Error('Failed to delete group');
                 }
@@ -245,10 +289,12 @@ const SplitwiseGroupDetail = () => {
                 setTimeout(() => {
                     navigate('/splitwise/groups');
                 }, 2000)
+            }
             } catch (error) {
                 closeConfirmModal();
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
+                    setTimeout(() => navigate('/splitwise/logout'), 3000);       
                 } else {
                     setError(error.message);
                 }
@@ -304,6 +350,13 @@ const SplitwiseGroupDetail = () => {
         setError('');
         setConnectionError('');
         try{
+                setNewExpenseName('');
+                setNewExpenseAmount('');
+                setPayers(new Map());
+                setParticipants(new Map());
+                setShowParticipants(false);
+                setShowPayers(false);
+                setShowAddExpenseForm(false);
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/addExpense`, {
                 method: 'POST',
                 headers: {
@@ -313,8 +366,16 @@ const SplitwiseGroupDetail = () => {
                 body: JSON.stringify(expenseData)
             });
 
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                return;
+            }
+            else{
+
             if(!response.ok){
-                const data = response.text();
+                const data = await response.text();
                 throw new Error(data);
             }
 
@@ -326,21 +387,16 @@ const SplitwiseGroupDetail = () => {
 
             toast.success('Expense added successfully!');
 
-            setTimeout(() => {
-                setNewExpenseName('');
-                setNewExpenseAmount('');
-                setPayers(new Map());
-                setParticipants(new Map());
-                setShowAddExpenseForm(false);
-                fetchGroupDetails();
-                setShowExpenses(true);
-            }, 2000); 
+            fetchGroupDetails();
 
+            setRefreshExpenses(prev => !prev);
+        }
         }
         catch(error)
         {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 3000);
             } else {
                 toast.error(error.message);
             }
@@ -369,6 +425,14 @@ const SplitwiseGroupDetail = () => {
                 },
                 body: JSON.stringify(paymentData)
             });
+
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                return;
+            }
+            else{
     
             if (!response.ok) {
                 const errorData = await response.text();
@@ -384,10 +448,11 @@ const SplitwiseGroupDetail = () => {
             }, 2000);
 
             setBalances(data.transactions);
-            //console.log("after transactions");
+        }
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 3000);
             } else {
                 toast.error(error.message);
             }
@@ -401,9 +466,6 @@ const SplitwiseGroupDetail = () => {
         setError('');
         setConnectionError('');
 
-        console.log("inside 10");
-        console.log(memberToRemove);
-        console.log(balances);
         const netBalance = balances.reduce((acc, balance) => {
             if (balance.fromUser === memberToRemove) {
                 return acc - balance.amount;
@@ -413,12 +475,9 @@ const SplitwiseGroupDetail = () => {
             return acc;
         }, 0);
 
-        console.log("netBalnce"+netBalance);
-
-        console.log("inside 100");
         // Check if the net balance is zero
         if (netBalance !== 0) {
-            //closeConfirmModal();
+            
             if(currentUser === memberToRemove)
             {
                 toast.error(`Balances not settled up. Please settle all balances before leaving.`);
@@ -430,8 +489,6 @@ const SplitwiseGroupDetail = () => {
             return;
         }
 
-
-        console.log("inside 1000");
             try {
                 const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/removemember`, {
                     method: 'PUT',
@@ -442,10 +499,14 @@ const SplitwiseGroupDetail = () => {
                     body: JSON.stringify({ username: memberToRemove })
                 });
 
-                //closeConfirmModal();
-                console.log("inside 20");
+                if (response.status === 403) {
+                    // Handle forbidden request
+                    setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                    setTimeout(() => navigate('/splitwise/logout'), 5000);
+                    return;
+                }
+                else{
                 if (!response.ok) {
-                    console.log("inside response");
                     throw new Error('Failed to remove member');
                 }
     
@@ -463,11 +524,12 @@ const SplitwiseGroupDetail = () => {
                 }
                 
                 setMembers(prevMembers => prevMembers.filter(member => member !== memberToRemove));
+            }
             } catch (error) {
                 closeConfirmModal();
-                console.log(error);
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
+                    setTimeout(() => navigate('/splitwise/logout'), 3000);   
                 } else {
                     toast.error(error.message);
                 }
@@ -537,10 +599,8 @@ const SplitwiseGroupDetail = () => {
         setShowEditOptions(false);
     };
 
-    // Function to toggle add expense form visibility
     const toggleAddExpense = () => {
         setShowAddExpenseForm(true);
-        //console.log("showExpenses", showExpenses);
     };
 
     const toggleExpenses = () => {
@@ -561,6 +621,8 @@ const SplitwiseGroupDetail = () => {
         setShowPayers(false);
         setParticipants(new Map());
         setShowEditOptions(false);
+        setNewExpenseAmount(null);
+        setNewExpenseName(null);
     };
 
     const toggleEditIconForm = () => {
@@ -629,13 +691,12 @@ const SplitwiseGroupDetail = () => {
         );
     }
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return (<div className={styles.loaderContainer}>
+        <div className={styles.loader}></div>
+    </div>);
 
     if (error) return <p>{error}</p>;
 
-    console.log("showMessage"+showMessage);
-    console.log("action"+action);
-    console.log("tempAction"+tempAction);
 
     const handleExpenseFormOverlayClick = (e) => {
         e.stopPropagation();
@@ -708,6 +769,7 @@ const SplitwiseGroupDetail = () => {
                         action={tempAction}
                         handleAction={handleAction}
                         setEverythingToNull={setEverythingToNull}
+                        refreshExpenses={refreshExpenses}
                     />
                     </div>
                 )}

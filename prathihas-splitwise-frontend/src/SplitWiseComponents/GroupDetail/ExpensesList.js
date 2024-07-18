@@ -1,13 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import styles from './ExpensesList.module.css'
 import SplitwiseExpenseDetailPage from '../ExpenseDetail/SplitwiseExpenseDetailPage';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
-const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEverythingToNull}) => {
+const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEverythingToNull, refreshExpenses}) => {
 
-    const [expenses, setExpenses] = useState('');
+    const navigate = useNavigate();
     const [activeExpenses, setActiveExpenses] = useState([]);
     const [deletedExpenses, setDeletedExpenses] = useState([]);
+
+    const [connectionError, setConnectionError] = useState(null);
+
+    //console.log("inside");
 
     const fetchExpenses = async () => {
         try {
@@ -43,13 +48,13 @@ const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEveryth
             });
 
             const sortedExpenses = filteredExpenses.sort((a, b) => -(new Date(a.dateCreated) - new Date(b.dateCreated)));
-            setExpenses(data.detailedExpenses);
             setActiveExpenses(sortedExpenses.filter(exp => !exp.deleted));
             setDeletedExpenses(sortedExpenses.filter(exp => exp.deleted));
             
         } catch (error) {
             if (error instanceof TypeError) {
-                toast.error("try again later.");
+                setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 3000);
             } else {
                 toast.error("failed to retrieve");
             }
@@ -58,7 +63,7 @@ const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEveryth
 
     useEffect(() => {
         fetchExpenses();
-    }, [groupId]);
+    }, [groupId, refreshExpenses]);
 
 
     const [selectedExpenseId, setSelectedExpenseId] = useState(null);
@@ -67,7 +72,10 @@ const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEveryth
         setSelectedExpenseId(selectedExpenseId === expenseId ? null : expenseId);
     };
 
-    
+    if(connectionError)
+    {
+        return <div>{connectionError}</div>
+    }
 
     const stopPropagation = (e) => {
         e.stopPropagation();
@@ -77,7 +85,7 @@ const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEveryth
 
     return (
 
-        
+
         <div className={styles.expensesSection}>
         <h1>{whichExpenses ? 'active' : 'deleted'} expenses</h1>
         {expensesToShow.length > 0 ? (

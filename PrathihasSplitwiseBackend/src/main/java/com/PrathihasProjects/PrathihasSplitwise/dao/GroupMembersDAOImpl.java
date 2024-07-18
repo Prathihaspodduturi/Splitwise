@@ -23,7 +23,13 @@ public class GroupMembersDAOImpl implements GroupMembersDAO {
     @Override
     @Transactional
     public void save(GroupMembers members) {
-        entityManager.persist(members);
+        boolean memberShip = isMember(members.getUser().getUsername(), members.getGroup().getId());
+        boolean isOldMembership = isOldMember(members.getUser().getUsername(), members.getGroup().getId());
+        if (memberShip || isOldMembership) {
+            entityManager.merge(members);
+        } else {
+            entityManager.persist(members);
+        }
     }
 
     @Override

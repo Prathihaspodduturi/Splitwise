@@ -36,7 +36,6 @@ public class RemoveMemberFromGroupController {
     {
         try
         {
-            System.out.println("recieved request");
             String memberUsername = requestBody.get("username");
             if (memberUsername == null || memberUsername.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Member username is required");
@@ -69,6 +68,7 @@ public class RemoveMemberFromGroupController {
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: please try again later!");
         }
     }

@@ -6,21 +6,21 @@ import ExpenseHeader from './ExpenseHeader';
 import ExpenseParticipants from './ExpenseParticipants';
 import EditDeleteButtons from './EditDeleteButtons';
 import ExpenseForm from './ExpenseForm';
+import { useNavigate } from 'react-router-dom';
 
 const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, handleAction, setEverythingToNull}) => {
 
+    const navigate = useNavigate();
+
     const [expense, setExpenseDetails] = useState(null);
     const [editExpense, setEditExpense] = useState(null);
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [editMode, setEditMode] = useState(false);
     const [totalMismatch, setTotalMismatch] = useState('');
     const [connectionError, setConnectionError] = useState(''); 
 
-    const fetchExpenseDetails = async () => {
+    const fetchExpenseDetails = useCallback(async () => {
         const token = sessionStorage.getItem('token');
-        console.log("expense id"+expenseId);
-        setError('');
         setConnectionError('');
         try {
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/expenses/${expenseId}`, {
@@ -31,14 +31,20 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                 },
             });
 
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
+                return;
+            }
+            else
+            {
             if (!response.ok) {
-                
                 const data = await response.text();
                 throw new Error(data);
             }
             const data = await response.json();
-            //.log("data", data);
-            // Initialize each participant's checked status for editing
+            
             const dataWithOutChecked = {
                 ...data,
                 participants: data.participants.map(participant => ({
@@ -47,27 +53,24 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                 }))
             };
 
-            //console.log(dataWithOutChecked);
-
-            //onsole.log("printing");
             setLoading(false);
             setEditExpense(dataWithOutChecked);
             setExpenseDetails(dataWithOutChecked);
-
+        }
         } catch (error) {
             setLoading(false);
             if (error instanceof TypeError) {
                 
                 setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
             } else {
-                
-                setError(error.message);
+                setConnectionError(error.message);
             }
         }
-    };
+    }, [expenseId]);
 
     useEffect(() => {
-        //console.log("inside useeffect");
+        
         fetchExpenseDetails();
     }, [expenseId]);
 
@@ -159,9 +162,7 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
             payers: payers
         };
 
-        console.log("updatePayload",updatePayload);
         try {
-            setError('');
             setConnectionError('');
 
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/expenses/${expenseId}/update`, {
@@ -173,6 +174,14 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                 body: JSON.stringify(updatePayload)
             });
 
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
+                return;
+            }
+            else
+            {
             if (!response.ok) {
                 const data = await response.text();
                 throw new Error(data);
@@ -190,24 +199,21 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
 
             setEditExpense(dataWithOutChecked);
             setExpenseDetails(dataWithOutChecked);
-            //setExpenseDetails(updatedExpense);
             setEditMode(false);
             setTotalMismatch(''); // Reset on successful update
 
-            //console.log(updatedExpense);
 
             toast.success('Updated successfully!');
 
             setTimeout(() => {
                 fetchExpenses();
             }, 2000);
-            //fetchExpenseDetails();
-            /*setTimeout(() => {
-                navigate(`/splitwise/groups/${groupId}`);
-            }, 2000);*/
+            }
+            
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
             } else {
                 toast.error("Failed to Update");
             }
@@ -225,7 +231,14 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                     'Authorization': `Bearer ${sessionStorage.getItem('token')}`
                 }
             });
-
+            
+            if (response.status === 403) {
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
+                return;
+            }
+            else
+            {
             if (!response.ok) {
                 const data = await response.text();
                 throw new Error(data);
@@ -236,10 +249,11 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
             setTimeout(() => {
                 fetchExpenses();
             }, 2000);
-
+        }
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
             } else {
                 toast.error('Failed to delete');
             }
@@ -258,7 +272,14 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                 }
             });
 
-            //console.log(response)
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
+                return;
+            }
+            else
+            {
             if (!response.ok) {
                 const data = await response.text();
                 throw new Error(data);
@@ -269,10 +290,11 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
             setTimeout(() => {
                 fetchExpenses();
             }, 2000);
-            
+        }
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
             } else {
                 toast.error('Failed to restore');
             }
@@ -280,7 +302,6 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
     }
 
     const handleUpdatePayment = async () => {
-        // Prepare payers and participants data
         const payers = {};
         editExpense.participants.forEach(participant => {
             if (participant.amountPaid > 0) {  // Check if the paid amount is greater than zero
@@ -306,7 +327,6 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
         };
     
         try {
-            setError('');
             setConnectionError('');
             const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/expenses/${expenseId}/update`, {
                 method: 'PUT',
@@ -317,6 +337,14 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
                 body: JSON.stringify(updatePayload)
             });
     
+            if (response.status === 403) {
+                // Handle forbidden request
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
+                return;
+            }
+            else
+            {
             
             if (!response.ok) {
                 const data = await response.text();
@@ -330,16 +358,17 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
             setTimeout(() => {
                 fetchExpenses();
             }, 2000);
+        }
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 2000);
             } else {
-                toast.error("Failed to Update");Error(error.message);
+                toast.error("Failed to Update");
+                Error(error.message);
             }
         }
     };
-
-    console.log("action in expenseDetail", action);
 
     useEffect(() => {
         if (action === 'restore') {
@@ -362,10 +391,14 @@ const SplitwiseExpenseDetailPage = ({groupId, expenseId, fetchExpenses, action, 
         );
     }
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>{error}</p>;
+    if (loading) {
+        return (
+            <div className={styles.loaderContainer}>
+                <div className={styles.loader}></div>
+            </div>
+        )
+    };
 
-    //console.log("totalMismatch", totalMismatch);
 
     return (
         <div className={styles.container}>

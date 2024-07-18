@@ -1,4 +1,30 @@
 /* SplitwiseLoginPage.module.css */
+@keyframes spinner {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .loader {
+    border: 8px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #000;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spinner 1.2s linear infinite;
+  }
+
+  .loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Adjust height as needed */
+    margin: 0 auto;
+  }
+
 
 .page {
     display: flex;
@@ -35,7 +61,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     max-width: 300px;
-    font-size: 20px;
+    font-size: 15px;
 }
 
 .button {
@@ -93,7 +119,7 @@
     }
 
     .input {
-        font-size: 30px;
+        font-size: 25px;
     }
 
     .button {

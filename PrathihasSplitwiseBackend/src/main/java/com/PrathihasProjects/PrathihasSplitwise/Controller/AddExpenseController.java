@@ -78,6 +78,7 @@ public class AddExpenseController {
                 }
             });
 
+
             // Then handle participants
             expenseDTO.getParticipants().forEach((participantUsername, isParticipating) -> {
                 if (isParticipating) {
@@ -100,24 +101,22 @@ public class AddExpenseController {
                 }
             });
 
-
             GroupMembersHelper gmDetails = groupDetailsService.getGmDetails(groupId, username);
 
             List<Expenses> expenses = expensesDAO.groupExpenses(groupId);
 
-            List<Map<String,Object>> detailedExpenses = groupDetailsService.getDetailedExpenses(expenses, username);
-
             List<Transaction> transactions = groupDetailsService.getAllTransactions(expenses);
+
 
             Map<String, Object> response = new HashMap<>();
             response.put("transactions", transactions);
-            response.put("detailedExpenses", detailedExpenses);
             response.put("gmDetails",gmDetails);
-            System.out.println("detailedExpenses"+ detailedExpenses);
+
 
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add expense: " + e.getMessage());
         }
     }

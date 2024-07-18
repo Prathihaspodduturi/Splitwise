@@ -7,6 +7,23 @@
     font-family: Arial, sans-serif;
 }
 
+.loader {
+    border: 8px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #000;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spinner 1.2s linear infinite;
+  }
+
+  .loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Adjust height as needed */
+  }
+
+
 .input-group {
     margin-bottom: 10px;  /* Provides spacing between input groups */
 }
@@ -551,7 +568,7 @@
     background-color: transparent;
     border: none;
     color: #007bff;
-    font-size: 16px;
+    font-size: 22px;
     cursor: pointer;
     margin-bottom: 10px;
 }

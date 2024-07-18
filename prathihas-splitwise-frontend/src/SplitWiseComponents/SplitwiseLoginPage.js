@@ -28,6 +28,7 @@ const SplitwiseLoginPage  = () => {
     {
         e.preventDefault();
         setIsSubmiitted(true);
+        setError('');
         setConnectionError('');
           try{
   
@@ -47,8 +48,6 @@ const SplitwiseLoginPage  = () => {
           sessionStorage.setItem('token', jwtToken);
           sessionStorage.setItem('Connected', true);
           sessionStorage.setItem('username', username);
-          //sessionStorage.setItem('LoggedIn', true);
-          //console.log("token is"+sessionStorage.getItem('token'));
           navigate('/splitwise/groups');
           
           setError('');

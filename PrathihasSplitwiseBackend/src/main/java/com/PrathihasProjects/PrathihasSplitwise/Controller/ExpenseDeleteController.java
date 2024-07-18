@@ -44,6 +44,15 @@ public class ExpenseDeleteController {
             expense.setDeleted(true);
             String user = authentication.getName();
             User userFromDb = theUserDAOImpl.findUserByName(user);
+
+
+            if (userFromDb == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user information.");
+            }
+
+            // Ensure we are working with a managed instance of User
+            userFromDb = theUserDAOImpl.findUserByName(userFromDb.getUsername());
+
             expense.setDeletedBy(userFromDb);
             expense.setDeletedDate(new Date());
             expensesDAO.updateExpense(expense);
@@ -57,6 +66,7 @@ public class ExpenseDeleteController {
 
             return ResponseEntity.ok().body("Expense deleted successfully");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete expense: " + e.getMessage());
         }
     }

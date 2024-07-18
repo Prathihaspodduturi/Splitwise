@@ -23,7 +23,11 @@ public class ExpenseParticipantsDAOImpl implements ExpenseParticipantsDAO {
     @Override
     @Transactional
     public void save(ExpenseParticipants participants) {
-        entityManager.persist(participants);
+        if (participants.getId() == null) {
+            entityManager.persist(participants);
+        } else {
+            entityManager.merge(participants);
+        }
     }
 
 //    @Override

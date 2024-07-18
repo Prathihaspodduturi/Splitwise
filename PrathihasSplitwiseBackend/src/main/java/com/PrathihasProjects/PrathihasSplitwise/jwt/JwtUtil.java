@@ -31,7 +31,6 @@ public class JwtUtil {
 
     public String getUsernameFromToken(String token) {
 
-        //System.out.println("In jwtutil: "+tempusername);
         return getClaimFromToken(token, Claims::getSubject);
     }
 

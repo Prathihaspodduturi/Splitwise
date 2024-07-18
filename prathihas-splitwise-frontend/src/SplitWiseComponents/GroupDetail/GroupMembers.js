@@ -8,8 +8,6 @@ const GroupMembers = ({members, group, gmDetails, handleAddMember, handleRemoveM
         toggleAddMemberForm(false);
     }
 
-    //console.log("in GroupMembers"+gmDetails);
-
     return (
         
         <div>

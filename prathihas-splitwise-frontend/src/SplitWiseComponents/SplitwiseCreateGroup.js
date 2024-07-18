@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import styles from './SplitwiseCreateGroup.module.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-const SplitwiseCreateGroup = ({setShowCreateGroupForm, closeConfirmModal, setGroups}) => {
+const SplitwiseCreateGroup = ({setShowCreateGroupForm, closeConfirmModal, fetchGroups}) => {
     const navigate = useNavigate();
 
     const [groupName, setGroupName] = useState('');
@@ -28,25 +28,31 @@ const SplitwiseCreateGroup = ({setShowCreateGroupForm, closeConfirmModal, setGro
                 body: JSON.stringify({ groupName, groupDescription })
             });
 
+            if (response.status === 403) {
+                setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                return;
+            }
+            else
+            {
             if (!response.ok) {
                 const data = await response.text();
                 throw new Error(data);
             }
-
-            const data = await response.text();
-
             toast.success(`Group ${groupName} created successfully`);
+
+            const data = await response.json();
 
             closeConfirmModal();
 
-            setTimeout(() => {
-                setGroups(prev => [... prev, ...data]);
-            }, 2000);
+            fetchGroups();
+        }
 
         } catch (error) {
             closeConfirmModal();
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
+                setTimeout(() => navigate('/splitwise/logout'), 5000);
             } else {
                 toast.error('Failed to create the group');
             }
@@ -85,8 +91,8 @@ const SplitwiseCreateGroup = ({setShowCreateGroupForm, closeConfirmModal, setGro
                 </div>
                 <button type="submit" className={styles.button}>Submit</button>
                 <button type="button" onClick={() => setShowCreateGroupForm(false)} className={styles.buttonCancel}>Cancel</button>
+                <ToastContainer position="top-center" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss={false} draggable={true} pauseOnHover={true} />
             </form>
-            <ToastContainer position="top-center" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss={false} draggable={true} pauseOnHover={true} />
         </div>
         </div>
     );

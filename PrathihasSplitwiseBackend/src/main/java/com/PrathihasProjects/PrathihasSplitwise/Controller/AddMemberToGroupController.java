@@ -46,7 +46,6 @@ public class AddMemberToGroupController {
             User curUser = theUserDAOImpl.findUserByName(username);
 
             User userToAdd = theUserDAOImpl.findUserByName(newUsername);
-            System.out.println("userToAdd"+ userToAdd);
             if (userToAdd == null) {
                 return ResponseEntity.badRequest().body("User does not exist");
             }
@@ -60,15 +59,12 @@ public class AddMemberToGroupController {
             // Check if user is already a member of the group
             boolean isAlreadyMember = groupMembersDAO.isMember(newUsername, groupId);
             if (isAlreadyMember) {
-                System.out.println("inside 1");
                 return ResponseEntity.badRequest().body("User is already a member of this group");
             }
 
             boolean oldMember = groupMembersDAO.isOldMember(newUsername, groupId);
-            System.out.println("oldMember"+oldMember);
             if(oldMember)
             {
-
                 GroupMembers gmTemp = groupMembersDAO.getDetails(groupId, newUsername);
                 gmTemp.setAddedBy(curUser);
                 gmTemp.setRemovedBy(null);
@@ -91,6 +87,7 @@ public class AddMemberToGroupController {
             return ResponseEntity.ok().body(members);
         }
         catch(Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: please try again later!");
         }
     }

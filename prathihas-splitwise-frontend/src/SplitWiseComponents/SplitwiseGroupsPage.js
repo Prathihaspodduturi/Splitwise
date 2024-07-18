@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import styles from './SplitwiseGroupsPage.module.css';
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,6 +7,9 @@ import ConfirmModal from "../Modal/ConfirmModal";
 import SplitwiseCreateGroup from "./SplitwiseCreateGroup";
 
 const SplitwiseGroupsPage = () => {
+
+    const navigate = useNavigate();
+
     const [allGroups, setGroups] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -25,18 +28,27 @@ const SplitwiseGroupsPage = () => {
     const [showCreateGroupForm, setShowCreateGroupForm] = useState(false);
 
 
-        const fetchGroups = async () => {
+    const fetchGroups = async () => {
             const token = sessionStorage.getItem('token');
             setError('');
             setConnectionError('');
             try {
+
                 const response = await fetch('http://localhost:8080/splitwise/groups', {
-                    method: 'POST',  // Consider changing to GET if no specific data needs to be sent
+                    method: 'POST',  
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                 });   
+
+                if (response.status === 403) {
+                    setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
+                    setTimeout(() => navigate('/splitwise/logout'), 5000);
+                    return;
+                }
+                else
+                {
 
                 if (!response.ok) {
                     const data = await response.text();
@@ -47,19 +59,22 @@ const SplitwiseGroupsPage = () => {
                 
                 setGroups(data);
                 setIsLoading(false);
+                }
             } catch (error) {
                 setIsLoading(false);
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
+                    setTimeout(() => navigate('/splitwise/logout'), 5000); 
+                    return;  
                 } else {
-                    setError(error.message);
+                    setConnectionError(error.message);
                 }
             }
-        };
+    };
 
     useEffect(() => {
         fetchGroups();
-    }, [fetchGroups]);
+    }, []);
 
     const handleRestoreGroup = async () => {
         try{
@@ -88,6 +103,7 @@ const SplitwiseGroupsPage = () => {
             closeConfirmModal();
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
+               setTimeout(() => navigate('/splitwise/logout'), 5000);    
             }
             else{
                 toast.error('Failed to restore group due to an error');
@@ -118,8 +134,6 @@ const SplitwiseGroupsPage = () => {
         setShowCreateGroupForm(false);
     };
 
-    const isLoggedIn = sessionStorage.getItem('token');
-
     if (connectionError) {
         return (
           <div className={styles.errorMessage}>{connectionError}</div>
@@ -127,10 +141,13 @@ const SplitwiseGroupsPage = () => {
     }
 
     if(isLoading){
-        return (<div>Loading...</div>);
+        return (
+            <div className={styles.loaderContainer}>
+                <div className={styles.loader}></div>
+            </div>
+        );
     }
 
-    console.log("restoring", restoring);
 
     return (
         <div className={styles.page}>
@@ -162,7 +179,6 @@ const SplitwiseGroupsPage = () => {
                     setShowCreateGroupForm={setShowCreateGroupForm}
                     closeConfirmModal={closeConfirmModal}
                     fetchGroups={fetchGroups}
-                    setGroups={setGroups}
                 />
             )
             }

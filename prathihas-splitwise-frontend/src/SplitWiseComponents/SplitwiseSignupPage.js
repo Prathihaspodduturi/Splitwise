@@ -19,32 +19,63 @@ const SplitwiseSignupPage = () => {
     const [signUpMessage, setSignUpMessage] = useState('');
     const [connectionError, setConnectionError] = useState('');
 
+    const [isLoading, setIsLoading] = useState('');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage('');
         setSignUpMessage('');
         setConnectionError('');
-        try {
-            const response = await fetch('http://localhost:8080/splitwise/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
+        setIsLoading(true);
 
-            const data = await response.text();
-            if (!response.ok) {
-                throw new Error(data);
-            }
-            setUsername('');
-            setPassword('');
-            setSignUpMessage('Signup successfull');
-        } catch (error) {
-            if (error instanceof TypeError) {
-                setConnectionError("Unable to connect to the server. Please try again later.");
-            } else {
-                setErrorMessage(error.message);
+        const usernameRegex = /^[a-zA-Z0-9_]{5,15}$/;
+        if (!usernameRegex.test(username)) {
+
+            setTimeout(() => {
+            setIsLoading(false);
+            setErrorMessage('Username must be between 5 and 15 characters long and can only contain letters, numbers, and underscores.');
+            return;
+            }, 1000);
+        }
+        else
+        {
+        // Password validation
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        if (!passwordRegex.test(password)) {
+
+            setTimeout(() => {
+            setIsLoading(false);
+            setErrorMessage('Password must contain at least one symbol, one number, one uppercase letter, one lowercase letter, and be at least 8 characters long.');
+            return;
+            }, 1000);
+        }
+        else
+        {
+            try {
+                const response = await fetch('http://localhost:8080/splitwise/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.text();
+                if (!response.ok) {
+                    throw new Error(data);
+                }
+                setUsername('');
+                setPassword('');
+                setIsLoading(false);
+                setSignUpMessage('Signup successfull');
+            } catch (error) {
+                setIsLoading(false);
+                if (error instanceof TypeError) {
+                    setConnectionError("Unable to connect to the server. Please try again later.");    
+                } else {
+                    setErrorMessage(error.message);
+                }
             }
         }
+    }
     };
 
     const handleLoginRedirect = () => {
@@ -60,6 +91,11 @@ const SplitwiseSignupPage = () => {
     return (
         <div className={styles.page}>
             <div className={styles.container}>
+            {isLoading && (
+                    <div className={styles.loaderContainer}>
+                        <div className={styles.loader}></div>
+                    </div>
+            )}
             {errorMessage && <div className={styles.error}>{errorMessage}</div>}
             {signUpMessage && <div className={styles.signUpMessage}>{signUpMessage}</div>}
             <h2 className={styles.heading}>Sign Up</h2>
