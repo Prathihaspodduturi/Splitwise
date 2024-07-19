@@ -101,3 +101,73 @@
         font-size: 25px;
     }
 }
+
+/* Media Queries for screens less than 768px wide */
+@media (max-width: 768px) {
+    .listBalancesContainer {
+        padding: 15px; /* Slightly reduce padding */
+        margin-top: 15px;
+        width: 95%; /* Increase width usage on small screens */
+    }
+
+    .listBalancesContainer h3 {
+        font-size: 16px; /* Adjust font size for smaller screens */
+        margin-bottom: 10px; /* Slightly reduce margin */
+    }
+
+    .listBalancesItem {
+        padding: 8px; /* Reduce padding for a more compact layout */
+        margin-bottom: 8px; /* Reduce margin between items */
+        font-size: 16px; /* Reduce font size */
+    }
+
+    .listBalancesItem p {
+        font-size: 16px; /* Adjust paragraph font size to match list items */
+    }
+
+    .listBalancesItem:hover {
+        transform: scale(1); /* Disable transform on hover for better usability */
+    }
+
+    .balancesPayButton {
+        padding: 6px 10px; /* Reduce button padding */
+        font-size: 14px; /* Reduce font size for buttons */
+    }
+
+    .balancesHeading {
+        font-size: 18px; /* Reduce heading font size */
+    }
+}
+
+/* Additional media query for very small screens (less than 480px) */
+@media (max-width: 480px) {
+    .listBalancesContainer {
+        padding: 10px; /* Further reduce padding */
+        margin-top: 10px;
+        width: 75%; /* Use full width to maximize space */
+    }
+
+    .listBalancesContainer h3 {
+        font-size: 14px; /* Further reduce font size for headers */
+    }
+
+    .listBalancesItem {
+        margin-left: 2.5px;
+     /* Further reduce padding */
+        font-size: 14px; /* Further reduce font size */
+        width: 78%;
+    }
+
+    .listBalancesItem p {
+        font-size: 14px; /* Adjust paragraph font size to match list items */
+    }
+
+    .balancesPayButton {
+        padding: 5px 8px; /* Further reduce button padding */
+        font-size: 12px; /* Further reduce button font size */
+    }
+
+    .balancesHeading {
+        font-size: 16px; /* Further reduce heading font size */
+    }
+}

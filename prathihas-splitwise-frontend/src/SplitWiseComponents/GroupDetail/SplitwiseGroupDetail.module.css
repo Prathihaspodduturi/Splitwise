@@ -153,16 +153,13 @@
     color: #757575; 
 }
 
-
-
-.logoutLink {
-    position: fixed; 
+.logoutLink { 
+    position: absolute;
     right: 20px;
     top: 20px;
     color: #2196F3;
     font-weight: bold;
     text-decoration: none;
-    z-index: 1000;   
 }
 
 .groupNameContainer {
@@ -575,4 +572,126 @@
 
 .backButton:hover {
     text-decoration: underline;
+}
+
+
+/* Media Queries for screens less than 768px wide */
+@media (max-width: 768px) {
+    .background {
+        padding: 10px; /* Provide more internal space */
+    }
+
+    .modalContent, .updateForm, .addExpenseContainer {
+        width: 90%; /* Make modal and forms wider to use available space */
+    }
+
+    .loaderContainer, .optionsContainer, .groupStatusSettledUp, .groupStatusRemoval {
+        padding: 8px; /* Adjust padding */
+    }
+
+    .input-group, .formInput, .formTextArea, .updateFormInput[type="text"], .inputAddExpense {
+        font-size: 16px; /* Increase font size for better readability */
+        padding: 12px; /* Increase padding for easier interaction */
+    }
+
+    .button, .buttonCancel, .addExpenseButton, .editOptionButton, .deleteOptionButton,
+    .updateFormConfirmButton, .updateFormCancelButton, .paymentConfirmButton, .paymentCancelButton,
+    .buttonSubmitAddExpense, .buttonCancelAddExpense, .inActiveButton, .activeButton {
+        padding: 12px 18px; /* Larger buttons for easier tapping */
+        font-size: 14px; /* Adjust font size for space */
+        min-width: 100px; /* Ensure buttons are not too narrow */
+    }
+
+    .expenseItem, .deletedExpensesItem {
+        padding: 12px; /* More padding for each item */
+    }
+
+    .logoutLink, .editIcon, .groupNameContainer {
+        font-size: 14px; /* Adjust font size for readability */
+    }
+
+    .expensesSection, .deletedExpensesContainer {
+        height: auto; /* Make the height auto to avoid overflow */
+        overflow: visible;
+    }
+
+    .optionLink {
+        flex-grow: 1; /* Allow each option to fill the space */
+        margin: 2px; /* Reduce margin */
+    }
+}
+
+/* Additional media query for very small screens (less than 480px) */
+@media (max-width: 480px) {
+    .modalContent, .updateForm, .addExpenseContainer {
+        width: 80%; /* Use nearly full width of the screen */
+    }
+
+    .input-group, .formInput, .formTextArea, .updateFormInput[type="text"], .inputAddExpense {
+        font-size: 12px; /* Reduce font size slightly */
+        padding: 10px; /* Slightly reduce padding */
+    }
+
+    .button, .buttonCancel, .addExpenseButton, .editOptionButton, .deleteOptionButton,
+    .updateFormConfirmButton, .updateFormCancelButton, .paymentConfirmButton, .paymentCancelButton,
+    .buttonSubmitAddExpense, .buttonCancelAddExpense, .inActiveButton, .activeButton {
+        padding: 10px 15px; /* Slightly smaller padding */
+        font-size: 11px; /* Smaller font size */
+    }
+
+    .expenseItem, .deletedExpensesItem {
+        padding: 10px; /* Adjust padding for smaller size */
+    }
+
+    .logoutLink, .editIcon, .groupNameContainer {
+        font-size: 13px; /* Smaller text size */
+    }
+
+    .optionLink {
+        font-size: 12px; /* Reduce font size for option links */
+    }
+
+    .expensesSection, .deletedExpensesContainer {
+        padding: 10px; /* Reduce padding in sections */
+    }
+
+    .expenseFormOverlay{
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .decisionButtonContainer{
+        margin-top: 12px;
+    }
+
+    .paymentModal{
+        margin-left: 6px;
+        margin-right: 6px;
+    }
+
+    .paymentModalInput[type="number"]{
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .modalOverlay
+    {
+        width: 100%;
+        margin-left: 6px;
+    }
+
+    .updateFormInput[type="text"]{
+        width: 80%;
+        padding: 3px 6px; 
+        margin-top: 5px;
+        margin-right: 2px;
+    }
+
+    .backButton{
+        font-size: 13px;
+    }
+
+    .inputForm{
+        width: 100px;
+    }
 }

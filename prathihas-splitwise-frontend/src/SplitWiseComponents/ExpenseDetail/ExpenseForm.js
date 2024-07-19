@@ -26,7 +26,7 @@ const ExpenseForm = ({ editExpense, handleInputChange, handleParticipantAmountCh
             </div>
             <div className={styles.participantsContainer}>
                 <div className={styles.partcipantsSection}>
-                    <h3>Payers</h3>
+                    <h3 className={styles.labelForm}>Payers</h3>
                     {editExpense.participants.map(participant => (
                         <div key={participant.username}>
                             <label htmlFor={"amountPaid" + participant.username} className={styles.labelForm}>{participant.username}:</label>
@@ -41,7 +41,7 @@ const ExpenseForm = ({ editExpense, handleInputChange, handleParticipantAmountCh
                     ))}
                 </div>
                 <div className={styles.participantsSection}>
-                    <h3>Participants</h3>
+                    <h3 className={styles.labelForm}>Participants</h3>
                     {editExpense.participants.map(participant => (
                         <div key={participant.username}>
                             <label>

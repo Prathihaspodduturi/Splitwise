@@ -194,3 +194,64 @@
         font-size: 25px; /* Further increased font size */
     }
 }
+
+/* Media Queries for screens less than 768px wide */
+@media (max-width: 768px) {
+    .membersContainer, .addMemberFormContainer {
+        width: 95%; /* Use nearly full width for better utilization of space */
+        padding: 15px; /* Slightly reduce padding */
+    }
+
+    .membersItem, .addMemberFormInput {
+        padding: 8px; /* Reduce padding for a more compact layout */
+    }
+
+    .username, .usernameDetail {
+        font-size: 14px; /* Reduce font size for space management */
+    }
+
+    .addMemberButton, .removeMemberButton, .addMemberFormButton {
+        padding: 8px 12px; /* Make buttons smaller to fit the layout */
+        font-size: 14px; /* Adjust button text size for better fit */
+    }
+
+    .membersItem:hover {
+        transform: scale(1); /* Disable scaling on hover to avoid layout shift */
+    }
+}
+
+/* Additional media query for very small screens (less than 480px) */
+@media (max-width: 480px) {
+    .membersContainer, .addMemberFormContainer {
+        width: 78%; /* Use full width to maximize space */
+        padding: 2px; /* Further reduce padding */
+    }
+
+    .membersItem {
+        padding: 2px; /* Further reduce padding for a tighter layout */
+        width: 75%;
+    }
+
+    .username, .usernameDetail {
+        font-size: 14px; /* Further reduce font size for small screens */
+    }
+
+    .addMemberButton,  .addMemberFormButton {
+        padding: 6px 10px; /* Further reduce button sizes */
+        font-size: 12px; /* Further reduce button text size */
+    }
+
+    .removeMemberButton{
+        padding: 2px 5px;
+        margin-left: 3px;
+    }
+
+    .removeMemberButton{
+        font-size: 12px;
+    }
+
+    .addMemberFormInput{
+        width: 80%;
+        margin-left: 5px;
+    }
+}

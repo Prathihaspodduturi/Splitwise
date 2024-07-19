@@ -1,6 +1,10 @@
 .page {
-    background: url('https://www.transparenttextures.com/patterns/white-wall.png'), linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(224, 234, 252, 0.8));
+    background: url('https://www.transparenttextures.com/patterns/white-wall.png'), linear-gradient(to bottom, #ffffff, #e0eafc);
     background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
 }
 
 .arrow {
@@ -220,4 +224,82 @@
     font-weight: bold;
 }
 
+
+/* Media Queries for screens less than 768px wide */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px; /* Reduce padding */
+    }
+
+    .topRightLink, .navLink, .toggleButton {
+        font-size: 14px; /* Reduce font size for links and buttons */
+    }
+
+    .button, .notActiveButton, .toggleButton {
+        padding: 8px 15px; /* Adjust padding */
+        font-size: 14px; /* Reduce font size */
+    }
+
+    .groupItem, .activeGroupItem {
+        width: 90%; /* Make group items take more screen width */
+        padding: 15px; /* Reduce padding */
+    }
+
+    .heading, .label, .groupName, .activeGroupName {
+        font-size: 16px; /* Increase heading and label sizes for better readability */
+    }
+
+    .error, .signUpMessage, .groupDescription, .activeGroupDescription {
+        font-size: 12px; /* Adjust text sizes */
+    }
+
+    .loader {
+        width: 30px;
+        height: 30px;
+        border-width: 6px; /* Adjust loader size */
+    }
+
+    .pulseButton {
+        padding: 6px 12px; /* Adjust button padding */
+    }
+
+    .arrow {
+        border-width: 8px solid transparent; /* Adjust arrow size */
+        border-top-width: 8px solid #000; /* Adjust arrow top border */
+    }
+}
+
+/* Additional media query for very small screens (less than 480px) */
+@media (max-width: 480px) {
+     .groupItem, .activeGroupItem {
+        width: 80%; /* Full width for better use of space */
+    }
+
+    .activeGroupList{
+        width: 65%
+    }
+
+    .button, .notActiveButton, .toggleButton {
+        padding: 6px 10px; /* Reduce button padding further */
+        font-size: 12px; /* Reduce font size for buttons */
+    }
+
+    .heading, .label, .groupName, .activeGroupName, .topRightLink, .navLink, .toggleButton {
+        font-size: 16px; /* Slightly smaller font sizes */
+    }
+
+    .error, .signUpMessage, .groupDescription, .activeGroupDescription {
+        font-size: 13px; /* Further reduce text sizes for better fit */
+    }
+
+    .activeGroupsHeader {
+        text-align: center;
+        margin-top: 70px; /* Increase margin to ensure space above is sufficient */
+        padding: 10px;
+    }
+
+    .toggleButton {
+        font-size: 12.5px;
+    }
+}
 

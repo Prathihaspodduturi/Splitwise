@@ -145,3 +145,78 @@
 {
     font-size: 16px;
 }
+
+/* Media Queries for screens less than 768px wide */
+@media (max-width: 768px) {
+    .participantsContainer, .formContainer {
+        flex-direction: column; /* Stack the sections vertically */
+        align-items: center; /* Center-align the content */
+    }
+
+    .participantsSection, .formContainer {
+        width: 100%; /* Make sections full width */
+        padding: 10px; /* Reduce padding */
+    }
+
+    .participantsSection h3, .participantsSection li, .participantsSection ul, .paymentLabel, .inputForm, .labelForm, .userNameForm {
+        font-size: 16px; /* Adjust font sizes for readability */
+    }
+
+    .editButton, .deleteButton, .restoreButton, .saveButton, .cancelButton {
+        padding: 8px 16px; /* Smaller buttons */
+        font-size: 14px; /* Smaller font size for button labels */
+    }
+
+    .buttonContainer {
+     /* Stack buttons vertically */
+        align-items: center; /* Center-align buttons */
+        gap: 5px; /* Reduce space between buttons */
+    }
+
+    .inputForm, .paymentInputForm {
+        max-width: 100%; /* Full width for input forms */
+    }
+}
+
+/* Additional media query for very small screens (less than 480px) */
+@media (max-width: 480px) {
+    .participantsSection h3, .participantsSection li, .paymentLabel {
+        font-size: 13px; /* Further reduce font sizes */
+    }
+
+    .editButton, .deleteButton, .restoreButton, .saveButton, .cancelButton {
+        padding: 6px 12px; /* Even smaller buttons */
+        font-size: 12px; /* Further reduce font size for button labels */
+    }
+
+    .buttonContainer {
+        justify-content: start;
+        gap: 3px; /* Reduce space between buttons further */
+        margin-left: 2.5px;
+    }
+
+    .participantsContainer{
+        margin-top: 3px;
+    }
+
+    .participantsSection, .participantsSection h3{
+        padding: 5px;
+    }
+
+    .formContainer{
+        margin-top: 4px;
+        margin-left: 3px;
+    }
+
+    .inputForm{
+        width: 80%;
+    }
+
+    .userNameForm{
+        font-size: 13px;
+    }
+
+    .labelForm{
+        font-size: 13px;
+    }
+}

@@ -167,3 +167,77 @@
     min-height: 100vh;
 }
 
+/* Media Queries for screens less than 768px wide */
+@media (max-width: 768px) {
+    .expensesSection {
+        padding: 15px;
+        margin: 15px auto;
+        max-width: 95%; /* Increase width usage on small screens */
+    }
+
+    .expensesHeader {
+        padding: 10px;
+        font-size: 16px; /* Adjust font size for smaller screens */
+    }
+
+    .addExpenseButton {
+        padding: 10px 20px; /* Smaller button for smaller screens */
+        font-size: 14px; /* Smaller font size for button */
+        bottom: 10px; /* Adjust position closer to the edge */
+        right: 20px;
+    }
+
+    .expenseItem {
+        padding: 12px;
+        margin-bottom: 12px;
+        font-size: 14px; /* Smaller font size for list items */
+    }
+
+    .expenseItem:hover {
+        transform: translateY(0); /* Disable transform on hover for better usability */
+    }
+
+    .expenseItemDetails {
+        font-size: 12px; /* Smaller font size for item details */
+    }
+
+    .expenseDetails {
+        padding: 6px; /* Reduce padding */
+    }
+}
+
+/* Additional media query for very small screens (less than 480px) */
+@media (max-width: 480px) {
+    .expensesSection {
+        padding: 10px;
+        margin: 10px auto;
+        max-width: 80%; /* Use full width to maximize space */
+    }
+
+    .expensesHeader {
+        padding: 8px;
+        font-size: 14px; /* Further reduce font size for headers */
+    }
+
+    .addExpenseButton {
+        padding: 8px 16px; /* Further reduce button padding */
+        font-size: 12px; /* Further reduce button font size */
+        bottom: 5px;
+        right: 10px;
+    }
+
+    .expenseItem {
+        padding: 10px;
+        margin-bottom: 10px;
+        font-size: 16px; /* Further reduce font size for expense items */
+    }
+
+    .expenseItemDetails {
+        font-size: 13px; /* Further reduce font size for details */
+    }
+
+    .expenseDetails {
+        padding: 5px; /* Further reduce details padding */
+    }
+}
+

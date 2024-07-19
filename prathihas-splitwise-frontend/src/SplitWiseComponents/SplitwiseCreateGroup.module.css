@@ -86,3 +86,55 @@
     margin-bottom: 5px;
 }
 
+/* Media Queries for screens less than 768px wide */
+@media (max-width: 768px) {
+    .modalContent {
+        width: 85%; /* Increase width to use more of the screen */
+        padding: 15px; /* Adjust padding */
+    }
+
+    .formInput, .formTextArea {
+        font-size: 18px; /* Slightly larger font size for easier interaction */
+        padding: 10px; /* Increase padding for better touch targets */
+        margin: 8px 0;
+        max-width: none; /* Allow inputs to fill the modal */
+    }
+
+    .button, .buttonCancel {
+        padding: 12px 15px; /* Increase padding for easier tapping */
+        font-size: 14px; /* Adjust font size */
+        min-width: 100px; /* Adjust button width */
+    }
+
+    .form {
+        padding: 10px; /* Adjust padding inside forms */
+    }
+
+    .formLabel {
+        font-size: 16px; /* Increase label font size for better readability */
+    }
+}
+
+/* Additional media query for very small screens (less than 480px) */
+@media (max-width: 480px) {
+    .modalContent {
+        width: 85%; /* Use nearly full width of the screen */
+        padding: 10px; /* Reduce padding to save space */
+    }
+
+    .formInput, .formTextArea {
+        font-size: 16px; /* Slightly reduce font size to fit smaller screens */
+        padding: 8px; /* Adjust padding */
+        width: 50%;
+    }
+
+    .button, .buttonCancel {
+        padding: 10px 12px; /* Adjust padding */
+        font-size: 12px; /* Reduce font size for buttons */
+        min-width: 90px; /* Slightly reduce minimum button width */
+    }
+
+    .formLabel {
+        font-size: 14px; /* Reduce label font size for consistency */
+    }
+}

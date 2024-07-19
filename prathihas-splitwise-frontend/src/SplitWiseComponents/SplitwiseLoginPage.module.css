@@ -182,8 +182,10 @@
     }
 }
 
+
+
 /* Styles for screens less than 320px wide (Very small devices) */
-@media (max-width: 320px) {
+@media (max-width: 400px) {
     .heading, .label, .para, .signUpMessage, .error {
         font-size: 16px; /* Further reduce text size for very small screens */
     }
@@ -191,4 +193,15 @@
     .button {
         padding: 10px; /* Adjust button padding */
     }
+
+    .container{
+        width: 80%
+    }
+
+    .input{
+        width: 50%;
+    }
+    
 }
+
+
