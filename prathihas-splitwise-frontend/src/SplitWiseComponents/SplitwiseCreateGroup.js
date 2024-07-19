@@ -19,7 +19,7 @@ const SplitwiseCreateGroup = ({setShowCreateGroupForm, closeConfirmModal, fetchG
         setConnectionError('');
         const token = sessionStorage.getItem('token');
         try {
-            const response = await fetch("http://localhost:8080/splitwise/creategroup", {
+            const response = await fetch("http://52.15.44.104:8080/splitwise/creategroup", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ const SplitwiseCreateGroup = ({setShowCreateGroupForm, closeConfirmModal, fetchG
 
             if (response.status === 403) {
                 setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                 return;
             }
             else
@@ -52,7 +52,7 @@ const SplitwiseCreateGroup = ({setShowCreateGroupForm, closeConfirmModal, fetchG
             closeConfirmModal();
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
-                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
             } else {
                 toast.error('Failed to create the group');
             }

@@ -4,7 +4,7 @@ import SplitwiseExpenseDetailPage from '../ExpenseDetail/SplitwiseExpenseDetailP
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEverythingToNull, refreshExpenses}) => {
+const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEverythingToNull, refreshExpenses, deletedBy, settledBy}) => {
 
     const navigate = useNavigate();
     const [activeExpenses, setActiveExpenses] = useState([]);
@@ -12,11 +12,9 @@ const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEveryth
 
     const [connectionError, setConnectionError] = useState(null);
 
-    //console.log("inside");
-
     const fetchExpenses = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/expenses`, {
+            const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}/expenses`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,7 +52,7 @@ const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEveryth
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
-                setTimeout(() => navigate('/splitwise/logout'), 3000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 3000);
             } else {
                 toast.error("failed to retrieve");
             }
@@ -116,6 +114,8 @@ const ExpensesList = ({ groupId, whichExpenses, action, handleAction, setEveryth
                                     action={action}
                                     handleAction={handleAction}
                                     setEverythingToNull={setEverythingToNull}
+                                    deletedBy={deletedBy}
+                                    settledBy={settledBy}
                                 />
                             </div>
                         )}

@@ -1,5 +1,5 @@
 import './App.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 
 import React, {useState, useEffect}  from "react";
 import SplitwiseLoginPage from './SplitWiseComponents/SplitwiseLoginPage';
@@ -14,27 +14,31 @@ import SplitwiseCreateGroup from './SplitWiseComponents/SplitwiseCreateGroup';
 
 const router = createBrowserRouter([
       {
-        path: '/splitwise/',
+        path: '/',
+        element: <Navigate to="/prathihas-splitwise/login" replace />
+      },
+      {
+        path: '/prathihas-splitwise/',
         element: <SplitwiseHomePage/>,
       },
       {
-        path: '/splitwise/login',
+        path: '/prathihas-splitwise/login',
         element: <SplitwiseLoginPage/>
       },
       {
-        path: '/splitwise/signup',
+        path: '/prathihas-splitwise/signup',
         element: <SplitwiseSignupPage/>
       },
       {
-        path: '/splitwise/logout',
+        path: '/prathihas-splitwise/logout',
         element: <SplitwiseLogout/>
       },
       {
-        path: '/splitwise/groups',
+        path: '/prathihas-splitwise/groups',
         element: <SplitwiseGroupsPage/>
       },
       {
-        path: '/splitwise/groups/:groupId', // Route for specific group details
+        path: '/prathihas-splitwise/groups/:groupId', // Route for specific group details
         element: <SplitwiseGroupDetail />
       },
 ])

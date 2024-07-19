@@ -34,7 +34,7 @@ const SplitwiseGroupsPage = () => {
             setConnectionError('');
             try {
 
-                const response = await fetch('http://localhost:8080/splitwise/groups', {
+                const response = await fetch('http://52.15.44.104:8080/splitwise/groups', {
                     method: 'POST',  
                     headers: {
                         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const SplitwiseGroupsPage = () => {
 
                 if (response.status === 403) {
                     setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                    setTimeout(() => navigate('/splitwise/logout'), 5000);
+                    setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                     return;
                 }
                 else
@@ -59,12 +59,13 @@ const SplitwiseGroupsPage = () => {
                 
                 setGroups(data);
                 setIsLoading(false);
+                
                 }
             } catch (error) {
                 setIsLoading(false);
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
-                    setTimeout(() => navigate('/splitwise/logout'), 5000); 
+                    setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000); 
                     return;  
                 } else {
                     setConnectionError(error.message);
@@ -78,7 +79,7 @@ const SplitwiseGroupsPage = () => {
 
     const handleRestoreGroup = async () => {
         try{
-        const response = await fetch(`http://localhost:8080/splitwise/groups/${restoreGroupId}/restore`, {
+        const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${restoreGroupId}/restore`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -103,7 +104,7 @@ const SplitwiseGroupsPage = () => {
             closeConfirmModal();
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
-               setTimeout(() => navigate('/splitwise/logout'), 5000);    
+               setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);    
             }
             else{
                 toast.error('Failed to restore group due to an error');
@@ -148,22 +149,23 @@ const SplitwiseGroupsPage = () => {
         );
     }
 
+    const activeGroups = allGroups.filter(group => !group.settledUp && !group.deleted && group.removedDate === null);
 
     return (
         <div className={styles.page}>
             <div className={styles.container}>
-            <NavLink to="/splitwise/logout" className={styles.topRightLink}>Logout</NavLink>
+            <NavLink to="/prathihas-splitwise/logout" className={styles.topRightLink}>Logout</NavLink>
             {isLoading && <p>Loading...</p>}
             {error && <div>{error}</div>}
-            <button to="/splitwise/groups/creategroup" onClick={handleCreateGroup} className={`${styles.button} ${styles.topLeftButton}`}>
+            {activeGroups.length > 0 && (<button to="/prathihas-splitwise/groups/creategroup" onClick={handleCreateGroup} className={`${styles.button} ${styles.topLeftButton} ${styles.pulseButton}`}>
                 Create Group
-            </button>
-            <h2 className={styles.activeGroupsHeader}>Active Groups</h2>
+            </button>)}
+            <h1 className={styles.activeGroupsHeader}>Active Groups</h1>
             <ul className={styles.activeGroupList}>
                 {allGroups.filter(group => !group.settledUp && !group.deleted && group.removedDate === null).map(group => (
                     <li key={group.id} className={styles.activeGroupItem}>
                         <div className={styles.activeGroupName}>
-                            <NavLink to={`/splitwise/groups/${group.id}`} className={styles.activeGroupLink}>
+                            <NavLink to={`/prathihas-splitwise/groups/${group.id}`} className={styles.activeGroupLink}>
                                 {group.groupName}
                             </NavLink>
                         </div>
@@ -172,6 +174,17 @@ const SplitwiseGroupsPage = () => {
                         </div>
                     </li>
                 ))}
+
+                {activeGroups.length === 0 && (
+                    <div className={styles.activeGroupsHeader}>
+                            <h1>There are no active groups!</h1>
+                            <h2>You can create a group by clicking on create group button!</h2>
+                            <div className={styles.arrow}></div>
+                        <button to="/prathihas-splitwise/groups/creategroup" onClick={handleCreateGroup} className={`${styles.notActiveButton} ${styles.pulseButton}`}>
+                                Create Group
+                        </button>
+                    </div> 
+                )}
             </ul>
 
             {showCreateGroupForm === true && (
@@ -196,7 +209,7 @@ const SplitwiseGroupsPage = () => {
                 <ul className={styles.groupList}>
                     {allGroups.filter(group => (group.settledUp && !group.deleted) || (group.removedDate !== null)).map(group => (
                         <li key={group.id} className={styles.groupItem}>
-                            <NavLink to={`/splitwise/groups/${group.id}`} className={styles.navLink}>
+                            <NavLink to={`/prathihas-splitwise/groups/${group.id}`} className={styles.navLink}>
                                 {group.groupName}
                             </NavLink>  {group.groupDescription}
                         </li>
@@ -208,7 +221,7 @@ const SplitwiseGroupsPage = () => {
                 <ul className={styles.groupList}>
                     {allGroups.filter(group => group.deleted && group.removedDate === null).map(group => (
                         <li key={group.id} className={`${styles.groupItem} ${styles.groupItemDeleted}`}>
-                            <NavLink to={`/splitwise/groups/${group.id}`} className={styles.navLink}>
+                            <NavLink to={`/prathihas-splitwise/groups/${group.id}`} className={styles.navLink}>
                                 {group.groupName}
                             </NavLink>  {group.groupDescription}
                             <button onClick={() => handleToggleRestore(group.id, group.groupName)} className={styles.button}>Restore</button>

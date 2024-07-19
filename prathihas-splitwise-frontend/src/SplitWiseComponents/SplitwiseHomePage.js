@@ -12,7 +12,7 @@ const SplitwiseHomePage = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            navigate('/splitwise/groups');  // Navigate to the groups page if logged in
+            navigate('/prathihas-splitwise/groups');  // Navigate to the groups page if logged in
         }
     }, [isLoggedIn, navigate]);
 
@@ -60,8 +60,8 @@ const SplitwiseHomePage = () => {
                 <div>
                     <h1 className={styles.title}>Welcome to Splitwise</h1>
                     <p>A simple site to split and maintain expenses</p>
-                    <NavLink to="/splitwise/login" className={styles.navLinks}>Login</NavLink>
-                    <NavLink to="/splitwise/signup" className={styles.navLinks}>Sign Up</NavLink>
+                    <NavLink to="/prathihas-splitwise/login" className={styles.navLinks}>Login</NavLink>
+                    <NavLink to="/prathihas-splitwise/signup" className={styles.navLinks}>Sign Up</NavLink>
                 </div>
         </div>
     );

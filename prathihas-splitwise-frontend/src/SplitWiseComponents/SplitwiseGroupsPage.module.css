@@ -3,6 +3,48 @@
     background-size: cover;
 }
 
+.arrow {
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;  
+    border-right: 10px solid transparent; 
+    border-top: 10px solid #000; 
+    margin: 20px auto 10px; 
+    animation: bounce 2s infinite;
+    margin-top: 60px;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .pulseButton {
+    animation: pulse 2s infinite;
+  }
+  
 @keyframes spinner {
     0% {
       transform: rotate(0deg);
@@ -48,7 +90,7 @@
     text-decoration: none;
 }
 
-.button {
+.button, .notActiveButton {
     background-color: #4CAF50;
     border: none;
     color: white;
@@ -61,6 +103,12 @@
     width: auto;
     min-width: 120px;
     max-width: 200px;
+}
+
+.notActiveButton{
+    font-size: 20px;
+    padding: 20px 25px;
+    margin-top: 20px;
 }
 
 .topLeftButton {

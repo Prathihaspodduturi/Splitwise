@@ -69,13 +69,11 @@ const SplitwiseGroupDetail = () => {
     const [isSettling, setIsSettling] = useState(false);
     const [refreshExpenses, setRefreshExpenses] = useState(false);
 
-    console.log("inside groupdetail");
-
     const fetchGroupDetails = async () => {
         setError('');
         setConnectionError('');
         try {
-            const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}`, {
+            const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +84,7 @@ const SplitwiseGroupDetail = () => {
             if (response.status === 403) {
                 // Handle forbidden request
                 setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                 return;
             }
             else
@@ -110,7 +108,7 @@ const SplitwiseGroupDetail = () => {
             setIsLoading(false);
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to server try again later.");
-                setTimeout(() => navigate('/splitwise/logout'), 2000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 2000);
             } else {
                 setError(error.message);
             }
@@ -126,7 +124,7 @@ const SplitwiseGroupDetail = () => {
         setError('');
         setConnectionError('');
         try {
-            const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/update`, {
+            const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}/update`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -138,7 +136,7 @@ const SplitwiseGroupDetail = () => {
             if (response.status === 403) {
                 // Handle forbidden request
                 setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                 return;
             }
             else
@@ -157,7 +155,7 @@ const SplitwiseGroupDetail = () => {
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
-                setTimeout(() => navigate('/splitwise/logout'), 3000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 3000);
             } else {
                 toast.error(error.message);
             }
@@ -170,7 +168,7 @@ const SplitwiseGroupDetail = () => {
         setConnectionError('');
 
         try {
-            const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/addmember`, {
+            const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}/addmember`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,7 +180,7 @@ const SplitwiseGroupDetail = () => {
             if (response.status === 403) {
                 // Handle forbidden request
                 setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                 return;
             }
             else{
@@ -202,7 +200,7 @@ const SplitwiseGroupDetail = () => {
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Please try again later.");
-                setTimeout(() => navigate('/splitwise/logout'), 3000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 3000);
             } else {
                 toast.error(error.message);
             }
@@ -222,7 +220,7 @@ const SplitwiseGroupDetail = () => {
         }
 
             try {
-                const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/settlegroup`, {
+                const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}/settlegroup`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -233,7 +231,7 @@ const SplitwiseGroupDetail = () => {
                 if (response.status === 403) {
                     // Handle forbidden request
                     setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                    setTimeout(() => navigate('/splitwise/logout'), 5000);
+                    setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                     return;
                 }
                 else{
@@ -245,14 +243,14 @@ const SplitwiseGroupDetail = () => {
                 toast.success('Group settled successfully!');
                 
                 setTimeout(() => {
-                    navigate('/splitwise/groups');
+                    navigate('/prathihas-splitwise/groups');
                 }, 2000)
             }
             } catch (error) {
                 closeConfirmModal();
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
-                    setTimeout(() => navigate('/splitwise/logout'), 3000);
+                    setTimeout(() => navigate('/prathihas-splitwise/logout'), 3000);
                 } else {
                     setError(error.message);
                 }
@@ -264,7 +262,7 @@ const SplitwiseGroupDetail = () => {
             setError('');
             setConnectionError('');
             try {
-                const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/delete`, {
+                const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}/delete`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -275,7 +273,7 @@ const SplitwiseGroupDetail = () => {
                 if (response.status === 403) {
                     // Handle forbidden request
                     setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                    setTimeout(() => navigate('/splitwise/logout'), 5000);
+                    setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                     return;
                 }
                 else{
@@ -287,14 +285,14 @@ const SplitwiseGroupDetail = () => {
                 toast.success("Group has been deleted");
                 
                 setTimeout(() => {
-                    navigate('/splitwise/groups');
+                    navigate('/prathihas-splitwise/groups');
                 }, 2000)
             }
             } catch (error) {
                 closeConfirmModal();
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
-                    setTimeout(() => navigate('/splitwise/logout'), 3000);       
+                    setTimeout(() => navigate('/prathihas-splitwise/logout'), 3000);       
                 } else {
                     setError(error.message);
                 }
@@ -357,7 +355,7 @@ const SplitwiseGroupDetail = () => {
                 setShowParticipants(false);
                 setShowPayers(false);
                 setShowAddExpenseForm(false);
-            const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/addExpense`, {
+            const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}/addExpense`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -369,7 +367,7 @@ const SplitwiseGroupDetail = () => {
             if (response.status === 403) {
                 // Handle forbidden request
                 setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                 return;
             }
             else{
@@ -387,16 +385,16 @@ const SplitwiseGroupDetail = () => {
 
             toast.success('Expense added successfully!');
 
-            fetchGroupDetails();
-
             setRefreshExpenses(prev => !prev);
+
+            fetchGroupDetails();
         }
         }
         catch(error)
         {
             if (error instanceof TypeError) {
                 setConnectionError("Unable to connect to the server. Please try again later.");
-                setTimeout(() => navigate('/splitwise/logout'), 3000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 3000);
             } else {
                 toast.error(error.message);
             }
@@ -417,7 +415,7 @@ const SplitwiseGroupDetail = () => {
         try {
             setError('');
             setConnectionError('');
-            const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/addExpense`, {
+            const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}/addExpense`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -429,7 +427,7 @@ const SplitwiseGroupDetail = () => {
             if (response.status === 403) {
                 // Handle forbidden request
                 setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                setTimeout(() => navigate('/splitwise/logout'), 5000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                 return;
             }
             else{
@@ -452,7 +450,7 @@ const SplitwiseGroupDetail = () => {
         } catch (error) {
             if (error instanceof TypeError) {
                 setConnectionError("Please try again later.");
-                setTimeout(() => navigate('/splitwise/logout'), 3000);
+                setTimeout(() => navigate('/prathihas-splitwise/logout'), 3000);
             } else {
                 toast.error(error.message);
             }
@@ -490,7 +488,7 @@ const SplitwiseGroupDetail = () => {
         }
 
             try {
-                const response = await fetch(`http://localhost:8080/splitwise/groups/${groupId}/removemember`, {
+                const response = await fetch(`http://52.15.44.104:8080/splitwise/groups/${groupId}/removemember`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -502,7 +500,7 @@ const SplitwiseGroupDetail = () => {
                 if (response.status === 403) {
                     // Handle forbidden request
                     setConnectionError("You do not have permission to access this resource. Redirecting to logout...");
-                    setTimeout(() => navigate('/splitwise/logout'), 5000);
+                    setTimeout(() => navigate('/prathihas-splitwise/logout'), 5000);
                     return;
                 }
                 else{
@@ -529,7 +527,7 @@ const SplitwiseGroupDetail = () => {
                 closeConfirmModal();
                 if (error instanceof TypeError) {
                     setConnectionError("Unable to connect to the server. Please try again later.");
-                    setTimeout(() => navigate('/splitwise/logout'), 3000);   
+                    setTimeout(() => navigate('/prathihas-splitwise/logout'), 3000);   
                 } else {
                     toast.error(error.message);
                 }
@@ -709,9 +707,9 @@ const SplitwiseGroupDetail = () => {
                 <button onClick={() => navigate(-1)} className={styles.backButton}>
                     <FaArrowLeft /> Back
                 </button>
-                <NavLink to="/splitwise/logout" className={styles.logoutLink}>Logout</NavLink>
+                <NavLink to="/prathihas-splitwise/logout" className={styles.logoutLink}>Logout</NavLink>
                 <div className={styles.groupNameContainer}>
-                    <h2>{group.groupName} {gmDetails.removedBy === null && <FaEdit className={styles.editIcon} onClick={toggleEditIconForm} />}</h2>
+                    <h2>{group.groupName} {gmDetails.removedBy === null && group.settledBy === null && group.deletedBy === null && <FaEdit className={styles.editIcon} onClick={toggleEditIconForm} />}</h2>
                     {gmDetails.removedBy !== null && gmDetails.removedDate !== null ? (
                         gmDetails.removedBy === currentUser ? (
                             <p className={styles.groupStatusRemoval}>
@@ -770,6 +768,8 @@ const SplitwiseGroupDetail = () => {
                         handleAction={handleAction}
                         setEverythingToNull={setEverythingToNull}
                         refreshExpenses={refreshExpenses}
+                        deletedBy={group.deletedBy}
+                        settledBy={group.settledBy}
                     />
                     </div>
                 )}
@@ -782,6 +782,8 @@ const SplitwiseGroupDetail = () => {
                             action={tempAction}
                             handleAction={handleAction}
                             setEverythingToNull={setEverythingToNull}
+                            deletedBy={group.deletedBy}
+                            settledBy={group.settledBy}
                         />
                     </div>
                 )} 

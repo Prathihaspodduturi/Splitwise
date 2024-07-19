@@ -12,7 +12,7 @@ const SplitwiseLoginPage  = () => {
     const token = sessionStorage.getItem('token'); 
 
     if(token) {
-      navigate('/splitwise/groups');
+      navigate('/prathihas-splitwise/groups');
     }
   }, []);
     
@@ -32,7 +32,7 @@ const SplitwiseLoginPage  = () => {
         setConnectionError('');
           try{
   
-          const response = await fetch("http://localhost:8080/splitwise/login", {
+          const response = await fetch("http://52.15.44.104:8080/splitwise/login", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify({ "username" : username, "password" : password })
@@ -48,7 +48,7 @@ const SplitwiseLoginPage  = () => {
           sessionStorage.setItem('token', jwtToken);
           sessionStorage.setItem('Connected', true);
           sessionStorage.setItem('username', username);
-          navigate('/splitwise/groups');
+          navigate('/prathihas-splitwise/groups');
           
           setError('');
         }
@@ -65,7 +65,7 @@ const SplitwiseLoginPage  = () => {
     }
 
     const handleSignUpReDirect = () => {
-      navigate('/splitwise/signup');
+      navigate('/prathihas-splitwise/signup');
     }
 
     if (connectionError) {

@@ -9,8 +9,13 @@ const EditDeleteButtons = ({
     setEditMode,
     isPayment,
     handleAction,
+    deletedBy, 
+    settledBy
 }) => { 
 
+    
+    if(deletedBy !== null || settledBy !== null)
+            return;
 
     let editLabel = "Edit Expense";
     let deleteLabel = "Delete Expense";

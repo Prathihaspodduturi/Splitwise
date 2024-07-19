@@ -8,7 +8,7 @@ const SplitwiseLogout = () =>
     useEffect(() => {
         sessionStorage.clear();
 
-        setTimeout(() => navigate('/splitwise/login'), 1000);
+        setTimeout(() => navigate('/prathihas-splitwise/login'), 1000);
     }, [navigate]);
 
     return (

@@ -147,3 +147,48 @@
         font-size: 27px;
     }
 }
+
+/* Default styles are already mobile-first. Below are additional mobile-specific adjustments */
+
+/* Styles for screens less than 768px wide (Tablets and large phones) */
+@media (max-width: 768px) {
+    .container {
+        width: 95%; /* Make the container use almost full width */
+        padding: 15px; /* Reduce padding */
+    }
+
+    .input, .button {
+        max-width: none; /* Allow inputs and buttons to fill the container */
+        font-size: 18px; /* Increase font size for better readability */
+    }
+
+    .button {
+        padding: 12px; /* Make buttons easier to tap */
+    }
+
+    .heading, .label, .para, .signUpMessage, .error {
+        font-size: 20px; /* Increase text size for better readability */
+    }
+}
+
+/* Styles for screens less than 480px wide (Small phones) */
+@media (max-width: 480px) {
+    .heading, .label, .para, .signUpMessage, .error {
+        font-size: 18px; /* Slightly smaller font sizes for very small devices */
+    }
+
+    .input, .button {
+        font-size: 16px; /* Adjust font size for smaller screens */
+    }
+}
+
+/* Styles for screens less than 320px wide (Very small devices) */
+@media (max-width: 320px) {
+    .heading, .label, .para, .signUpMessage, .error {
+        font-size: 16px; /* Further reduce text size for very small screens */
+    }
+
+    .button {
+        padding: 10px; /* Adjust button padding */
+    }
+}
