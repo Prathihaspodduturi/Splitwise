@@ -17,19 +17,6 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    /*@ManyToMany(mappedBy = "users")
-    private Set<Groups> groupsDetails;*/
-
-    // Getters and setters...
-
-    /*public Set<Groups> getGroups() {
-        return groupsDetails;
-    }*/
-
-    /*public void setGroups(Set<Groups> groupsDetails) {
-        this.groupsDetails = groupsDetails;
-    }*/
-
     public User() {}
 
     public User(String username, String password)

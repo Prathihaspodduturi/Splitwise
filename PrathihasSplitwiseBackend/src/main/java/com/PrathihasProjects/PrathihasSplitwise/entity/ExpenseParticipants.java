@@ -106,7 +106,7 @@ public class ExpenseParticipants {
                 ", expense=" + expense +
                 ", user=" + user +
                 ", amountOwed=" + amountOwed +
-                ", amountpaid=" + amountpaid +
+                ", amountPaid=" + amountpaid +
                 ", isDeleted=" + isDeleted +
                 '}';
     }
