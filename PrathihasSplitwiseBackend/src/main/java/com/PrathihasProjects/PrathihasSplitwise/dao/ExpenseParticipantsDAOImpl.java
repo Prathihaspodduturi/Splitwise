@@ -30,17 +30,6 @@ public class ExpenseParticipantsDAOImpl implements ExpenseParticipantsDAO {
         }
     }
 
-//    @Override
-//    public List<User> getParticipants(int expenseId) {
-//        List<ExpenseParticipants> participants = entityManager.createQuery(
-//                        "SELECT ep FROM ExpenseParticipants ep WHERE ep.expense.id = :expenseId", ExpenseParticipants.class)
-//                .setParameter("expenseId", expenseId)
-//                .getResultList();
-//        return participants.stream()
-//                .map(ExpenseParticipants::getUser)
-//                .collect(Collectors.toList());
-//    }
-
     @Override
     public ExpenseParticipants findParticipant(int expenseId, String username)
     {

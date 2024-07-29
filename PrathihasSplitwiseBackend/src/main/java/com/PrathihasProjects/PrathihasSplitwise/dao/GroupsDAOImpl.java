@@ -22,7 +22,6 @@ public class GroupsDAOImpl implements GroupsDAO {
     @Override
     public Groups findGroupById(int id)
     {
-
         return entityManager.find(Groups.class, id);
     }
 
