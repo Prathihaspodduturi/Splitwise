@@ -13,9 +13,7 @@ import java.util.ArrayList;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
-
     private final UserDAOImpl theUserDAOImpl;
-
     @Autowired
     public MyUserDetailsService(UserDAOImpl theUserDAOImpl) {
         this.theUserDAOImpl = theUserDAOImpl;
