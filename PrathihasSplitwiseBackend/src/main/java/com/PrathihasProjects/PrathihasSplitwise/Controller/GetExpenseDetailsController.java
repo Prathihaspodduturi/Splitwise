@@ -37,6 +37,7 @@ public class GetExpenseDetailsController {
         try {
             String username = authentication.getName();
             Groups group = theGroupsDAOImpl.findGroupById(groupId);
+
             if (group == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found");
             }
