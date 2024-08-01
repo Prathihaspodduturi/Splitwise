@@ -44,15 +44,16 @@ public class RemoveMemberFromGroupController {
             String removedByUsername = authentication.getName();
 
             Groups group = theGroupsDAOImpl.findGroupById(groupId);
-            User removedByUser = theUserDAOImpl.findUserByName(removedByUsername);
-            User memberUser = theUserDAOImpl.findUserByName(memberUsername);
-
             if (group == null) {
-                return ResponseEntity.badRequest().body("Group not found");
+                return ResponseEntity.badRequest().body("Bad Request");
             }
+
+            User memberUser = theUserDAOImpl.findUserByName(memberUsername);
             if (memberUser == null) {
-                return ResponseEntity.badRequest().body("Member user not found");
+                return ResponseEntity.badRequest().body("User to be removed not found");
             }
+
+            User removedByUser = theUserDAOImpl.findUserByName(removedByUsername);
 
             GroupMembers member = groupMembersDAO.getDetails(groupId, memberUsername);
             if (member == null) {
@@ -68,7 +69,6 @@ public class RemoveMemberFromGroupController {
         }
         catch(Exception e)
         {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: please try again later!");
         }
     }

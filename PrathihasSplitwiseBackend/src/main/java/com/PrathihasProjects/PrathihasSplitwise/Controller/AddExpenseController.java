@@ -103,20 +103,14 @@ public class AddExpenseController {
 
             GroupMembersHelper gmDetails = groupDetailsService.getGmDetails(groupId, username);
 
-            List<Expenses> expenses = expensesDAO.groupExpenses(groupId);
-
-            List<Transaction> transactions = groupDetailsService.getAllTransactions(expenses);
-
-
             Map<String, Object> response = new HashMap<>();
-            response.put("transactions", transactions);
             response.put("gmDetails",gmDetails);
 
 
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add expense: " + e.getMessage());
         }
     }

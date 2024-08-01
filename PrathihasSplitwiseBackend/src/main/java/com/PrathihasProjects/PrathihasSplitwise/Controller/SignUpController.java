@@ -43,7 +43,7 @@ public class SignUpController {
         }
         catch (Exception e)
         {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error ocuured!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred!");
         }
     }
 }

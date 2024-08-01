@@ -66,7 +66,6 @@ public class ExpenseDeleteController {
 
             return ResponseEntity.ok().body("Expense deleted successfully");
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete expense: " + e.getMessage());
         }
     }

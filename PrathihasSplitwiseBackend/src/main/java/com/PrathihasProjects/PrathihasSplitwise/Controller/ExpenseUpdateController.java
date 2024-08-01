@@ -47,6 +47,7 @@ public class ExpenseUpdateController {
     @PutMapping("/splitwise/groups/{groupId}/expenses/{expenseId}/update")
     public ResponseEntity<?> updateExpense(@PathVariable int groupId, @PathVariable int expenseId, @RequestBody ExpenseDTO expenseDTO, Authentication authentication) {
         try {
+
             String username = authentication.getName();
             User user = theUserDAOImpl.findUserByName(username);
             if (user == null) {

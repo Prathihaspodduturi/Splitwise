@@ -381,7 +381,7 @@ const SplitwiseGroupDetail = () => {
 
             setGmDetails(data.gmDetails); 
 
-            setBalances(data.transactions);
+            //setBalances(data.transactions);
 
             toast.success('Expense added successfully!');
 

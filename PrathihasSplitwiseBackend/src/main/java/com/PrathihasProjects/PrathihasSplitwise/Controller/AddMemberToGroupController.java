@@ -87,7 +87,6 @@ public class AddMemberToGroupController {
             return ResponseEntity.ok().body(members);
         }
         catch(Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: please try again later!");
         }
     }

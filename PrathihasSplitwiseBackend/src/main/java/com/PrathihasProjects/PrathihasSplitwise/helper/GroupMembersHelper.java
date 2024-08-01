@@ -14,6 +14,8 @@ public class GroupMembersHelper {
     private Date addedDate;
 
     private Date removedDate = null;
+    public GroupMembersHelper(){
+    }
 
     public GroupMembersHelper(String username, int groupId, String addedBy, Date addedDate) {
         this.username = username;
